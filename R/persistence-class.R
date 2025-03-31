@@ -116,8 +116,21 @@ as_persistence.persistence <- function(x, ...) {
 
 #' @rdname persistence
 #' @export
+as_persistence.data.frame <- function(x, ...) {
+  if (ncol(x) != 3L) {
+    cli::cli_abort("The data frame must have 3 columns.")
+  }
+  if (!all(c("dimension", "birth", "death") %in% colnames(x))) {
+    cli::cli_abort("The data frame must have columns named {.var dimension}, {.var birth} and {.var death}.")
+  }
+  x <- split_df_by_dimension(x)
+  as_persistence(x, ...)
+}
+
+#' @rdname persistence
+#' @export
 as_persistence.matrix <- function(x, ...) {
-  x <- split_matrix_by_dimension(x)
+  x <- as.data.frame(x)
   as_persistence(x, ...)
 }
 
@@ -141,10 +154,9 @@ as_persistence.diagram <- function(x, ...) {
   }
 
   dims <- dim(x)
-  as_persistence.matrix(
-    as.matrix(x)[1:dims[1], 1:dims[2]],
-    rlang::splice(params)
-  )
+  x <- as.matrix(x)[1:dims[1], 1:dims[2]]
+  colnames(x) <- base::tolower(colnames(x))
+  as_persistence.matrix(x, rlang::splice(params))
 }
 
 #' @rdname persistence
@@ -178,11 +190,18 @@ format.persistence <- function(x, ...) {
   }
 
   cli::cli_h1("Metadata")
-  cli::cli_alert_info("Persistence has been computed from data stored in object {.field {x$metadata$data}}")
+  cli::cli_alert_info("Persistence has been computed from data stored in object {.field {x$metadata$data}}.")
   cli::cli_alert_info("Persistence has been computed using the {.pkg {x$metadata$engine}} package.")
   cli::cli_alert_info("The simplicial complex used in the computation is {.field {x$metadata$simplicial_complex}}.")
-  cli::cli_alert_info("The parameters used in the computation are:")
-  cli::cli_bullets("{x$metadata$parameters}")
+  cli::cli_alert_info("The function called was {.fn {rlang::call_name(x$metadata$call)}}.")
+  cli::cli_alert_info("The parameters used for the computation are:")
+  lid <- cli::cli_ul()
+  param_nms <- names(x$metadata$parameters)
+  param_vals <- x$metadata$parameters
+  for (i in seq_along(param_nms)) {
+    cli::cli_li("{param_nms[i]}: {param_vals[[i]]}")
+  }
+  cli::cli_end(lid)
 }
 
 #' @rdname persistence

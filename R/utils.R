@@ -28,8 +28,7 @@ check_2d_matrix <- function(x) {
   }
 }
 
-split_matrix_by_dimension <- function(x) {
-  x <- as.data.frame(x)
+split_df_by_dimension <- function(x) {
   x <- base::split(x, x$dimension)
   names(x) <- NULL
   lapply(x, \(.x) {

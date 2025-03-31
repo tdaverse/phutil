@@ -5,6 +5,7 @@
 \alias{as_persistence}
 \alias{as_persistence.list}
 \alias{as_persistence.persistence}
+\alias{as_persistence.data.frame}
 \alias{as_persistence.matrix}
 \alias{as_persistence.diagram}
 \alias{as_persistence.PHom}
@@ -19,6 +20,8 @@ as_persistence(x, ...)
 \method{as_persistence}{list}(x, ...)
 
 \method{as_persistence}{persistence}(x, ...)
+
+\method{as_persistence}{data.frame}(x, ...)
 
 \method{as_persistence}{matrix}(x, ...)
 
