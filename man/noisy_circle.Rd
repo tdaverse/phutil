@@ -4,7 +4,8 @@
 \name{noisy_circle}
 \alias{noisy_circle}
 \alias{noisy_circle_points}
-\alias{noisy_circle_persistence}
+\alias{noisy_circle_ripserr}
+\alias{noisy_circle_tda_rips}
 \title{Toy Data: Noisy circle}
 \format{
 \subsection{\code{noisy_circle_points}}{
@@ -12,10 +13,22 @@
 A matrix with 100 rows and 2 columns listing the coordinates of the points.
 }
 
-\subsection{\code{noisy_circle_persistence}}{
+\subsection{\code{noisy_circle_ripserr}}{
 
 An object of class 'PHom' as returned by the
 \href{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}{\code{ripserr::vietoris_rips()}}
+function, which is a data frame with 3 variables:
+\itemize{
+\item \code{dimension}: the dimension/degree of the feature,
+\item \code{birth}: the birth value of the feature,
+\item \code{death}: the death value of the feature.
+}
+}
+
+\subsection{\code{noisy_circle_tda_rips}}{
+
+An object of class 'diagram' as returned by the
+\href{https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag}{\code{TDA::ripsDiag()$diagram}}
 function, which is a matrix with 3 columns:
 \itemize{
 \item \code{dimension}: the dimension/degree of the feature,
@@ -25,15 +38,20 @@ function, which is a matrix with 3 columns:
 }
 
 An object of class \code{PHom} (inherits from \code{data.frame}) with 101 rows and 3 columns.
+
+An object of class \code{diagram} with 102 rows and 3 columns.
 }
 \source{
 \url{https://tdaverse.github.io/tdaunif/reference/circles.html},
-\url{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}
+\url{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html},
+\url{https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag}
 }
 \usage{
 noisy_circle_points
 
-noisy_circle_persistence
+noisy_circle_ripserr
+
+noisy_circle_tda_rips
 }
 \description{
 A simulated data set consisting of 100 points sampled from a circle with
@@ -45,10 +63,14 @@ The point cloud stored in \code{noisy_circle_points} has been generated using th
 \href{https://tdaverse.github.io/tdaunif/reference/circles.html}{\code{tdaunif::sample_circle()}}
 function. Specifically, the following parameters were used: \code{n = 100}, \code{sd = 0.05} and a seed of 1234.
 
-The persistence diagram stored in \code{noisy_circle_persistence} has been
-computed using the \href{https://tdaverse.github.io/ripserr/}{\strong{ripserr}} package
-with the
+The persistence diagram stored in \code{noisy_circle_ripserr} has been computed
+using the \href{https://tdaverse.github.io/ripserr/}{\strong{ripserr}} package with the
 \href{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}{\code{ripserr::vietoris_rips()}}
 function. Specifically, the following parameters were used: \code{max_dim = 1L}.
+
+The persistence diagram stored in \code{noisy_circle_tda_rips} has been computed
+using the \strong{TDA} package with the
+\href{https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag}{\code{TDA::ripsDiag()}}
+function. Specifically, the following parameters were used: \code{maxdimension = 1L} and \code{maxscale = 1.6322}.
 }
 \keyword{datasets}

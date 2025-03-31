@@ -20,4 +20,5 @@ LazyData: true
 Suggests: 
     tinytest
 Imports: 
-    cli
+    cli,
+    rlang

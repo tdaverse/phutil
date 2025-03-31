@@ -3,9 +3,9 @@
 \name{persistence}
 \alias{persistence}
 \alias{as_persistence}
-\alias{as_persistence.default}
-\alias{as_persistence.persistence}
 \alias{as_persistence.list}
+\alias{as_persistence.persistence}
+\alias{as_persistence.matrix}
 \alias{as_persistence.diagram}
 \alias{as_persistence.PHom}
 \alias{print.persistence}
@@ -16,11 +16,11 @@
 \usage{
 as_persistence(x, ...)
 
-\method{as_persistence}{default}(x, modulus = NULL, max_dim = NULL, threshold = NULL, ...)
+\method{as_persistence}{list}(x, ...)
 
 \method{as_persistence}{persistence}(x, ...)
 
-\method{as_persistence}{list}(x, ...)
+\method{as_persistence}{matrix}(x, ...)
 
 \method{as_persistence}{diagram}(x, ...)
 
@@ -35,7 +35,7 @@ get_pairs(x, degree, ...)
 \method{as.data.frame}{persistence}(x, row.names = NULL, optional = TRUE, ...)
 }
 \arguments{
-\item{x}{An R object containing the persistence data to be coerced into an
+\item{x}{An \code{R} object containing the persistence data to be coerced into an
 object of class \code{\link{persistence}}. Currently supported forms are:
 \itemize{
 \item a \eqn{\geq 3}-column matrix (or object coercible to one) with
@@ -48,10 +48,6 @@ whose first element is) an object of class 'diagram'.
 }}
 
 \item{...}{Parameters passed to methods.}
-
-\item{modulus, max_dim, threshold}{Possibly missing parameters of the
-calculation of the persistence data \code{x} to be included in the 'persistence'
-object.}
 
 \item{degree}{Non-negative integer; the homology degree for which to recover
 a matrix of persistence pairs.}
@@ -66,6 +62,10 @@ a matrix of persistence pairs.}
     \code{optional} only for column names treatment, basically with the
     meaning of \code{\link[base]{data.frame}(*, check.names = !optional)}.
     See also the \code{make.names} argument of the \code{matrix} method.}
+
+\item{modulus, max_dim, threshold}{Possibly missing parameters of the
+calculation of the persistence data \code{x} to be included in the 'persistence'
+object.}
 }
 \value{
 An object of class \code{\link{persistence}} which is a list of 2 elements:
@@ -78,7 +78,11 @@ higher dimensions, the corresponding element(s) is/are filled with a
 \item \code{metadata}: A list of 3 elements containing information about how the data
 was computed:
 \itemize{
+\item \code{data}: The name of the object containing the original data on which the
+persistence data was computed.
 \item \code{engine}: The name of the package that computed the persistence data.
+\item \code{simplicial_complex}: The type of simplicial complex used in the
+computation.
 \item \code{parameters}: A list of parameters used in the computation.
 \item \code{call}: The exact call that generated the persistence data.
 }

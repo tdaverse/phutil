@@ -9,7 +9,7 @@
 #'
 #' @name persistence
 #'
-#' @param x An R object containing the persistence data to be coerced into an
+#' @param x An `R` object containing the persistence data to be coerced into an
 #'   object of class [`persistence`]. Currently supported forms are:
 #'
 #' - a \eqn{\geq 3}-column matrix (or object coercible to one) with
@@ -39,7 +39,11 @@
 #' - `metadata`: A list of 3 elements containing information about how the data
 #' was computed:
 #'
+#'   - `data`: The name of the object containing the original data on which the
+#'   persistence data was computed.
 #'   - `engine`: The name of the package that computed the persistence data.
+#'   - `simplicial_complex`: The type of simplicial complex used in the
+#'   computation.
 #'   - `parameters`: A list of parameters used in the computation.
 #'   - `call`: The exact call that generated the persistence data.
 #'
@@ -52,34 +56,53 @@ as_persistence <- function(x, ...) {
 
 #' @rdname persistence
 #' @export
-as_persistence.default <- function(x,
-                                   modulus = NULL,
-                                   max_dim = NULL,
-                                   threshold = NULL,
-                                   ...) {
-  x <- as.matrix(x)
-
-  # initialize list
+as_persistence.list <- function(x, ...) {
   pd <- list()
-  pd$pairs <- list()
 
-  # concatenate a matrix for each dimension
-  if (is.null(max_dim))
-    max_dim <- if (nrow(x) == 0L) {
-      -Inf
-    } else {
-      max(x[, 1L, drop = TRUE])
-    }
-  if (max_dim >= 0)
-    for (i in seq(0L, max_dim)) {
-      pd$pairs[[i + 1L]] <- x[x[, 1L] == i, c(2L, 3L), drop = FALSE]
-      dimnames(pd$pairs[[i + 1L]]) <- NULL
-    }
+  # Handle persistence data stored in `x`
 
-  # assign parameters
-  pd$modulus <- modulus %||% NA_integer_
-  pd$max_dim <- max_dim %||% as.integer(max(x[, 1L]))
-  pd$threshold <- threshold %||% NA_real_
+  if (length(x) == 0L) {
+    cli::cli_abort("The list is empty.")
+  }
+
+  sapply(x, check_2d_matrix)
+
+  pd$pairs <- x
+
+  # Handle metadata
+
+  pd$metadata <- list()
+
+  dots <- rlang::list2(...)
+  if ("data" %in% names(dots)) {
+    pd$metadata$data <- dots$data
+    dots$data <- NULL
+  } else {
+    pd$metadata$data <- "?"
+  }
+  if ("engine" %in% names(dots)) {
+    pd$metadata$engine <- dots$engine
+    dots$engine <- NULL
+  } else {
+    pd$metadata$engine <- "?"
+  }
+  if ("simplicial_complex" %in% names(dots)) {
+    pd$metadata$simplicial_complex <- dots$simplicial_complex
+    dots$simplicial_complex <- NULL
+  } else {
+    pd$metadata$simplicial_complex <- "?"
+  }
+  if ("call" %in% names(dots)) {
+    pd$metadata$call <- dots$call
+    dots$call <- NULL
+  } else {
+    pd$metadata$call <- "?"
+  }
+  if ("parameters" %in% names(dots)) {
+    pd$metadata$parameters <- dots$parameters
+  } else {
+    pd$metadata$parameters <- dots
+  }
 
   class(pd) <- "persistence"
   pd
@@ -93,51 +116,35 @@ as_persistence.persistence <- function(x, ...) {
 
 #' @rdname persistence
 #' @export
-as_persistence.list <- function(x, ...) {
-  # if list contains one object, reroute to default method
-  # (handles `TDA::*Diag()` output with 'diagram' object as list singleton)
-  # TODO: check all possible outputs of `TDA::*Diag()`
-  if (length(x) == 1L) {
-    return(as_persistence(x[[1L]], ...))
-  }
-
-  if (!(all(vapply(x, is.matrix, NA)) && all(vapply(x, ncol, 0L) == 2L))) {
-    cli::cli_abort("Input must be a list of 2-column matrices.")
-  }
-
-  # collect recognized parameters
-  dots <- list(...)
-  params <- dots[intersect(c("modulus", "max_dim", "threshold"), names(dots))]
-
-  # interpret as pairs
-  pd <- c(list(pairs = x), params)
-
-  class(pd) <- "persistence"
-  pd
+as_persistence.matrix <- function(x, ...) {
+  x <- split_matrix_by_dimension(x)
+  as_persistence(x, ...)
 }
 
 #' @rdname persistence
 #' @export
 as_persistence.diagram <- function(x, ...) {
-  # get 3-column matrix
-  m <- matrix(as.vector(x), nrow = dim(x)[[1L]], ncol = dim(x)[[2L]])
-
-  # reconcile dots
-  dots <- list(...)
+  info <- attributes(x)
   params <- list(
-    x = m,
-    max_dim = attr(x, "call")$maxdimension %||% attr(x, "maxdimension"),
-    threshold = attr(x, "call")$maxscale %||% {
-      # discern maximum scale
-      x_scale <- attr(x, "scale")
-      if (!is.null(x_scale) && length(x_scale) == 2L)
-        x_scale <- x_scale[[2L]]
-      x_scale
-    }
+    data = info$call$X,
+    engine = rlang::call_ns(info$call),
+    simplicial_complex = gsub("*Diag", "", rlang::call_name(info$call)),
+    call = info$call
   )
+  nms <- names(info$call)
+  nms <- nms[nms != ""]
+  nms <- nms[nms != "X"]
+  if (length(nms) > 0L) {
+    for (nm in nms) {
+      params[[nm]] <- info$call[[nm]]
+    }
+  }
 
-  # reroute to default method with extracted parameters
-  do.call(as_persistence.default, utils::modifyList(params, dots))
+  dims <- dim(x)
+  as_persistence.matrix(
+    as.matrix(x)[1:dims[1], 1:dims[2]],
+    rlang::splice(params)
+  )
 }
 
 #' @rdname persistence
@@ -145,7 +152,12 @@ as_persistence.diagram <- function(x, ...) {
 as_persistence.PHom <- function(x, ...) {
   # coerce to matrix and reroute to default method
   # (will need to change if 'PHom' class changes)
-  as_persistence.default(as.matrix(as.data.frame(x)), ...)
+  as_persistence.matrix(
+    as.matrix(x),
+    engine = "ripserr",
+    simplicial_complex = "rips",
+    ...
+  )
 }
 
 #' @rdname persistence
@@ -158,45 +170,19 @@ print.persistence <- function(x, ...) {
 #' @rdname persistence
 #' @export
 format.persistence <- function(x, ...) {
-  # empty persistence data
-  if (x$max_dim == -Inf && length(x$pairs) == 0L)
-    return("empty 'persistence' data")
-
-  # parameters
-  if (is.na(x$max_dim))
-    x$max_dim <- length(x$pairs) - 1L
-
-  # header
-  fmt1 <- sprintf("'persistence' data computed up to degree %i:",
-                  x$max_dim %||% "<unknown>")
-
-  # features
-  num_deg <- length(x$pairs) - 1L
-  num_feat <- vapply(x$pairs, nrow, 0L)[seq(min(6L, num_deg + 1L))]
-  wid_feat <- floor(log(max(num_feat), 10)) + 1L
-  lines2 <- c(paste(
-    "* ",
-    format(seq_along(num_feat) - 1L, width = 1L),
-    "-degree features: ",
-    format(num_feat, width = wid_feat),
-    sep = ""
-  ),
-  if (num_deg > 6L)
-    "...")
-  fmt2 <- paste(lines2, collapse = "\n")
-
-  # other parameters, if any
-  fmt3 <- do.call(paste, c(
-    if (!is.na(x$modulus)) list(sprintf("modulus = %i", x$modulus)),
-    if (!is.na(x$threshold)) list(sprintf("threshold = %f", x$threshold)),
-    list(sep = "; ")
-  ))
-
-  if (length(fmt3) == 0L) {
-    paste(fmt1, fmt2, sep = "\n\n")
-  } else {
-    paste(fmt1, fmt2, fmt3, sep = "\n\n")
+  cli::cli_h1("Persistence Data")
+  ndim <- length(x$pairs)
+  npts <- sapply(x$pairs, nrow)
+  for (i in seq_len(ndim)) {
+    cli::cli_alert_info("There are {npts[i]} pairs in dimension {i - 1}.")
   }
+
+  cli::cli_h1("Metadata")
+  cli::cli_alert_info("Persistence has been computed from data stored in object {.field {x$metadata$data}}")
+  cli::cli_alert_info("Persistence has been computed using the {.pkg {x$metadata$engine}} package.")
+  cli::cli_alert_info("The simplicial complex used in the computation is {.field {x$metadata$simplicial_complex}}.")
+  cli::cli_alert_info("The parameters used in the computation are:")
+  cli::cli_bullets("{x$metadata$parameters}")
 }
 
 #' @rdname persistence
