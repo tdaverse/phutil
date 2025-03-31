@@ -3,32 +3,97 @@
 \name{persistence}
 \alias{persistence}
 \alias{as_persistence}
+\alias{as_persistence.default}
+\alias{as_persistence.persistence}
+\alias{as_persistence.list}
+\alias{as_persistence.diagram}
+\alias{as_persistence.PHom}
+\alias{print.persistence}
+\alias{format.persistence}
+\alias{get_pairs}
+\alias{as.data.frame.persistence}
 \title{An \code{S3} class for storing persistence data}
 \usage{
 as_persistence(x, ...)
+
+\method{as_persistence}{default}(x, modulus = NULL, max_dim = NULL, threshold = NULL, ...)
+
+\method{as_persistence}{persistence}(x, ...)
+
+\method{as_persistence}{list}(x, ...)
+
+\method{as_persistence}{diagram}(x, ...)
+
+\method{as_persistence}{PHom}(x, ...)
+
+\method{print}{persistence}(x, ...)
+
+\method{format}{persistence}(x, ...)
+
+get_pairs(x, degree, ...)
+
+\method{as.data.frame}{persistence}(x, row.names = NULL, optional = TRUE, ...)
 }
 \arguments{
-\item{x}{Persistence data to be transformed; either a \eqn{\geq 3}-column
-matrix (or object coercible to one) with dimension/degree, start/birth, and
-end/death columns, a list whose first element is such an object, an object
-of class 'PHom' as returned by \verb{[ripserr::vietoris_rips()]}, or (a list as
-returned by a \verb{*Diag()} function in \strong{TDA} (e.g. \verb{[TDA::ripsDiag()]})
-whose first element is) an object of class 'diagram'.}
+\item{x}{An R object containing the persistence data to be coerced into an
+object of class \code{\link{persistence}}. Currently supported forms are:
+\itemize{
+\item a \eqn{\geq 3}-column matrix (or object coercible to one) with
+dimension/degree, start/birth and end/death columns,
+\item a list whose first element is such an object,
+\item an object of class 'PHom' as returned by \href{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}{\code{ripserr::vietoris_rips()}},
+\item (a list as returned by a \verb{*Diag()} function in \strong{TDA}
+(e.g. \href{https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag}{\code{TDA::ripsDiag()}})
+whose first element is) an object of class 'diagram'.
+}}
 
 \item{...}{Parameters passed to methods.}
-
-\item{degree}{Non-negative integer; the homology degree for which to recover
-a matrix of persistence pairs.}
 
 \item{modulus, max_dim, threshold}{Possibly missing parameters of the
 calculation of the persistence data \code{x} to be included in the 'persistence'
 object.}
+
+\item{degree}{Non-negative integer; the homology degree for which to recover
+a matrix of persistence pairs.}
+
+\item{row.names}{\code{NULL} or a character vector giving the row
+    names for the data frame.  Missing values are not allowed.}
+
+\item{optional}{logical. If \code{TRUE}, setting row names and
+    converting column names (to syntactic names: see
+    \code{\link[base]{make.names}}) is optional.  Note that all of \R's
+    \pkg{base} package \code{as.data.frame()} methods use
+    \code{optional} only for column names treatment, basically with the
+    meaning of \code{\link[base]{data.frame}(*, check.names = !optional)}.
+    See also the \code{make.names} argument of the \code{matrix} method.}
 }
 \value{
-Persistence data in the form of a list of 2-column matrices
-containing birth-death pairs.
+An object of class \code{\link{persistence}} which is a list of 2 elements:
+\itemize{
+\item \code{pairs}: A list of 2-column matrices containing birth-death pairs. The
+\eqn{i}-\emph{th} element of the list corresponds to the \eqn{(i-1)}-\emph{th} homology
+dimension. If there is no pairs for a given dimension but there are pairs in
+higher dimensions, the corresponding element(s) is/are filled with a
+\eqn{0 \times 2} numeric matrix.
+\item \code{metadata}: A list of 3 elements containing information about how the data
+was computed:
+\itemize{
+\item \code{engine}: The name of the package that computed the persistence data.
+\item \code{parameters}: A list of parameters used in the computation.
+\item \code{call}: The exact call that generated the persistence data.
+}
+}
 }
 \description{
-The \code{\link{persistence}} class is a list of 2-column matrices containing
-birth-death pairs in each dimension/degree, starting with zero.
+A collection of functions to coerce persistence data into objects of class \code{\link{persistence}} (See \strong{Value} section for more details on this class). It is currently possible to coerce
+persistence data from the following sources:
+\itemize{
+\item a matrix with at least 3 columns (dimension/degree, start/birth, end/death)
+as returned by \href{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}{\code{ripserr::vietoris_rips()}}
+in the form of the 'PHom' class,
+\item a list as returned by any \verb{*Diag()} function in the \strong{TDA} package.
+}
+}
+\examples{
+# TO DO
 }
