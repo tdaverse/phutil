@@ -192,8 +192,10 @@ format.persistence <- function(x, ...) {
   pad_size <- max(nchar(npts))
   param_vals <- x$metadata$parameters
   param_nms <- NULL
-  if (!is.null(param_vals)) {
+  if (!is.null(param_vals) && length(param_vals) > 0L) {
     param_nms <- names(param_vals)
+    param_width <- max(nchar(param_nms))
+    param_nms <- format(param_nms, justify = "left", width = param_width, trim = FALSE)
   }
 
   cli::cli_format_method({
@@ -231,9 +233,11 @@ format.persistence <- function(x, ...) {
       cli::cli_div(theme = list(ul = list(`margin-left` = 4, before = "")))
       lid <- cli::cli_ul()
       for (i in seq_along(param_nms)) {
-        cli::cli_li("{param_nms[i]}: {param_vals[[i]]}")
+        cli::cli_alert("{param_nms[i]}: {param_vals[[i]]}")
       }
       cli::cli_end(lid)
+      cli::format_inline("{param_nms[1]}bla")
+      cli::format_inline("{param_nms[2]}bla")
     }
   })
 }

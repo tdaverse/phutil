@@ -12,6 +12,7 @@ Implements a class for hosting persistence homology information in the form of a
 Useful links:
 \itemize{
   \item \url{https://github.com/tdaverse/phutil}
+  \item \url{https://tdaverse.github.io/phutil/}
   \item Report bugs at \url{https://github.com/tdaverse/phutil/issues}
 }
 

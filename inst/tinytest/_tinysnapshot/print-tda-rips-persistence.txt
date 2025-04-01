@@ -9,5 +9,5 @@
 ℹ The simplicial complex used in the computation is rips.
 ℹ The function called was `ripsDiag()`.
 ℹ The parameters used for the computation are:
-    • maxdimension: 1
-    • maxscale: 1.6322
+    → maxdimension: 1
+    → maxscale    : 1.6322
