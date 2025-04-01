@@ -1,3 +1,10 @@
 ^phutil\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^data-raw$
+^\.github$
+^README\.Rmd$
+^codecov\.yml$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

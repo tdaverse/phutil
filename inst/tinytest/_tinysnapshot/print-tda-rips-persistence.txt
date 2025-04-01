@@ -1,0 +1,13 @@
+
+── Persistence Data ────────────────────────────────────────────────────────────
+ℹ There are 100 pairs in dimension 0.
+ℹ There are   2 pairs in dimension 1.
+
+── Metadata ────────────────────────────────────────────────────────────────────
+ℹ The data used to compute persistence is stored in object noisy_circle_points.
+ℹ Persistence has been computed using the TDA package.
+ℹ The simplicial complex used in the computation is rips.
+ℹ The function called was `ripsDiag()`.
+ℹ The parameters used for the computation are:
+    → maxdimension: 1
+    → maxscale    : 1.6322
