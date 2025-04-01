@@ -33,7 +33,7 @@ as_persistence(x, ...)
 
 \method{format}{persistence}(x, ...)
 
-get_pairs(x, degree, ...)
+get_pairs(x, dimension, ...)
 
 \method{as.data.frame}{persistence}(x, row.names = NULL, optional = TRUE, ...)
 }
@@ -52,8 +52,8 @@ whose first element is) an object of class 'diagram'.
 
 \item{...}{Parameters passed to methods.}
 
-\item{degree}{Non-negative integer; the homology degree for which to recover
-a matrix of persistence pairs.}
+\item{dimension}{A non-negative integer specifying the homology dimension for
+which to recover a matrix of persistence pairs.}
 
 \item{row.names}{\code{NULL} or a character vector giving the row
     names for the data frame.  Missing values are not allowed.}
@@ -65,10 +65,6 @@ a matrix of persistence pairs.}
     \code{optional} only for column names treatment, basically with the
     meaning of \code{\link[base]{data.frame}(*, check.names = !optional)}.
     See also the \code{make.names} argument of the \code{matrix} method.}
-
-\item{modulus, max_dim, threshold}{Possibly missing parameters of the
-calculation of the persistence data \code{x} to be included in the 'persistence'
-object.}
 }
 \value{
 An object of class \code{\link{persistence}} which is a list of 2 elements:
@@ -102,5 +98,14 @@ in the form of the 'PHom' class,
 }
 }
 \examples{
-# TO DO
+as_persistence(noisy_circle_ripserr)
+
+x <- as_persistence(noisy_circle_tda_rips)
+x
+
+as_persistence(x)
+
+get_pairs(x, dimension = 1)
+
+as.data.frame(x)
 }

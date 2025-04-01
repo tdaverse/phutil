@@ -21,11 +21,8 @@
 #' whose first element is) an object of class 'diagram'.
 #'
 #' @param ... Parameters passed to methods.
-#' @param degree Non-negative integer; the homology degree for which to recover
-#'   a matrix of persistence pairs.
-#' @param modulus,max_dim,threshold Possibly missing parameters of the
-#'   calculation of the persistence data `x` to be included in the 'persistence'
-#'   object.
+#' @param dimension A non-negative integer specifying the homology dimension for
+#'   which to recover a matrix of persistence pairs.
 #' @inheritParams base::as.data.frame
 
 #' @returns An object of class [`persistence`] which is a list of 2 elements:
@@ -49,7 +46,16 @@
 #'
 #' @export
 #' @examples
-#' # TO DO
+#' as_persistence(noisy_circle_ripserr)
+#'
+#' x <- as_persistence(noisy_circle_tda_rips)
+#' x
+#'
+#' as_persistence(x)
+#'
+#' get_pairs(x, dimension = 1)
+#'
+#' as.data.frame(x)
 as_persistence <- function(x, ...) {
   UseMethod("as_persistence")
 }
@@ -175,41 +181,71 @@ as_persistence.PHom <- function(x, ...) {
 #' @rdname persistence
 #' @export
 print.persistence <- function(x, ...) {
-  cat(format(x, ...), "\n")
-  invisible(x)
+  cat(format(x, ...), sep = "\n")
 }
 
 #' @rdname persistence
 #' @export
 format.persistence <- function(x, ...) {
-  cli::cli_h1("Persistence Data")
   ndim <- length(x$pairs)
   npts <- sapply(x$pairs, nrow)
-  for (i in seq_len(ndim)) {
-    cli::cli_alert_info("There are {npts[i]} pairs in dimension {i - 1}.")
+  pad_size <- max(nchar(npts))
+  param_vals <- x$metadata$parameters
+  param_nms <- NULL
+  if (!is.null(param_vals)) {
+    param_nms <- names(param_vals)
   }
 
-  cli::cli_h1("Metadata")
-  cli::cli_alert_info("Persistence has been computed from data stored in object {.field {x$metadata$data}}.")
-  cli::cli_alert_info("Persistence has been computed using the {.pkg {x$metadata$engine}} package.")
-  cli::cli_alert_info("The simplicial complex used in the computation is {.field {x$metadata$simplicial_complex}}.")
-  cli::cli_alert_info("The function called was {.fn {rlang::call_name(x$metadata$call)}}.")
-  cli::cli_alert_info("The parameters used for the computation are:")
-  lid <- cli::cli_ul()
-  param_nms <- names(x$metadata$parameters)
-  param_vals <- x$metadata$parameters
-  for (i in seq_along(param_nms)) {
-    cli::cli_li("{param_nms[i]}: {param_vals[[i]]}")
-  }
-  cli::cli_end(lid)
+  cli::cli_format_method({
+    cli::cli_h1("Persistence Data")
+
+    for (i in seq_len(ndim)) {
+      cli::cli_alert_info('There {cli::qty({npts[i]})}{?is /are} {base::format(npts[i], width = pad_size)} {cli::qty({npts[i]})}pair{? /s} in dimension {i - 1}.')
+    }
+
+    cli::cli_h1("Metadata")
+    if (x$metadata$data == "?") {
+      cli::cli_alert_info("The data used to compute persistence is not available.")
+    } else {
+      cli::cli_alert_info("The data used to compute persistence is stored in object {.field {x$metadata$data}}.")
+    }
+    if (x$metadata$engine == "?") {
+      cli::cli_alert_info("The package used to compute persistence is not available.")
+    } else {
+      cli::cli_alert_info("Persistence has been computed using the {.pkg {x$metadata$engine}} package.")
+    }
+    if (x$metadata$simplicial_complex == "?") {
+      cli::cli_alert_info("The simplicial complex used in the computation is not available.")
+    } else {
+      cli::cli_alert_info("The simplicial complex used in the computation is {.field {x$metadata$simplicial_complex}}.")
+    }
+    if (x$metadata$call == "?") {
+      cli::cli_alert_info("The function called to compute persistence is not available.")
+    } else {
+      cli::cli_alert_info("The function called was {.fn {rlang::call_name(x$metadata$call)}}.")
+    }
+    if (is.null(param_vals) || length(param_vals) == 0L) {
+      cli::cli_alert_info("The parameters used for the computation are not available.")
+    } else {
+      cli::cli_alert_info("The parameters used for the computation are:")
+      cli::cli_div(theme = list(ul = list(`margin-left` = 4, before = "")))
+      lid <- cli::cli_ul()
+      for (i in seq_along(param_nms)) {
+        cli::cli_li("{param_nms[i]}: {param_vals[[i]]}")
+      }
+      cli::cli_end(lid)
+    }
+  })
 }
 
 #' @rdname persistence
 #' @export
-get_pairs <- function(x, degree, ...) {
-  stopifnot(inherits(x, "persistence"))
-  if (length(x$pairs) > degree) {
-    x$pairs[[degree + 1L]]
+get_pairs <- function(x, dimension, ...) {
+  if (!inherits(x, "persistence")) {
+    cli::cli_abort("Input must be an object of class {.cls persistence}.")
+  }
+  if (length(x$pairs) > dimension) {
+    x$pairs[[dimension + 1L]]
   } else {
     matrix(NA_real_, nrow = 0L, ncol = 2L)
   }
@@ -221,16 +257,16 @@ as.data.frame.persistence <- function(x,
                                       row.names = NULL,
                                       optional = TRUE,
                                       ...) {
-  features <- vapply(x$pairs, nrow, 0L)
-  degree <- rep(seq_along(x$pairs) - 1L, features)
+  npts <- sapply(x$pairs, nrow)
+  dimension <- rep(seq_along(x$pairs) - 1L, npts)
   pairs <- Reduce(rbind, x$pairs)
-  df <- data.frame(degree, pairs)
-  names(df) <- c("degree", "birth", "death")
+  colnames(pairs) <- c("birth", "death")
+  df <- data.frame(dimension, pairs)
   if (!is.null(row.names)) {
     rownames(df) <- row.names
   } else if (!optional) {
-    id <- unlist(lapply(features, seq))
-    rownames(df) <- paste(degree, id, sep = ".")
+    id <- unlist(lapply(npts, seq))
+    rownames(df) <- paste(dimension, id, sep = "-")
   }
   df
 }
