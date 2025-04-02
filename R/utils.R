@@ -22,10 +22,6 @@ check_2d_matrix <- function(x) {
   if (any(x[, 1L] < 0)) {
     cli::cli_abort("Birth values must be non-negative.")
   }
-
-  if (any(x[, 2L] < 0)) {
-    cli::cli_abort("Death values must be non-negative.")
-  }
 }
 
 split_df_by_dimension <- function(x) {
