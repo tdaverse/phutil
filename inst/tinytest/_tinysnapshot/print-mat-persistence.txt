@@ -1,0 +1,13 @@
+
+── Persistence Data ────────────────────────────────────────────────────────────
+ℹ There are 99 pairs in dimension 0.
+ℹ There are  2 pairs in dimension 1.
+
+── Metadata ────────────────────────────────────────────────────────────────────
+ℹ The data used to compute persistence is not available.
+ℹ The package used to compute persistence is not available.
+ℹ The simplicial complex used in the computation is not available.
+ℹ The function called to compute persistence is not available.
+ℹ The parameters used for the computation are:
+    → maxdimension: 1
+    → maxscale    : 1.6322
