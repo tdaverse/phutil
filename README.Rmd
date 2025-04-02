@@ -46,7 +46,7 @@ deviation of $0.05$:
 
 ```{r}
 library(phutil)
-noisy_circle_points
+head(noisy_circle_points)
 ```
 
 The data set `noisy_circle_ripserr` is a persistence diagram computed using the
@@ -56,7 +56,7 @@ and stored as an object of class 'PHom', which is a light wrapper around a data
 frame with 3 variables:
 
 ```{r}
-noisy_circle_ripserr
+head(noisy_circle_ripserr)
 ```
 
 The data set `noisy_circle_tda_rips` is a persistence diagram computed using the
@@ -65,7 +65,7 @@ The data set `noisy_circle_tda_rips` is a persistence diagram computed using the
 and stored as an object of class 'diagram', which is a matrix with 3 columns:
 
 ```{r}
-noisy_circle_tda_rips
+head(noisy_circle_tda_rips)
 ```
 
 The data structure adopted by the *tdaverse* suite of packages and provided by
