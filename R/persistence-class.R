@@ -209,8 +209,6 @@ format.persistence <- function(x, ...) {
 
     cli::cli_h1("Metadata")
     filt_nm <- capitalize(x$metadata$filtration)
-    if (filt_nm == "Rips")
-      filt_nm <- "Vietoris-Rips"
     cli::cli_alert_info("Computed from a {filt_nm} filtration using the {.fn {x$metadata$engine}} engine")
     if (!is.null(param_nms))
       cli::cli_alert_info("with the following parameters: {param_nms}.")
