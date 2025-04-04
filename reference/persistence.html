@@ -138,9 +138,10 @@ higher dimensions, the corresponding element(s) is/are filled with a
 <li><p><code>metadata</code>: A list of 3 elements containing information about how the data
 was computed:</p><ul><li><p><code>data</code>: The name of the object containing the original data on which the
 persistence data was computed.</p></li>
-<li><p><code>engine</code>: The name of the package that computed the persistence data.</p></li>
-<li><p><code>filtration</code>: The type of simplicial complex used in the
-computation.</p></li>
+<li><p><code>engine</code>: The name of the package and the function of this package that
+computed the persistence data in the form <code>"package_name::package_function"</code>.</p></li>
+<li><p><code>filtration</code>: The filtration used in the computation in a human-readable
+format (i.e. full names, capitals where need, etc.).</p></li>
 <li><p><code>parameters</code>: A list of parameters used in the computation.</p></li>
 <li><p><code>call</code>: The exact call that generated the persistence data.</p></li>
 </ul></li>
