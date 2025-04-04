@@ -105,7 +105,7 @@ components:
   - `engine`: The name of the package and the function of this package
     that computed the persistence data in the form
     `"package_name::package_function"`.
-  - `simplicial_complex`: The filtration used in the computation in a
+  - `filtration`: The filtration used in the computation in a
     human-readable format (i.e. full names, capitals where need, etc.).
   - `parameters`: A list of parameters used in the computation.
   - `call`: The exact call that generated the persistence data.
