@@ -139,7 +139,7 @@ higher dimensions, the corresponding element(s) is/are filled with a
 was computed:</p><ul><li><p><code>data</code>: The name of the object containing the original data on which the
 persistence data was computed.</p></li>
 <li><p><code>engine</code>: The name of the package that computed the persistence data.</p></li>
-<li><p><code>simplicial_complex</code>: The type of simplicial complex used in the
+<li><p><code>filtration</code>: The type of simplicial complex used in the
 computation.</p></li>
 <li><p><code>parameters</code>: A list of parameters used in the computation.</p></li>
 <li><p><code>call</code>: The exact call that generated the persistence data.</p></li>
@@ -151,46 +151,29 @@ computation.</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">noisy_circle_ripserr</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Persistence Data</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are 99 pairs in dimension 0.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are  2 pairs in dimension 1.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are 99 and 2 pairs in dimensions 1 and 2 respectively.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Metadata</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The data used to compute persistence is not available.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Persistence has been computed using the <span style="color: #0000BB;">ripserr</span> package.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The simplicial complex used in the computation is <span style="color: #00BB00;">rips</span>.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The function called to compute persistence is not available.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The parameters used for the computation are not available.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Computed from a Vietoris-Rips filtration using the `ripserr::vietoris_rips()` engine</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">as_persistence</span><span class="op">(</span><span class="va">noisy_circle_tda_rips</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">x</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Persistence Data</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are 100 pairs in dimension 0.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are   2 pairs in dimension 1.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are 100 and 2 pairs in dimensions 1 and 2 respectively.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Metadata</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The data used to compute persistence is stored in object <span style="color: #00BB00;">noisy_circle_points</span>.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Persistence has been computed using the <span style="color: #0000BB;">TDA</span> package.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The simplicial complex used in the computation is <span style="color: #00BB00;">rips</span>.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The function called was `ripsDiag()`.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The parameters used for the computation are:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     → maxdimension: 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     → maxscale    : 1.6322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Computed from a Vietoris-Rips filtration using the `TDA::ripsDiag()` engine</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> with the following parameters: maxdimension = 1 and maxscale = 1.6322.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Persistence Data</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are 100 pairs in dimension 0.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are   2 pairs in dimension 1.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are 100 and 2 pairs in dimensions 1 and 2 respectively.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Metadata</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────────────</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The data used to compute persistence is stored in object <span style="color: #00BB00;">noisy_circle_points</span>.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Persistence has been computed using the <span style="color: #0000BB;">TDA</span> package.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The simplicial complex used in the computation is <span style="color: #00BB00;">rips</span>.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The function called was `ripsDiag()`.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The parameters used for the computation are:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     → maxdimension: 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     → maxscale    : 1.6322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Computed from a Vietoris-Rips filtration using the `TDA::ripsDiag()` engine</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> with the following parameters: maxdimension = 1 and maxscale = 1.6322.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">get_pairs</span><span class="op">(</span><span class="va">x</span>, dimension <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           [,1]       [,2]</span>
