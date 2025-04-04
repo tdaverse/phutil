@@ -79,9 +79,10 @@ was computed:
 \itemize{
 \item \code{data}: The name of the object containing the original data on which the
 persistence data was computed.
-\item \code{engine}: The name of the package that computed the persistence data.
-\item \code{filtration}: The type of simplicial complex used in the
-computation.
+\item \code{engine}: The name of the package and the function of this package that
+computed the persistence data in the form \code{"package_name::package_function"}.
+\item \code{filtration}: The filtration used in the computation in a human-readable
+format (i.e. full names, capitals where need, etc.).
 \item \code{parameters}: A list of parameters used in the computation.
 \item \code{call}: The exact call that generated the persistence data.
 }
