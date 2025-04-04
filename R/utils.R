@@ -34,3 +34,7 @@ split_df_by_dimension <- function(x) {
     .x
   })
 }
+
+capitalize <- function(x) {
+  gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(x), perl = TRUE)
+}

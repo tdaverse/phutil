@@ -80,7 +80,7 @@ was computed:
 \item \code{data}: The name of the object containing the original data on which the
 persistence data was computed.
 \item \code{engine}: The name of the package that computed the persistence data.
-\item \code{simplicial_complex}: The type of simplicial complex used in the
+\item \code{filtration}: The type of simplicial complex used in the
 computation.
 \item \code{parameters}: A list of parameters used in the computation.
 \item \code{call}: The exact call that generated the persistence data.

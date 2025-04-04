@@ -39,7 +39,7 @@
 #'   - `data`: The name of the object containing the original data on which the
 #'   persistence data was computed.
 #'   - `engine`: The name of the package that computed the persistence data.
-#'   - `simplicial_complex`: The type of simplicial complex used in the
+#'   - `filtration`: The type of simplicial complex used in the
 #'   computation.
 #'   - `parameters`: A list of parameters used in the computation.
 #'   - `call`: The exact call that generated the persistence data.
@@ -71,7 +71,7 @@ as_persistence.list <- function(x, ...) {
     cli::cli_abort("The list is empty.")
   }
 
-  sapply(x, check_2d_matrix)
+  lapply(x, check_2d_matrix)
 
   pd$pairs <- x
 
@@ -92,11 +92,11 @@ as_persistence.list <- function(x, ...) {
   } else {
     pd$metadata$engine <- "?"
   }
-  if ("simplicial_complex" %in% names(dots)) {
-    pd$metadata$simplicial_complex <- dots$simplicial_complex
-    dots$simplicial_complex <- NULL
+  if ("filtration" %in% names(dots)) {
+    pd$metadata$filtration <- dots$filtration
+    dots$filtration <- NULL
   } else {
-    pd$metadata$simplicial_complex <- "?"
+    pd$metadata$filtration <- "?"
   }
   if ("call" %in% names(dots)) {
     pd$metadata$call <- dots$call
@@ -144,10 +144,14 @@ as_persistence.matrix <- function(x, ...) {
 #' @export
 as_persistence.diagram <- function(x, ...) {
   info <- attributes(x)
+  filt_nm <- gsub("*Diag", "", rlang::call_name(info$call))
+  if (filt_nm == "rips") {
+    filt_nm <- "Vietoris-Rips"
+  }
   params <- list(
     data = info$call$X,
-    engine = rlang::call_ns(info$call),
-    simplicial_complex = gsub("*Diag", "", rlang::call_name(info$call)),
+    engine = paste0(rlang::call_ns(info$call), "::", rlang::call_name(info$call)),
+    filtration = filt_nm,
     call = info$call
   )
   nms <- names(info$call)
@@ -172,8 +176,8 @@ as_persistence.PHom <- function(x, ...) {
   # (will need to change if 'PHom' class changes)
   as_persistence.matrix(
     as.matrix(x),
-    engine = "ripserr",
-    simplicial_complex = "rips",
+    engine = "ripserr::vietoris_rips",
+    filtration = "Vietoris-Rips",
     ...
   )
 }
@@ -189,56 +193,27 @@ print.persistence <- function(x, ...) {
 format.persistence <- function(x, ...) {
   ndim <- length(x$pairs)
   npts <- sapply(x$pairs, nrow)
+  max_npts <- max(npts)
   pad_size <- max(nchar(npts))
   param_vals <- x$metadata$parameters
   param_nms <- NULL
   if (!is.null(param_vals) && length(param_vals) > 0L) {
     param_nms <- names(param_vals)
-    param_width <- max(nchar(param_nms))
-    param_nms <- format(param_nms, justify = "left", width = param_width, trim = FALSE)
+    param_nms <- paste(param_nms, "=", param_vals)
   }
 
   cli::cli_format_method({
     cli::cli_h1("Persistence Data")
 
-    for (i in seq_len(ndim)) {
-      cli::cli_alert_info('There {cli::qty({npts[i]})}{?is /are} {base::format(npts[i], width = pad_size)} {cli::qty({npts[i]})}pair{? /s} in dimension {i - 1}.')
-    }
+    cli::cli_alert_info('There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim)} respectively.')
 
     cli::cli_h1("Metadata")
-    if (x$metadata$data == "?") {
-      cli::cli_alert_info("The data used to compute persistence is not available.")
-    } else {
-      cli::cli_alert_info("The data used to compute persistence is stored in object {.field {x$metadata$data}}.")
-    }
-    if (x$metadata$engine == "?") {
-      cli::cli_alert_info("The package used to compute persistence is not available.")
-    } else {
-      cli::cli_alert_info("Persistence has been computed using the {.pkg {x$metadata$engine}} package.")
-    }
-    if (x$metadata$simplicial_complex == "?") {
-      cli::cli_alert_info("The simplicial complex used in the computation is not available.")
-    } else {
-      cli::cli_alert_info("The simplicial complex used in the computation is {.field {x$metadata$simplicial_complex}}.")
-    }
-    if (x$metadata$call == "?") {
-      cli::cli_alert_info("The function called to compute persistence is not available.")
-    } else {
-      cli::cli_alert_info("The function called was {.fn {rlang::call_name(x$metadata$call)}}.")
-    }
-    if (is.null(param_vals) || length(param_vals) == 0L) {
-      cli::cli_alert_info("The parameters used for the computation are not available.")
-    } else {
-      cli::cli_alert_info("The parameters used for the computation are:")
-      cli::cli_div(theme = list(ul = list(`margin-left` = 4, before = "")))
-      lid <- cli::cli_ul()
-      for (i in seq_along(param_nms)) {
-        cli::cli_alert("{param_nms[i]}: {param_vals[[i]]}")
-      }
-      cli::cli_end(lid)
-      cli::format_inline("{param_nms[1]}bla")
-      cli::format_inline("{param_nms[2]}bla")
-    }
+    filt_nm <- capitalize(x$metadata$filtration)
+    if (filt_nm == "Rips")
+      filt_nm <- "Vietoris-Rips"
+    cli::cli_alert_info("Computed from a {filt_nm} filtration using the {.fn {x$metadata$engine}} engine")
+    if (!is.null(param_nms))
+      cli::cli_alert_info("with the following parameters: {param_nms}.")
   })
 }
 
