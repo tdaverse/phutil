@@ -1,11 +1,6 @@
 
 ── Persistence Data ────────────────────────────────────────────────────────────
-ℹ There are 99 pairs in dimension 0.
-ℹ There are  2 pairs in dimension 1.
+ℹ There are 99 and 2 pairs in dimensions 1 and 2 respectively.
 
 ── Metadata ────────────────────────────────────────────────────────────────────
-ℹ The data used to compute persistence is not available.
-ℹ Persistence has been computed using the ripserr package.
-ℹ The simplicial complex used in the computation is rips.
-ℹ The function called to compute persistence is not available.
-ℹ The parameters used for the computation are not available.
+ℹ Computed from a Vietoris-Rips filtration using the `ripserr::vietoris_rips()` engine

@@ -102,10 +102,11 @@ components:
 
   - `data`: The name of the object containing the original data on which
     the persistence data was computed.
-  - `engine`: The name of the package that computed the persistence
-    data.
-  - `simplicial_complex`: The type of simplicial complex used in the
-    computation.
+  - `engine`: The name of the package and the function of this package
+    that computed the persistence data in the form
+    `"package_name::package_function"`.
+  - `filtration`: The filtration used in the computation in a
+    human-readable format (i.e. full names, capitals where need, etc.).
   - `parameters`: A list of parameters used in the computation.
   - `call`: The exact call that generated the persistence data.
 
@@ -118,15 +119,10 @@ into the ‘persistence’ class as follows:
 as_persistence(noisy_circle_ripserr)
 #> 
 #> ── Persistence Data ────────────────────────────────────────────────────────────
-#> ℹ There are 99 pairs in dimension 0.
-#> ℹ There are  2 pairs in dimension 1.
+#> ℹ There are 99 and 2 pairs in dimensions 1 and 2 respectively.
 #> 
 #> ── Metadata ────────────────────────────────────────────────────────────────────
-#> ℹ The data used to compute persistence is not available.
-#> ℹ Persistence has been computed using the ripserr package.
-#> ℹ The simplicial complex used in the computation is rips.
-#> ℹ The function called to compute persistence is not available.
-#> ℹ The parameters used for the computation are not available.
+#> ℹ Computed from a Vietoris-Rips filtration using the `ripserr::vietoris_rips()` engine
 ```
 
 Similarly, the persistence data computed using the **TDA** package can
@@ -136,15 +132,9 @@ be converted into the ‘persistence’ class as follows:
 as_persistence(noisy_circle_tda_rips)
 #> 
 #> ── Persistence Data ────────────────────────────────────────────────────────────
-#> ℹ There are 100 pairs in dimension 0.
-#> ℹ There are   2 pairs in dimension 1.
+#> ℹ There are 100 and 2 pairs in dimensions 1 and 2 respectively.
 #> 
 #> ── Metadata ────────────────────────────────────────────────────────────────────
-#> ℹ The data used to compute persistence is stored in object noisy_circle_points.
-#> ℹ Persistence has been computed using the TDA package.
-#> ℹ The simplicial complex used in the computation is rips.
-#> ℹ The function called was `ripsDiag()`.
-#> ℹ The parameters used for the computation are:
-#>     → maxdimension: 1
-#>     → maxscale    : 1.6322
+#> ℹ Computed from a Vietoris-Rips filtration using the `TDA::ripsDiag()` engine
+#> ℹ with the following parameters: maxdimension = 1 and maxscale = 1.6322.
 ```
