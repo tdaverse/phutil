@@ -9,6 +9,7 @@
 \alias{as_persistence.matrix}
 \alias{as_persistence.diagram}
 \alias{as_persistence.PHom}
+\alias{as_persistence.hclust}
 \alias{print.persistence}
 \alias{format.persistence}
 \alias{get_pairs}
@@ -28,6 +29,8 @@ as_persistence(x, ...)
 \method{as_persistence}{diagram}(x, ...)
 
 \method{as_persistence}{PHom}(x, ...)
+
+\method{as_persistence}{hclust}(x, birth = NULL, ...)
 
 \method{print}{persistence}(x, ...)
 
@@ -109,4 +112,13 @@ as_persistence(x)
 get_pairs(x, dimension = 1)
 
 as.data.frame(x)
+
+distances between cities
+euroclust <- hclust(eurodist, method = "ward.D")
+as_persistence(euroclust)
+
+# `hclust()` can accommodate negative distances
+d <- as.dist(rbind(c(0, 3, -4), c(3, 0, 5), c(-4, 5, 0)))
+hc <- hclust(d, method = "single")
+as_persistence(hc, birth = -10)
 }
