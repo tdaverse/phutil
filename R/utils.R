@@ -14,14 +14,6 @@ check_2d_matrix <- function(x) {
   if (anyNA(x)) {
     cli::cli_abort("Input must be a matrix with no missing values.")
   }
-
-  if (any(x[, 1L] >= x[, 2L])) {
-    cli::cli_abort("Birth values must be stricly less than death values.")
-  }
-
-  if (any(x[, 1L] < 0)) {
-    cli::cli_abort("Birth values must be non-negative.")
-  }
 }
 
 split_df_by_dimension <- function(x) {
