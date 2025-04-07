@@ -3,4 +3,4 @@
 ℹ There are 99 and 2 pairs in dimensions 1 and 2 respectively.
 
 ── Metadata ────────────────────────────────────────────────────────────────────
-ℹ Computed from a Vietoris-Rips filtration using the `ripserr::vietoris_rips()` engine
+ℹ Computed from a Vietoris-Rips filtration using `ripserr::vietoris_rips()`

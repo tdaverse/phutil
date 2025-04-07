@@ -3,5 +3,5 @@
 ℹ There are 99 and 2 pairs in dimensions 1 and 2 respectively.
 
 ── Metadata ────────────────────────────────────────────────────────────────────
-ℹ Computed from a ? filtration using the `?()` engine
+ℹ Computed from a ? filtration using `?()`
 ℹ with the following parameters: maxdimension = 1 and maxscale = 1.6322.
