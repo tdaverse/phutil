@@ -177,8 +177,8 @@ as_persistence.PHom <- function(x, ...) {
   # (will need to change if 'PHom' class changes)
   as_persistence.matrix(
     as.matrix(x),
-    engine = "ripserr::vietoris_rips",
-    filtration = "Vietoris-Rips",
+    engine = "ripserr::<vietoris_rips/cubical>",
+    filtration = "Vietoris-Rips/cubical",
     ...
   )
 }
