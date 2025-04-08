@@ -202,17 +202,27 @@ format.persistence <- function(x, ...) {
     param_nms <- names(param_vals)
     param_nms <- paste(param_nms, "=", param_vals)
   }
+  filt_nm <- capitalize(x$metadata$filtration)
 
   cli::cli_format_method({
     cli::cli_h1("Persistence Data")
-
     cli::cli_alert_info('There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim) - 1L} respectively.')
-
-    cli::cli_h1("Metadata")
-    filt_nm <- capitalize(x$metadata$filtration)
-    cli::cli_alert_info("Computed from a {filt_nm} filtration using the {.fn {x$metadata$engine}} engine")
-    if (!is.null(param_nms))
-      cli::cli_alert_info("with the following parameters: {param_nms}.")
+    if (filt_nm == "?" && x$metadata$engine == "?") {
+      cli::cli_alert_warning("Both filtration and computation engine are unknown.")
+    } else if (filt_nm == "?") {
+      cli::cli_alert_info("Computed using {.fn {x$metadata$engine}}.")
+      cli::cli_alert_warning("Filtration is unknown.")
+    } else if (x$metadata$engine == "?") {
+      cli::cli_alert_info("Computed from a {filt_nm} filtration.")
+      cli::cli_alert_warning("Computation engine is unknown.")
+    } else {
+      cli::cli_alert_info("Computed from a {filt_nm} filtration using {.fn {x$metadata$engine}}.")
+    }
+    if (is.null(param_nms)) {
+      cli::cli_alert_warning("With unknown parameters.")
+    } else {
+      cli::cli_alert_info("With the following parameters: {param_nms}.")
+    }
   })
 }
 
