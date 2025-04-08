@@ -206,7 +206,7 @@ format.persistence <- function(x, ...) {
   cli::cli_format_method({
     cli::cli_h3("Persistence Data")
 
-    cli::cli_alert_info('There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim)} respectively.')
+    cli::cli_alert_info('There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim) - 1L} respectively.')
 
     cli::cli_h3("Metadata")
     filt_nm <- capitalize(x$metadata$filtration)
