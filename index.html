@@ -118,20 +118,17 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/persistence.html">as_persistence</a></span><span class="op">(</span><span class="va">noisy_circle_ripserr</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Persistence Data ────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ There are 99 and 2 pairs in dimensions 1 and 2 respectively.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Metadata ────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Computed from a Vietoris-Rips filtration using the `ripserr::vietoris_rips()` engine</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ There are 99 and 2 pairs in dimensions 0 and 1 respectively.</span></span>
+<span><span class="co">#&gt; ℹ Computed from a Vietoris-Rips filtration using `ripserr::vietoris_rips()`.</span></span>
+<span><span class="co">#&gt; ! With unknown parameters.</span></span></code></pre></div>
 <p>Similarly, the persistence data computed using the <strong>TDA</strong> package can be converted into the ‘persistence’ class as follows:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/persistence.html">as_persistence</a></span><span class="op">(</span><span class="va">noisy_circle_tda_rips</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Persistence Data ────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ There are 100 and 2 pairs in dimensions 1 and 2 respectively.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Metadata ────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Computed from a Vietoris-Rips filtration using the `TDA::ripsDiag()` engine</span></span>
-<span><span class="co">#&gt; ℹ with the following parameters: maxdimension = 1 and maxscale = 1.6322.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ There are 100 and 2 pairs in dimensions 0 and 1 respectively.</span></span>
+<span><span class="co">#&gt; ℹ Computed from a Vietoris-Rips filtration using `TDA::ripsDiag()`.</span></span>
+<span><span class="co">#&gt; ℹ With the following parameters: maxdimension = 1 and maxscale = 1.6322.</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
