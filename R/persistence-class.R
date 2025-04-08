@@ -64,6 +64,13 @@ as_persistence <- function(x, ...) {
 #' @rdname persistence
 #' @export
 as_persistence.list <- function(x, ...) {
+  if (length(x) == 1L) {
+    if ("diagram" %in% names(x)) {
+      return(as_persistence(x$diagram, ...))
+    }
+    x <- x[[1L]]
+  }
+
   pd <- list()
 
   # Handle persistence data stored in `x`

@@ -45,6 +45,9 @@ expect_equal(as.character(ripserr$metadata$call), "?")
 expect_equal(length(ripserr$metadata$parameters), 0L)
 expect_snapshot_print(ripserr, label = "print-ripserr-persistence")
 
+tda_rips <- as_persistence(getElement(noisy_circle_tda_rips, "diagram"))
+expect_equal(sapply(tda_rips$pairs, ncol), c(2L, 2L))
+
 tda_rips <- as_persistence(noisy_circle_tda_rips)
 expect_equal(sapply(tda_rips$pairs, ncol), c(2L, 2L))
 expect_equal(as.character(tda_rips$metadata$data), "noisy_circle_points")

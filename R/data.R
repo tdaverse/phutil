@@ -34,7 +34,7 @@
 #' - `death`: the death value of the feature.
 #'
 #' ## `noisy_circle_tda_rips`
-#' An object of class 'diagram' as returned by the
+#' A list of length 1 containing an object of class 'diagram' as returned by the
 #' [`TDA::ripsDiag()$diagram`](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag)
 #' function, which is a matrix with 3 columns:
 #'
