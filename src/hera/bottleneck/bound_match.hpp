@@ -46,7 +46,7 @@ derivative works thereof, in binary and source code form.
 
 #ifndef FOR_R_TDA
 
-#include <iostream>
+#include <Rcpp.h>
 
 #endif
 
@@ -129,7 +129,7 @@ namespace hera {
                 bool mustBeExposed { idx == 0 or idx == augPath.size() - 1 };
                 if (isExposed(augPath[idx]) != mustBeExposed) {
 #ifndef FOR_R_TDA
-                    std::cerr << "mustBeExposed = " << mustBeExposed << ", idx = " << idx << ", point " << augPath[idx]
+                    Rcpp::Rcerr << "mustBeExposed = " << mustBeExposed << ", idx = " << idx << ", point " << augPath[idx]
                               << std::endl;
 #endif
                 }
@@ -229,9 +229,6 @@ namespace hera {
             R max_dist = -1.0;
             MatchingEdge<R> edge;
             for (const auto& x : AToB) {
-                //std::cout << "max_dist = " << max_dist << std::endl;
-                //std::cout << "distance = " << dist_l_inf(x.first, x.second) << std::endl;
-
                 // for now skew edges may appear in the matching
                 // but they should not be returned to user
                 // if currrent edge is a skew edge, there must another edge
@@ -247,8 +244,6 @@ namespace hera {
                 if (max_dist < curr_dist) {
                     max_dist = curr_dist;
                     edge = x;
-                    //std::cout << "updated max_dist = " << max_dist << std::endl;
-                    //std::cout << "updated edge = " << x.first << " <-> " << x.second << std::endl;
                 }
             }
             return edge;
@@ -276,7 +271,7 @@ namespace hera {
 #ifdef VERBOSE_BOTTLENECK
             auto endMoment = hrClock.now();
             std::chrono::duration<double, std::milli> iterTime = endMoment - startMoment;
-            std::cout << "isMatchLess for r = " << r << " finished in " << std::chrono::duration<double, std::milli>(iterTime).count() << " ms." << std::endl;
+            Rcpp::Rcout << "isMatchLess for r = " << r << " finished in " << std::chrono::duration<double, std::milli>(iterTime).count() << " ms." << std::endl;
 #endif
             return result;
 
@@ -318,9 +313,9 @@ namespace hera {
                         DgmPoint nextVertexA;
                         if (!M.getMatchedVertex(nextVertexB, nextVertexA)) {
 #ifndef FOR_R_TDA
-                            std::cerr << "Vertices in even layers must be matched! Unmatched: ";
-                            std::cerr << nextVertexB << std::endl;
-                            std::cerr << evenLayerIdx << "; " << layerGraph.size() << std::endl;
+                            Rcpp::Rcerr << "Vertices in even layers must be matched! Unmatched: ";
+                            Rcpp::Rcerr << nextVertexB << std::endl;
+                            Rcpp::Rcerr << evenLayerIdx << "; " << layerGraph.size() << std::endl;
 #endif
                             throw std::runtime_error("Unmatched vertex in even layer");
                         } else {
@@ -388,7 +383,7 @@ namespace hera {
                     }
                     if (augmentingPaths.empty()) {
 #ifndef FOR_R_TDA
-                        std::cerr << "augmenting paths must exist, but were not found!" << std::endl;
+                        Rcpp::Rcerr << "augmenting paths must exist, but were not found!" << std::endl;
 #endif
                         throw std::runtime_error("bad epsilon?");
                     }
@@ -407,11 +402,11 @@ namespace hera {
         {
 #ifdef DEBUG_BOUND_MATCH
             for(auto& layer : layerGraph) {
-                std::cout << "{ ";
+              Rcpp::Rcerr << "{ ";
                 for(auto& p : layer) {
-                    std::cout << p << "; ";
+                  Rcpp::Rcerr << p << "; ";
                 }
-                std::cout << "\b\b }" << std::endl;
+                Rcpp::Rcerr << "\b\b }" << std::endl;
             }
 #endif
         }
@@ -420,7 +415,7 @@ namespace hera {
         void BoundMatchOracle<R, NO>::buildLayerGraph(Real r)
         {
 #ifdef VERBOSE_BOTTLENECK
-            std::cout << "Entered buildLayerGraph, r = " << r << std::endl;
+            Rcpp::Rcerr << "Entered buildLayerGraph, r = " << r << std::endl;
 #endif
             layerGraph.clear();
             DgmPointSet L1 = M.getExposedVertices();
