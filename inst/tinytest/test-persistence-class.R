@@ -38,6 +38,7 @@ expect_error(as_persistence(wrong_df))
 
 ripserr <- as_persistence(noisy_circle_ripserr)
 expect_equal(sapply(ripserr$pairs, ncol), c(2L, 2L))
+expect_equal(ripserr$metadata$ordered_pairs, TRUE)
 expect_equal(as.character(ripserr$metadata$data), "?")
 expect_equal(ripserr$metadata$engine, "ripserr::vietoris_rips")
 expect_equal(ripserr$metadata$filtration, "Vietoris-Rips")
