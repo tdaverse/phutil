@@ -23,6 +23,8 @@
 #' @param ... Parameters passed to methods.
 #' @param dimension A non-negative integer specifying the homology dimension for
 #'   which to recover a matrix of persistence pairs.
+#' @param birth Numeric; the height at which to declare all leaves were born.
+#'   Defaults to `0` if all heights are non-negative and `-Inf` otherwise.
 #' @inheritParams base::as.data.frame
 
 #' @returns An object of class [`persistence`] which is a list of 2 elements:
@@ -58,14 +60,15 @@
 #'
 #' as.data.frame(x)
 #'
-#' distances between cities
+#' # distances between cities
 #' euroclust <- hclust(eurodist, method = "ward.D")
 #' as_persistence(euroclust)
 #'
 #' # `hclust()` can accommodate negative distances
 #' d <- as.dist(rbind(c(0, 3, -4), c(3, 0, 5), c(-4, 5, 0)))
 #' hc <- hclust(d, method = "single")
-#' as_persistence(hc, birth = -10)
+#' ph <- as_persistence(hc, birth = -10)
+#' get_pairs(ph, 0)
 as_persistence <- function(x, ...) {
   UseMethod("as_persistence")
 }
