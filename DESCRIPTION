@@ -24,4 +24,5 @@ Imports:
     Rcpp,
     rlang
 LinkingTo: 
+    BH,
     Rcpp
