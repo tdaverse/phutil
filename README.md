@@ -120,8 +120,8 @@ as_persistence(noisy_circle_ripserr)
 #> 
 #> ── Persistence Data ────────────────────────────────────────────────────────────
 #> ℹ There are 99 and 2 pairs in dimensions 0 and 1 respectively.
-#> ℹ Computed from a Vietoris-Rips filtration using `ripserr::vietoris_rips()`
-#> ! with unknown parameters.
+#> ℹ Computed from a Vietoris-Rips filtration using `ripserr::vietoris_rips()`.
+#> ! With unknown parameters.
 ```
 
 Similarly, the persistence data computed using the **TDA** package can
@@ -132,6 +132,6 @@ as_persistence(noisy_circle_tda_rips)
 #> 
 #> ── Persistence Data ────────────────────────────────────────────────────────────
 #> ℹ There are 100 and 2 pairs in dimensions 0 and 1 respectively.
-#> ℹ Computed from a Vietoris-Rips filtration using `TDA::ripsDiag()`
-#> ℹ with the following parameters: maxdimension = 1 and maxscale = 1.6322.
+#> ℹ Computed from a Vietoris-Rips filtration using `TDA::ripsDiag()`.
+#> ℹ With the following parameters: maxdimension = 1 and maxscale = 1.6322.
 ```
