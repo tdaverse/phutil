@@ -1,4 +1,4 @@
-check_2d_matrix <- function(x) {
+check_2column_matrix <- function(x, warn = TRUE) {
   if (!is.matrix(x)) {
     cli::cli_abort("Input must be a matrix.")
   }
@@ -16,12 +16,15 @@ check_2d_matrix <- function(x) {
   }
 
   if (any(x[, 1L] >= x[, 2L])) {
-    cli::cli_abort("Birth values must be stricly less than death values.")
+    if (warn) {
+      cli::cli_alert_warning(
+        "Birth values are expected to be stricly less than death values."
+      )
+    }
+    return(FALSE)
   }
 
-  if (any(x[, 1L] < 0)) {
-    cli::cli_abort("Birth values must be non-negative.")
-  }
+  TRUE
 }
 
 split_df_by_dimension <- function(x) {
