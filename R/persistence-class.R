@@ -35,9 +35,12 @@
 #' higher dimensions, the corresponding element(s) is/are filled with a
 #' \eqn{0 \times 2} numeric matrix.
 #'
-#' - `metadata`: A list of 3 elements containing information about how the data
+#' - `metadata`: A list of length 6 containing information about how the data
 #' was computed:
 #'
+#'   - `orderered_pairs`: A boolean indicating whether the pairs in the
+#'   `pairs` list are ordered (i.e. the first column is strictly less than the
+#'   second column).
 #'   - `data`: The name of the object containing the original data on which the
 #'   persistence data was computed.
 #'   - `engine`: The name of the package and the function of this package that
