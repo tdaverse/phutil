@@ -83,9 +83,9 @@
 <span><span class="co">#&gt; 4         0     0 0.014004707</span></span>
 <span><span class="co">#&gt; 5         0     0 0.020555701</span></span>
 <span><span class="co">#&gt; 6         0     0 0.024621462</span></span></code></pre></div>
-<p>The data set <code>noisy_circle_tda_rips</code> is a persistence diagram computed using the <strong>TDA</strong> package with the <a href="https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag" class="external-link"><code>TDA::ripsDiag()</code></a> and stored as an object of class ‘diagram’, which is a matrix with 3 columns:</p>
+<p>The data set <code>noisy_circle_tda_rips</code> is a persistence diagram computed using the <strong>TDA</strong> package with the <a href="https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag" class="external-link"><code>TDA::ripsDiag()</code></a> and stored as a list of length 1 containing the object <code>diagram</code> of class ‘diagram’, which is a matrix with 3 columns:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">noisy_circle_tda_rips</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">noisy_circle_tda_rips</span><span class="op">$</span><span class="va">diagram</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      dimension Birth     Death</span></span>
 <span><span class="co">#&gt; [1,]         0     0 1.6322000</span></span>
 <span><span class="co">#&gt; [2,]         0     0 0.3677392</span></span>
@@ -98,8 +98,10 @@
 <ul>
 <li><p><code>pairs</code>: A list of 2-column matrices containing birth-death pairs. The -<em>th</em> element of the list corresponds to the -<em>th</em> homology dimension. If there is no pairs for a given dimension but there are pairs in higher dimensions, the corresponding element(s) is/are filled with a numeric matrix.</p></li>
 <li>
-<p><code>metadata</code>: A list of 3 elements containing information about how the data was computed:</p>
+<p><code>metadata</code>: A list of length 6 containing information about how the data was computed:</p>
 <ul>
+<li>
+<code>orderered_pairs</code>: A boolean indicating whether the pairs in the <code>pairs</code> list are ordered (i.e. the first column is strictly less than the second column).</li>
 <li>
 <code>data</code>: The name of the object containing the original data on which the persistence data was computed.</li>
 <li>

@@ -56,22 +56,22 @@ in the form of the 'PHom' class,</p></li>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, warn <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'list'</span></span>
-<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, warn <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'persistence'</span></span>
-<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, warn <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'data.frame'</span></span>
-<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, warn <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'matrix'</span></span>
-<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, warn <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'diagram'</span></span>
-<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, warn <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'PHom'</span></span>
 <span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -102,6 +102,11 @@ dimension/degree, start/birth and end/death columns,</p></li>
 (e.g. <a href="https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag" class="external-link"><code>TDA::ripsDiag()</code></a>)
 whose first element is) an object of class 'diagram'.</p></li>
 </ul></dd>
+
+
+<dt id="arg-warn">warn<a class="anchor" aria-label="anchor" href="#arg-warn"></a></dt>
+<dd><p>A boolean specifying whether to issue a warning if the input
+persistence data contained unordered pairs. Defaults to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -135,8 +140,11 @@ which to recover a matrix of persistence pairs.</p></dd>
 dimension. If there is no pairs for a given dimension but there are pairs in
 higher dimensions, the corresponding element(s) is/are filled with a
 \(0 \times 2\) numeric matrix.</p></li>
-<li><p><code>metadata</code>: A list of 3 elements containing information about how the data
-was computed:</p><ul><li><p><code>data</code>: The name of the object containing the original data on which the
+<li><p><code>metadata</code>: A list of length 6 containing information about how the data
+was computed:</p><ul><li><p><code>orderered_pairs</code>: A boolean indicating whether the pairs in the
+<code>pairs</code> list are ordered (i.e. the first column is strictly less than the
+second column).</p></li>
+<li><p><code>data</code>: The name of the object containing the original data on which the
 persistence data was computed.</p></li>
 <li><p><code>engine</code>: The name of the package and the function of this package that
 computed the persistence data in the form <code>"package_name::package_function"</code>.</p></li>
