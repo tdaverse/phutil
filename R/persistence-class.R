@@ -62,13 +62,13 @@
 #' get_pairs(x, dimension = 1)
 #'
 #' as.data.frame(x)
-as_persistence <- function(x, warn = TRUE, ...) {
+as_persistence <- function(x, ..., warn = TRUE) {
   UseMethod("as_persistence")
 }
 
 #' @rdname persistence
 #' @export
-as_persistence.list <- function(x, warn = TRUE, ...) {
+as_persistence.list <- function(x, ..., warn = TRUE) {
   if (length(x) == 1L) {
     if ("diagram" %in% names(x)) {
       return(as_persistence(x$diagram, ...))
@@ -132,13 +132,13 @@ as_persistence.list <- function(x, warn = TRUE, ...) {
 
 #' @rdname persistence
 #' @export
-as_persistence.persistence <- function(x, warn = TRUE, ...) {
+as_persistence.persistence <- function(x, ..., warn = TRUE) {
   x
 }
 
 #' @rdname persistence
 #' @export
-as_persistence.data.frame <- function(x, warn = TRUE, ...) {
+as_persistence.data.frame <- function(x, ..., warn = TRUE) {
   if (ncol(x) != 3L) {
     cli::cli_abort("The data frame must have 3 columns.")
   }
@@ -146,19 +146,19 @@ as_persistence.data.frame <- function(x, warn = TRUE, ...) {
     cli::cli_abort("The data frame must have columns named {.var dimension}, {.var birth} and {.var death}.")
   }
   x <- split_df_by_dimension(x)
-  as_persistence(x, warn = warn, ...)
+  as_persistence(x, ..., warn = warn)
 }
 
 #' @rdname persistence
 #' @export
-as_persistence.matrix <- function(x, warn = TRUE, ...) {
+as_persistence.matrix <- function(x, ..., warn = TRUE) {
   x <- as.data.frame(x)
-  as_persistence(x, warn = warn, ...)
+  as_persistence(x, ..., warn = warn)
 }
 
 #' @rdname persistence
 #' @export
-as_persistence.diagram <- function(x, warn = TRUE, ...) {
+as_persistence.diagram <- function(x, ..., warn = TRUE) {
   info <- attributes(x)
   filt_nm <- gsub("*Diag", "", rlang::call_name(info$call))
   if (filt_nm == "rips") {
@@ -182,7 +182,7 @@ as_persistence.diagram <- function(x, warn = TRUE, ...) {
   dims <- dim(x)
   x <- as.matrix(x)[1:dims[1], 1:dims[2]]
   colnames(x) <- base::tolower(colnames(x))
-  as_persistence.matrix(x, warn = warn, rlang::splice(params))
+  as_persistence.matrix(x, rlang::splice(params), warn = warn)
 }
 
 #' @rdname persistence

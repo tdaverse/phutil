@@ -15,17 +15,17 @@
 \alias{as.data.frame.persistence}
 \title{An \code{S3} class for storing persistence data}
 \usage{
-as_persistence(x, warn = TRUE, ...)
+as_persistence(x, ..., warn = TRUE)
 
-\method{as_persistence}{list}(x, warn = TRUE, ...)
+\method{as_persistence}{list}(x, ..., warn = TRUE)
 
-\method{as_persistence}{persistence}(x, warn = TRUE, ...)
+\method{as_persistence}{persistence}(x, ..., warn = TRUE)
 
-\method{as_persistence}{data.frame}(x, warn = TRUE, ...)
+\method{as_persistence}{data.frame}(x, ..., warn = TRUE)
 
-\method{as_persistence}{matrix}(x, warn = TRUE, ...)
+\method{as_persistence}{matrix}(x, ..., warn = TRUE)
 
-\method{as_persistence}{diagram}(x, warn = TRUE, ...)
+\method{as_persistence}{diagram}(x, ..., warn = TRUE)
 
 \method{as_persistence}{PHom}(x, ...)
 
@@ -50,10 +50,10 @@ dimension/degree, start/birth and end/death columns,
 whose first element is) an object of class 'diagram'.
 }}
 
+\item{...}{Parameters passed to methods.}
+
 \item{warn}{A boolean specifying whether to issue a warning if the input
 persistence data contained unordered pairs. Defaults to \code{TRUE}.}
-
-\item{...}{Parameters passed to methods.}
 
 \item{dimension}{A non-negative integer specifying the homology dimension for
 which to recover a matrix of persistence pairs.}
