@@ -15,17 +15,17 @@
 \alias{as.data.frame.persistence}
 \title{An \code{S3} class for storing persistence data}
 \usage{
-as_persistence(x, ...)
+as_persistence(x, warn = TRUE, ...)
 
-\method{as_persistence}{list}(x, ...)
+\method{as_persistence}{list}(x, warn = TRUE, ...)
 
-\method{as_persistence}{persistence}(x, ...)
+\method{as_persistence}{persistence}(x, warn = TRUE, ...)
 
-\method{as_persistence}{data.frame}(x, ...)
+\method{as_persistence}{data.frame}(x, warn = TRUE, ...)
 
-\method{as_persistence}{matrix}(x, ...)
+\method{as_persistence}{matrix}(x, warn = TRUE, ...)
 
-\method{as_persistence}{diagram}(x, ...)
+\method{as_persistence}{diagram}(x, warn = TRUE, ...)
 
 \method{as_persistence}{PHom}(x, ...)
 
@@ -49,6 +49,9 @@ dimension/degree, start/birth and end/death columns,
 (e.g. \href{https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag}{\code{TDA::ripsDiag()}})
 whose first element is) an object of class 'diagram'.
 }}
+
+\item{warn}{A boolean specifying whether to issue a warning if the input
+persistence data contained unordered pairs. Defaults to \code{TRUE}.}
 
 \item{...}{Parameters passed to methods.}
 
@@ -74,9 +77,12 @@ An object of class \code{\link{persistence}} which is a list of 2 elements:
 dimension. If there is no pairs for a given dimension but there are pairs in
 higher dimensions, the corresponding element(s) is/are filled with a
 \eqn{0 \times 2} numeric matrix.
-\item \code{metadata}: A list of 3 elements containing information about how the data
+\item \code{metadata}: A list of length 6 containing information about how the data
 was computed:
 \itemize{
+\item \code{orderered_pairs}: A boolean indicating whether the pairs in the
+\code{pairs} list are ordered (i.e. the first column is strictly less than the
+second column).
 \item \code{data}: The name of the object containing the original data on which the
 persistence data was computed.
 \item \code{engine}: The name of the package and the function of this package that
