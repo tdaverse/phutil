@@ -22,7 +22,7 @@ double wassersteinDist(PairVector& diagramA,
   params.initial_epsilon = initial_epsilon;
   params.epsilon_common_ratio = epsilon_common_ratio;
   params.max_bids_per_round = max_bids_per_round;
-  params.max_num_phases = 800;
+  params.max_num_phases = max_num_phases;
   params.tolerate_max_iter_exceeded = tolerate_max_iter_exceeded;
 
   if (params.wasserstein_power < 1.0) {
