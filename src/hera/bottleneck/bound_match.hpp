@@ -44,10 +44,10 @@ derivative works thereof, in binary and source code form.
 #include <chrono>
 #endif
 
-#ifndef FOR_R_TDA
-
+#ifdef FOR_R_TDA
 #include <Rcpp.h>
-
+#else
+#include <iostream>
 #endif
 
 namespace hera {
@@ -128,9 +128,12 @@ namespace hera {
             for (size_t idx = 0; idx < augPath.size(); ++idx) {
                 bool mustBeExposed { idx == 0 or idx == augPath.size() - 1 };
                 if (isExposed(augPath[idx]) != mustBeExposed) {
-#ifndef FOR_R_TDA
+#ifdef FOR_R_TDA
                     Rcpp::Rcerr << "mustBeExposed = " << mustBeExposed << ", idx = " << idx << ", point " << augPath[idx]
                               << std::endl;
+#else
+                    std::cerr << "mustBeExposed = " << mustBeExposed << ", idx = " << idx << ", point " << augPath[idx]
+                                << std::endl;
 #endif
                 }
                 assert(isExposed(augPath[idx]) == mustBeExposed);
@@ -274,9 +277,7 @@ namespace hera {
             Rcpp::Rcout << "isMatchLess for r = " << r << " finished in " << std::chrono::duration<double, std::milli>(iterTime).count() << " ms." << std::endl;
 #endif
             return result;
-
         }
-
 
         template<class R, class NO>
         void BoundMatchOracle<R, NO>::removeFromLayer(const DgmPoint& p, const int layerIdx)
@@ -312,10 +313,14 @@ namespace hera {
                         // layer
                         DgmPoint nextVertexA;
                         if (!M.getMatchedVertex(nextVertexB, nextVertexA)) {
-#ifndef FOR_R_TDA
+#ifdef FOR_R_TDA
                             Rcpp::Rcerr << "Vertices in even layers must be matched! Unmatched: ";
                             Rcpp::Rcerr << nextVertexB << std::endl;
                             Rcpp::Rcerr << evenLayerIdx << "; " << layerGraph.size() << std::endl;
+#else
+                            std::cerr << "Vertices in even layers must be matched! Unmatched: ";
+                            std::cerr << nextVertexB << std::endl;
+                            std::cerr << evenLayerIdx << "; " << layerGraph.size() << std::endl;
 #endif
                             throw std::runtime_error("Unmatched vertex in even layer");
                         } else {
@@ -382,8 +387,10 @@ namespace hera {
                         }
                     }
                     if (augmentingPaths.empty()) {
-#ifndef FOR_R_TDA
+#ifdef FOR_R_TDA
                         Rcpp::Rcerr << "augmenting paths must exist, but were not found!" << std::endl;
+#else
+                        std::cerr << "augmenting paths must exist, but were not found!" << std::endl;
 #endif
                         throw std::runtime_error("bad epsilon?");
                     }

@@ -5,6 +5,12 @@
 #include <queue>
 #include <stack>
 
+#ifdef FOR_R_TDA
+#include <Rcpp.h>
+#else
+#include <iostream>
+#endif
+
 #include "../parallel/tbb.h" // for task_group
 
 template<class T>
@@ -314,7 +320,7 @@ void
 hera::ws::dnn::KDTree<T>::
 printWeights(void)
 {
-#ifndef FOR_R_TDA
+#ifdef FOR_R_TDA
     Rcpp::Rcerr << "weights_:" << std::endl;
     for(const auto ph : indices_) {
         Rcpp::Rcerr << "idx = " << ph.second << ": (" << (ph.first)->at(0) << ", " << (ph.first)->at(1) << ") weight = " << weights_[ph.second] << std::endl;
@@ -322,6 +328,15 @@ printWeights(void)
     Rcpp::Rcerr << "subtree_weights_:" << std::endl;
     for(size_t idx = 0; idx < subtree_weights_.size(); ++idx) {
         Rcpp::Rcerr << idx << " : " << subtree_weights_[idx] << std::endl;
+    }
+#else
+    std::cerr << "weights_:" << std::endl;
+    for(const auto ph : indices_) {
+      std::cerr << "idx = " << ph.second << ": (" << (ph.first)->at(0) << ", " << (ph.first)->at(1) << ") weight = " << weights_[ph.second] << std::endl;
+    }
+    std::cerr << "subtree_weights_:" << std::endl;
+    for(size_t idx = 0; idx < subtree_weights_.size(); ++idx) {
+      std::cerr << idx << " : " << subtree_weights_[idx] << std::endl;
     }
 #endif
 }
