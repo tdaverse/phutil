@@ -73,7 +73,6 @@ as_persistence.list <- function(x, warn = TRUE, ...) {
     if ("diagram" %in% names(x)) {
       return(as_persistence(x$diagram, ...))
     }
-    x <- x[[1L]]
   }
 
   pd <- list()
