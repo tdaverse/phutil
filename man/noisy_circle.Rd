@@ -27,7 +27,7 @@ function, which is a data frame with 3 variables:
 
 \subsection{\code{noisy_circle_tda_rips}}{
 
-An object of class 'diagram' as returned by the
+A list of length 1 containing an object of class 'diagram' as returned by the
 \href{https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag}{\code{TDA::ripsDiag()$diagram}}
 function, which is a matrix with 3 columns:
 \itemize{
@@ -39,7 +39,7 @@ function, which is a matrix with 3 columns:
 
 An object of class \code{PHom} (inherits from \code{data.frame}) with 101 rows and 3 columns.
 
-An object of class \code{diagram} with 102 rows and 3 columns.
+An object of class \code{list} of length 1.
 }
 \source{
 \url{https://tdaverse.github.io/tdaunif/reference/circles.html},

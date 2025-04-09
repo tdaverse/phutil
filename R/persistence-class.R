@@ -20,6 +20,8 @@
 #' (e.g. [`TDA::ripsDiag()`](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag))
 #' whose first element is) an object of class 'diagram'.
 #'
+#' @param warn A boolean specifying whether to issue a warning if the input
+#'   persistence data contained unordered pairs. Defaults to `TRUE`.
 #' @param ... Parameters passed to methods.
 #' @param dimension A non-negative integer specifying the homology dimension for
 #'   which to recover a matrix of persistence pairs.
@@ -35,9 +37,12 @@
 #' higher dimensions, the corresponding element(s) is/are filled with a
 #' \eqn{0 \times 2} numeric matrix.
 #'
-#' - `metadata`: A list of 3 elements containing information about how the data
+#' - `metadata`: A list of length 6 containing information about how the data
 #' was computed:
 #'
+#'   - `orderered_pairs`: A boolean indicating whether the pairs in the
+#'   `pairs` list are ordered (i.e. the first column is strictly less than the
+#'   second column).
 #'   - `data`: The name of the object containing the original data on which the
 #'   persistence data was computed.
 #'   - `engine`: The name of the package and the function of this package that
@@ -69,13 +74,20 @@
 #' hc <- hclust(d, method = "single")
 #' ph <- as_persistence(hc, birth = -10)
 #' get_pairs(ph, 0)
-as_persistence <- function(x, ...) {
+as_persistence <- function(x, warn = TRUE, ...) {
   UseMethod("as_persistence")
 }
 
 #' @rdname persistence
 #' @export
-as_persistence.list <- function(x, ...) {
+as_persistence.list <- function(x, warn = TRUE, ...) {
+  if (length(x) == 1L) {
+    if ("diagram" %in% names(x)) {
+      return(as_persistence(x$diagram, ...))
+    }
+    x <- x[[1L]]
+  }
+
   pd <- list()
 
   # Handle persistence data stored in `x`
@@ -84,13 +96,17 @@ as_persistence.list <- function(x, ...) {
     cli::cli_abort("The list is empty.")
   }
 
-  lapply(x, check_2d_matrix)
+  valid_elements <- sapply(
+    x,
+    function(.x) check_2column_matrix(.x, warn = warn)
+  )
 
   pd$pairs <- x
 
   # Handle metadata
 
   pd$metadata <- list()
+  pd$metadata$ordered_pairs <- all(valid_elements)
 
   dots <- rlang::list2(...)
   if ("data" %in% names(dots)) {
@@ -129,13 +145,13 @@ as_persistence.list <- function(x, ...) {
 
 #' @rdname persistence
 #' @export
-as_persistence.persistence <- function(x, ...) {
+as_persistence.persistence <- function(x, warn = TRUE, ...) {
   x
 }
 
 #' @rdname persistence
 #' @export
-as_persistence.data.frame <- function(x, ...) {
+as_persistence.data.frame <- function(x, warn = TRUE, ...) {
   if (ncol(x) != 3L) {
     cli::cli_abort("The data frame must have 3 columns.")
   }
@@ -143,19 +159,19 @@ as_persistence.data.frame <- function(x, ...) {
     cli::cli_abort("The data frame must have columns named {.var dimension}, {.var birth} and {.var death}.")
   }
   x <- split_df_by_dimension(x)
-  as_persistence(x, ...)
+  as_persistence(x, warn = warn, ...)
 }
 
 #' @rdname persistence
 #' @export
-as_persistence.matrix <- function(x, ...) {
+as_persistence.matrix <- function(x, warn = TRUE, ...) {
   x <- as.data.frame(x)
-  as_persistence(x, ...)
+  as_persistence(x, warn = warn, ...)
 }
 
 #' @rdname persistence
 #' @export
-as_persistence.diagram <- function(x, ...) {
+as_persistence.diagram <- function(x, warn = TRUE, ...) {
   info <- attributes(x)
   filt_nm <- gsub("*Diag", "", rlang::call_name(info$call))
   if (filt_nm == "rips") {
@@ -179,7 +195,7 @@ as_persistence.diagram <- function(x, ...) {
   dims <- dim(x)
   x <- as.matrix(x)[1:dims[1], 1:dims[2]]
   colnames(x) <- base::tolower(colnames(x))
-  as_persistence.matrix(x, rlang::splice(params))
+  as_persistence.matrix(x, warn = warn, rlang::splice(params))
 }
 
 #' @rdname persistence
@@ -189,8 +205,8 @@ as_persistence.PHom <- function(x, ...) {
   # (will need to change if 'PHom' class changes)
   as_persistence.matrix(
     as.matrix(x),
-    engine = "ripserr::vietoris_rips",
-    filtration = "Vietoris-Rips",
+    engine = "ripserr::<vietoris_rips/cubical>",
+    filtration = "Vietoris-Rips/cubical",
     ...
   )
 }

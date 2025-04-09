@@ -68,11 +68,11 @@ head(noisy_circle_ripserr)
 The data set `noisy_circle_tda_rips` is a persistence diagram computed
 using the **TDA** package with the
 [`TDA::ripsDiag()`](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag)
-and stored as an object of class ‘diagram’, which is a matrix with 3
-columns:
+and stored as a list of length 1 containing the object `diagram` of
+class ‘diagram’, which is a matrix with 3 columns:
 
 ``` r
-head(noisy_circle_tda_rips)
+head(noisy_circle_tda_rips$diagram)
 #>      dimension Birth     Death
 #> [1,]         0     0 1.6322000
 #> [2,]         0     0 0.3677392
@@ -97,9 +97,12 @@ components:
   higher dimensions, the corresponding element(s) is/are filled with a
   numeric matrix.
 
-- `metadata`: A list of 3 elements containing information about how the
+- `metadata`: A list of length 6 containing information about how the
   data was computed:
 
+  - `orderered_pairs`: A boolean indicating whether the pairs in the
+    `pairs` list are ordered (i.e. the first column is strictly less
+    than the second column).
   - `data`: The name of the object containing the original data on which
     the persistence data was computed.
   - `engine`: The name of the package and the function of this package
@@ -120,7 +123,7 @@ as_persistence(noisy_circle_ripserr)
 #> 
 #> ── Persistence Data ────────────────────────────────────────────────────────────
 #> ℹ There are 99 and 2 pairs in dimensions 0 and 1 respectively.
-#> ℹ Computed from a Vietoris-Rips filtration using `ripserr::vietoris_rips()`.
+#> ℹ Computed from a Vietoris-Rips/Cubical filtration using `ripserr::<vietoris_rips/cubical>()`.
 #> ! With unknown parameters.
 ```
 
