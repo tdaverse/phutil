@@ -66,6 +66,13 @@ as_persistence <- function(x, warn = TRUE, ...) {
 #' @rdname persistence
 #' @export
 as_persistence.list <- function(x, warn = TRUE, ...) {
+  if (length(x) == 1L) {
+    if ("diagram" %in% names(x)) {
+      return(as_persistence(x$diagram, ...))
+    }
+    x <- x[[1L]]
+  }
+
   pd <- list()
 
   # Handle persistence data stored in `x`
@@ -183,8 +190,8 @@ as_persistence.PHom <- function(x, ...) {
   # (will need to change if 'PHom' class changes)
   as_persistence.matrix(
     as.matrix(x),
-    engine = "ripserr::vietoris_rips",
-    filtration = "Vietoris-Rips",
+    engine = "ripserr::<vietoris_rips/cubical>",
+    filtration = "Vietoris-Rips/cubical",
     ...
   )
 }

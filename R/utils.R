@@ -17,8 +17,8 @@ check_2column_matrix <- function(x, warn = TRUE) {
 
   if (any(x[, 1L] >= x[, 2L])) {
     if (warn) {
-      cli::cli_alert_danger(
-        "Birth values must be stricly less than death values."
+      cli::cli_alert_warning(
+        "Birth values are expected to be stricly less than death values."
       )
     }
     return(FALSE)
