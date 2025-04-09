@@ -24,16 +24,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // wasserstein_distance
-double wasserstein_distance(const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& y, const double wasserstein_power, const double delta);
-RcppExport SEXP _phutil_wasserstein_distance(SEXP xSEXP, SEXP ySEXP, SEXP wasserstein_powerSEXP, SEXP deltaSEXP) {
+double wasserstein_distance(const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& y, const double delta, const double wasserstein_power);
+RcppExport SEXP _phutil_wasserstein_distance(SEXP xSEXP, SEXP ySEXP, SEXP deltaSEXP, SEXP wasserstein_powerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const double >::type wasserstein_power(wasserstein_powerSEXP);
     Rcpp::traits::input_parameter< const double >::type delta(deltaSEXP);
-    rcpp_result_gen = Rcpp::wrap(wasserstein_distance(x, y, wasserstein_power, delta));
+    Rcpp::traits::input_parameter< const double >::type wasserstein_power(wasserstein_powerSEXP);
+    rcpp_result_gen = Rcpp::wrap(wasserstein_distance(x, y, delta, wasserstein_power));
     return rcpp_result_gen;
 END_RCPP
 }

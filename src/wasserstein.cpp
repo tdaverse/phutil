@@ -86,37 +86,13 @@ double wassersteinDist(PairVector& diagramA,
   return res.cost;
 }
 
-//' Wasserstein distance between two persistence diagrams
-//'
-//' This function computes the Wasserstein distance between two persistence
-//' diagrams of the same homology dimension. The diagrams must be represented as
-//' 2-column matrices. The first column of the matrix contains the birth times
-//' and the second column contains the death times of the points.
-//'
-//' @param x A matrix of shape \eqn{n \times 2} specifying the first persistence
-//'   diagram.
-//' @param y A matrix of shape \eqn{m \times 2} specifying the second
-//'   persistence diagram.
-//' @param wasserstein_power A numeric value specifying the power of the
-//'   Wasserstein distance. Defaults to `1.0`.
-//' @param delta A numeric value specifying the relative error. Defaults to
-//'   `0.01`.
-//'
-//' @return A numeric value storing the Wasserstein distance between the two
-//'   persistence diagrams.
-//'
-//' @examples
-//' wasserstein_distance(
-//'   persistence_sample[[1]]$pairs[[1]],
-//'   persistence_sample[[2]]$pairs[[1]]
-//' )
-//'
+//' @rdname distances
 //' @export
 // [[Rcpp::export]]
 double wasserstein_distance(const Rcpp::NumericMatrix& x,
                             const Rcpp::NumericMatrix& y,
-                            const double wasserstein_power = 1.0,
-                            const double delta = 0.01)
+                            const double delta = 0.01,
+                            const double wasserstein_power = 1.0)
 {
   PairVector diagramA, diagramB;
   parseMatrix(x, diagramA);
