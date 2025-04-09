@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2022, M. Kerber, D. Morozov, A. Nigmetov
+Copyright (c) 2015, M. Kerber, D. Morozov, A. Nigmetov
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,20 +24,15 @@ perpetual license to install, use, modify, prepare derivative works, incorporate
 into other computer software, distribute, and sublicense such enhancements or
 derivative works thereof, in binary and source code form.
 
-*/
+  */
 
-#ifndef HERA_COMMON_H
-#define HERA_COMMON_H
+#ifndef HERA_AUCTION_ORACLE_H
+#define HERA_AUCTION_ORACLE_H
 
-#ifdef _WIN32
-#include <ciso646>
-#endif
+// all oracle classes are in separate h-hpp files
+// this file comprises all of them
 
-#include "common/infinity.h"
-#include "common/hash_combine.h"
-#include "common/point.h"
-#include "common/diagram_point.h"
-#include "common/diagram_reader.h"
-#include "common/diagram_traits.h"
+#include "auction_oracle_base.h"
+#include "auction_oracle_kdtree_restricted.h"
 
-#endif
+#endif // HERA_AUCTION_ORACLE_H

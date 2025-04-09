@@ -9,3 +9,7 @@ bottleneckDistApprox <- function(x, y, delta, verbose = FALSE) {
     .Call(`_phutil_bottleneckDistApprox`, x, y, delta, verbose)
 }
 
+wassersteinDist <- function(x, y, wasserstein_power = 1.0, delta = 0.01) {
+    .Call(`_phutil_wassersteinDist`, x, y, wasserstein_power, delta)
+}
+

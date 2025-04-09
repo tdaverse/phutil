@@ -28,6 +28,11 @@ phutil:::bottleneckDistExact(
   verbose = TRUE
 )
 
+phutil:::wassersteinDist(
+  x = x$pairs[[1]],
+  y = y$pairs[[1]]
+)
+
 phutil:::bottleneckDistApprox(
   x = x$pairs[[2]],
   y = y$pairs[[2]],
@@ -40,4 +45,9 @@ phutil:::bottleneckDistExact(
   y = y$pairs[[2]],
   decPrecision = 4L,
   verbose = TRUE
+)
+
+phutil:::wassersteinDist(
+  x = x$pairs[[2]],
+  y = y$pairs[[2]]
 )

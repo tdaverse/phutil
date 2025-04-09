@@ -38,10 +38,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// wassersteinDist
+double wassersteinDist(const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& y, const double wasserstein_power, const double delta);
+RcppExport SEXP _phutil_wassersteinDist(SEXP xSEXP, SEXP ySEXP, SEXP wasserstein_powerSEXP, SEXP deltaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const double >::type wasserstein_power(wasserstein_powerSEXP);
+    Rcpp::traits::input_parameter< const double >::type delta(deltaSEXP);
+    rcpp_result_gen = Rcpp::wrap(wassersteinDist(x, y, wasserstein_power, delta));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_phutil_bottleneckDistExact", (DL_FUNC) &_phutil_bottleneckDistExact, 4},
     {"_phutil_bottleneckDistApprox", (DL_FUNC) &_phutil_bottleneckDistApprox, 4},
+    {"_phutil_wassersteinDist", (DL_FUNC) &_phutil_wassersteinDist, 4},
     {NULL, NULL, 0}
 };
 

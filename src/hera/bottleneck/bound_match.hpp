@@ -29,7 +29,6 @@ derivative works thereof, in binary and source code form.
 #ifndef HERA_BOUND_MATCH_HPP
 #define HERA_BOUND_MATCH_HPP
 
-
 #ifdef FOR_R_TDA
 #undef DEBUG_BOUND_MATCH
 #undef DEBUG_MATCHING

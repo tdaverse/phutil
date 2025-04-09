@@ -1,6 +1,7 @@
 /*
 
-Copyright (c) 2022, M. Kerber, D. Morozov, A. Nigmetov
+Copyright (c) 2015, M. Kerber, D. Morozov, A. Nigmetov
+Copyright (c) 2018, G. Spreemann
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 
 You are under no obligation whatsoever to provide any bug fixes, patches, or
 upgrades to the features, functionality or performance of the source code
@@ -26,18 +26,89 @@ derivative works thereof, in binary and source code form.
 
 */
 
-#ifndef HERA_COMMON_H
-#define HERA_COMMON_H
+#pragma once
 
-#ifdef _WIN32
-#include <ciso646>
+#include <algorithm>
+#include <cfloat>
+#include <set>
+#include <algorithm>
+#include <istream>
+#include <cstdint>
+#include "basic_defs_ws.h"
+
+#ifndef FOR_R_TDA
+#include <iostream>
 #endif
 
-#include "common/infinity.h"
-#include "common/hash_combine.h"
-#include "common/point.h"
-#include "common/diagram_point.h"
-#include "common/diagram_reader.h"
-#include "common/diagram_traits.h"
+#include <sstream>
 
-#endif
+namespace hera {
+
+namespace ws {
+
+
+
+
+
+
+template<class Container>
+inline std::string format_container_to_log(const Container& cont)
+{
+    std::stringstream result;
+    result << "[";
+    for(auto iter = cont.begin(); iter != cont.end(); ++iter) {
+        result << *iter;
+        if (std::next(iter) != cont.end()) {
+            result << ", ";
+        }
+    }
+    result << "]";
+    return result.str();
+}
+
+template<class Container>
+inline std::string format_pair_container_to_log(const Container& cont)
+{
+    std::stringstream result;
+    result << "[";
+    for(auto iter = cont.begin(); iter != cont.end(); ++iter) {
+        result << "(" << iter->first << ", " << iter->second << ")";
+        if (std::next(iter) != cont.end()) {
+            result << ", ";
+        }
+    }
+    result << "]";
+    return result.str();
+}
+
+
+template<class Real, class IndexContainer>
+inline std::string format_point_set_to_log(const IndexContainer& indices,
+                                    const std::vector<DiagramPoint<Real>>& points)
+{
+    std::stringstream result;
+    result << "[";
+    for(auto iter = indices.begin(); iter != indices.end(); ++iter) {
+        DiagramPoint<Real> p = points[*iter];
+        result << "(" << p.getRealX() << ", " << p.getRealY() << ")";
+        if (std::next(iter) != indices.end())
+            result << ", ";
+    }
+    result << "]";
+    return result.str();
+}
+
+template<class T>
+inline std::string format_int(T i)
+{
+    std::stringstream ss;
+    ss.imbue(std::locale(""));
+    ss << std::fixed << i;
+    return ss.str();
+}
+
+
+} // end of namespace ws
+
+
+} // hera
