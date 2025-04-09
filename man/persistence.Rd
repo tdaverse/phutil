@@ -30,7 +30,7 @@ as_persistence(x, warn = TRUE, ...)
 
 \method{as_persistence}{PHom}(x, ...)
 
-\method{as_persistence}{hclust}(x, birth = NULL, ...)
+\method{as_persistence}{hclust}(x, warn = TRUE, birth = NULL, ...)
 
 \method{print}{persistence}(x, ...)
 

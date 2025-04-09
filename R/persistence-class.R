@@ -212,7 +212,7 @@ as_persistence.PHom <- function(x, ...) {
 
 #' @rdname persistence
 #' @export
-as_persistence.hclust <- function(x, birth = NULL, ...) {
+as_persistence.hclust <- function(x, warn = TRUE, birth = NULL, ...) {
 
   if (is.null(birth)) {
     birth <- if (min(x$height) < 0) -Inf else 0
@@ -227,7 +227,7 @@ as_persistence.hclust <- function(x, birth = NULL, ...) {
     call = x$call
   )
 
-  as_persistence.list(res, rlang::splice(params))
+  as_persistence.list(res, warn = warn, rlang::splice(params))
 }
 
 #' @rdname persistence
