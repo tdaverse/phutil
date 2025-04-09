@@ -1,5 +1,5 @@
-#include <Rcpp.h>
+#include <cpp11.hpp>
 
 using PairVector = std::vector<std::pair<double,double>>;
 
-void parseMatrix(const Rcpp::NumericMatrix& matrix, PairVector& result);
+void parseMatrix(const cpp11::doubles_matrix<>& matrix, PairVector& result);

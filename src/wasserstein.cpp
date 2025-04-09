@@ -33,7 +33,7 @@ double wassersteinDist(PairVector& diagramA,
     std::string msg = "Wasserstein_degree was \"" +
       std::to_string(params.wasserstein_power) +
       "\", must be a number >= 1.0. Cannot proceed.";
-    Rcpp::stop(msg.c_str());
+    cpp11::stop(msg.c_str());
   }
 
   if (params.wasserstein_power == 1.0) {
@@ -44,7 +44,7 @@ double wassersteinDist(PairVector& diagramA,
     std::string msg = "relative error was \"" +
       std::to_string(params.delta) +
       "\", must be a number > 0.0. Cannot proceed.";
-    Rcpp::stop(msg.c_str());
+    cpp11::stop(msg.c_str());
   }
 
   // default for internal metric is l_infinity
@@ -56,7 +56,7 @@ double wassersteinDist(PairVector& diagramA,
     std::string msg = "internal-p was \"" +
       std::to_string(params.internal_p) +
       "\", must be a number >= 1.0 or inf. Cannot proceed.";
-    Rcpp::stop(msg.c_str());
+    cpp11::stop(msg.c_str());
   }
 
   // if you want to specify initial value for epsilon and the factor
@@ -65,14 +65,14 @@ double wassersteinDist(PairVector& diagramA,
     std::string msg = "initial-epsilon was \"" +
       std::to_string(params.initial_epsilon) +
       "\", must be a non-negative number. Cannot proceed.";
-    Rcpp::stop(msg.c_str());
+    cpp11::stop(msg.c_str());
   }
 
   if (params.epsilon_common_ratio <= 1.0 and params.epsilon_common_ratio != 0.0) {
     std::string msg = "epsilon-common-ratio was \"" +
       std::to_string(params.epsilon_common_ratio) +
       "\", must be a number > 1.0 or 0.0. Cannot proceed.";
-    Rcpp::stop(msg.c_str());
+    cpp11::stop(msg.c_str());
   }
 
   if (params.max_bids_per_round == 0)
@@ -80,19 +80,19 @@ double wassersteinDist(PairVector& diagramA,
 
   auto res = hera::wasserstein_cost_detailed(diagramA, diagramB, params);
 
-  if (print_relative_tolerance)
-    Rcpp::Rcout << "Relative tolerance: " << res.final_relative_error << std::endl;
+  // if (print_relative_tolerance)
+  //   Rcpp::Rcout << "Relative tolerance: " << res.final_relative_error << std::endl;
 
   return res.cost;
 }
 
-//' @rdname distances
+// @rdname distances
 //' @export
-// [[Rcpp::export]]
-double wasserstein_distance(const Rcpp::NumericMatrix& x,
-                            const Rcpp::NumericMatrix& y,
-                            const double delta = 0.01,
-                            const double wasserstein_power = 1.0)
+[[cpp11::register]]
+double wassersteinDistance(const cpp11::doubles_matrix<>& x,
+                           const cpp11::doubles_matrix<>& y,
+                           const double delta = 0.01,
+                           const double wasserstein_power = 1.0)
 {
   PairVector diagramA, diagramB;
   parseMatrix(x, diagramA);

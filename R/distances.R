@@ -32,3 +32,24 @@
 #'
 #' @name distances
 NULL
+
+#' @rdname distances
+#' @export
+bottleneck_distance <- function(x, y, delta = 0.01) {
+  bottleneckDistance(
+    x = x,
+    y = y,
+    delta = delta
+  )
+}
+
+#' @rdname distances
+#' @export
+wasserstein_distance <- function(x, y, delta = 0.01, wasserstein_power = 1.0) {
+  wassersteinDistance(
+    x = x,
+    y = y,
+    delta = delta,
+    wasserstein_power = wasserstein_power
+  )
+}

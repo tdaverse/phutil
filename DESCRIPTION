@@ -21,8 +21,7 @@ Suggests:
     tinytest, tinysnapshot
 Imports: 
     cli,
-    Rcpp,
     rlang
 LinkingTo: 
     BH,
-    Rcpp
+    cpp11
