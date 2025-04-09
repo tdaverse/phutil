@@ -10,37 +10,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// bottleneckDistExact
-double bottleneckDistExact(const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& y, int decPrecision, bool verbose);
-RcppExport SEXP _phutil_bottleneckDistExact(SEXP xSEXP, SEXP ySEXP, SEXP decPrecisionSEXP, SEXP verboseSEXP) {
+// bottleneck_distance
+double bottleneck_distance(const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& y, const double delta);
+RcppExport SEXP _phutil_bottleneck_distance(SEXP xSEXP, SEXP ySEXP, SEXP deltaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< int >::type decPrecision(decPrecisionSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(bottleneckDistExact(x, y, decPrecision, verbose));
+    Rcpp::traits::input_parameter< const double >::type delta(deltaSEXP);
+    rcpp_result_gen = Rcpp::wrap(bottleneck_distance(x, y, delta));
     return rcpp_result_gen;
 END_RCPP
 }
-// bottleneckDistApprox
-double bottleneckDistApprox(const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& y, double delta, bool verbose);
-RcppExport SEXP _phutil_bottleneckDistApprox(SEXP xSEXP, SEXP ySEXP, SEXP deltaSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(bottleneckDistApprox(x, y, delta, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// wassersteinDist
-double wassersteinDist(const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& y, const double wasserstein_power, const double delta);
-RcppExport SEXP _phutil_wassersteinDist(SEXP xSEXP, SEXP ySEXP, SEXP wasserstein_powerSEXP, SEXP deltaSEXP) {
+// wasserstein_distance
+double wasserstein_distance(const Rcpp::NumericMatrix& x, const Rcpp::NumericMatrix& y, const double wasserstein_power, const double delta);
+RcppExport SEXP _phutil_wasserstein_distance(SEXP xSEXP, SEXP ySEXP, SEXP wasserstein_powerSEXP, SEXP deltaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -48,15 +33,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const double >::type wasserstein_power(wasserstein_powerSEXP);
     Rcpp::traits::input_parameter< const double >::type delta(deltaSEXP);
-    rcpp_result_gen = Rcpp::wrap(wassersteinDist(x, y, wasserstein_power, delta));
+    rcpp_result_gen = Rcpp::wrap(wasserstein_distance(x, y, wasserstein_power, delta));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_phutil_bottleneckDistExact", (DL_FUNC) &_phutil_bottleneckDistExact, 4},
-    {"_phutil_bottleneckDistApprox", (DL_FUNC) &_phutil_bottleneckDistApprox, 4},
-    {"_phutil_wassersteinDist", (DL_FUNC) &_phutil_wassersteinDist, 4},
+    {"_phutil_bottleneck_distance", (DL_FUNC) &_phutil_bottleneck_distance, 3},
+    {"_phutil_wasserstein_distance", (DL_FUNC) &_phutil_wasserstein_distance, 4},
     {NULL, NULL, 0}
 };
 

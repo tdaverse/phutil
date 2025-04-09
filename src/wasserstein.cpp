@@ -30,7 +30,9 @@ double wassersteinDist(PairVector& diagramA,
   params.match_inf_points = match_inf_points;
 
   if (params.wasserstein_power < 1.0) {
-    std::string msg = "Wasserstein_degree was \"" + std::to_string(params.wasserstein_power) + "\", must be a number >= 1.0. Cannot proceed.";
+    std::string msg = "Wasserstein_degree was \"" +
+      std::to_string(params.wasserstein_power) +
+      "\", must be a number >= 1.0. Cannot proceed.";
     Rcpp::stop(msg.c_str());
   }
 
@@ -39,7 +41,9 @@ double wassersteinDist(PairVector& diagramA,
   }
 
   if (params.delta <= 0.0) {
-    std::string msg = "relative error was \"" + std::to_string(params.delta) + "\", must be a number > 0.0. Cannot proceed.";
+    std::string msg = "relative error was \"" +
+      std::to_string(params.delta) +
+      "\", must be a number > 0.0. Cannot proceed.";
     Rcpp::stop(msg.c_str());
   }
 
@@ -49,19 +53,25 @@ double wassersteinDist(PairVector& diagramA,
   }
 
   if (not hera::is_p_valid_norm<Real>(params.internal_p)) {
-    std::string msg = "internal-p was \"" + std::to_string(params.internal_p) + "\", must be a number >= 1.0 or inf. Cannot proceed.";
+    std::string msg = "internal-p was \"" +
+      std::to_string(params.internal_p) +
+      "\", must be a number >= 1.0 or inf. Cannot proceed.";
     Rcpp::stop(msg.c_str());
   }
 
   // if you want to specify initial value for epsilon and the factor
   // for epsilon-scaling
   if (params.initial_epsilon < 0.0) {
-    std::string msg = "initial-epsilon was \"" + std::to_string(params.initial_epsilon) + "\", must be a non-negative number. Cannot proceed.";
+    std::string msg = "initial-epsilon was \"" +
+      std::to_string(params.initial_epsilon) +
+      "\", must be a non-negative number. Cannot proceed.";
     Rcpp::stop(msg.c_str());
   }
 
   if (params.epsilon_common_ratio <= 1.0 and params.epsilon_common_ratio != 0.0) {
-    std::string msg = "epsilon-common-ratio was \"" + std::to_string(params.epsilon_common_ratio) + "\", must be a number > 1.0 or 0.0. Cannot proceed.";
+    std::string msg = "epsilon-common-ratio was \"" +
+      std::to_string(params.epsilon_common_ratio) +
+      "\", must be a number > 1.0 or 0.0. Cannot proceed.";
     Rcpp::stop(msg.c_str());
   }
 
@@ -76,11 +86,37 @@ double wassersteinDist(PairVector& diagramA,
   return res.cost;
 }
 
+//' Wasserstein distance between two persistence diagrams
+//'
+//' This function computes the Wasserstein distance between two persistence
+//' diagrams of the same homology dimension. The diagrams must be represented as
+//' 2-column matrices. The first column of the matrix contains the birth times
+//' and the second column contains the death times of the points.
+//'
+//' @param x A matrix of shape \eqn{n \times 2} specifying the first persistence
+//'   diagram.
+//' @param y A matrix of shape \eqn{m \times 2} specifying the second
+//'   persistence diagram.
+//' @param wasserstein_power A numeric value specifying the power of the
+//'   Wasserstein distance. Defaults to `1.0`.
+//' @param delta A numeric value specifying the relative error. Defaults to
+//'   `0.01`.
+//'
+//' @return A numeric value storing the Wasserstein distance between the two
+//'   persistence diagrams.
+//'
+//' @examples
+//' wasserstein_distance(
+//'   persistence_sample[[1]]$pairs[[1]],
+//'   persistence_sample[[2]]$pairs[[1]]
+//' )
+//'
+//' @export
 // [[Rcpp::export]]
-double wassersteinDist(const Rcpp::NumericMatrix& x,
-                       const Rcpp::NumericMatrix& y,
-                       const double wasserstein_power = 1.0,
-                       const double delta = 0.01)
+double wasserstein_distance(const Rcpp::NumericMatrix& x,
+                            const Rcpp::NumericMatrix& y,
+                            const double wasserstein_power = 1.0,
+                            const double delta = 0.01)
 {
   PairVector diagramA, diagramB;
   parseMatrix(x, diagramA);

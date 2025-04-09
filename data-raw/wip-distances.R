@@ -14,18 +14,16 @@ y <- tdaunif::sample_2sphere(n = 100, sd = 0.05) |>
   getElement("diagram") |>
   as_persistence()
 
-phutil:::bottleneckDistApprox(
+phutil:::bottleneckDist(
   x = x$pairs[[1]],
   y = y$pairs[[1]],
-  delta = 0.5,
-  verbose = TRUE
+  delta = 0.0
 )
 
-phutil:::bottleneckDistExact(
+phutil:::bottleneckDist(
   x = x$pairs[[1]],
   y = y$pairs[[1]],
-  decPrecision = 4L,
-  verbose = TRUE
+  delta = 0.01
 )
 
 phutil:::wassersteinDist(
@@ -33,22 +31,19 @@ phutil:::wassersteinDist(
   y = y$pairs[[1]]
 )
 
-phutil:::bottleneckDistApprox(
+phutil:::bottleneckDist(
   x = x$pairs[[2]],
   y = y$pairs[[2]],
-  delta = 0.5,
-  verbose = TRUE
+  delta = 0.0
 )
 
-phutil:::bottleneckDistExact(
+phutil:::bottleneckDist(
   x = x$pairs[[2]],
   y = y$pairs[[2]],
-  decPrecision = 4L,
-  verbose = TRUE
+  delta = 0.01
 )
 
 phutil:::wassersteinDist(
   x = x$pairs[[2]],
   y = y$pairs[[2]]
 )
-

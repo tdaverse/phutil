@@ -55,3 +55,15 @@
 
 #' @rdname noisy_circle
 "noisy_circle_tda_rips"
+
+#' Toy Data: A sample of persistence diagrams
+#'
+#' A collection of 100 samples of size 100 on the sphere from which a
+#' persistence diagram is computed using the [`TDA::ripsDiag()`] function with
+#' parameters `maxdimension = 1L` and `maxscale = 1.6322`. Each diagram has been
+#' generated using the [`tdaunif::sample_2sphere()`] function with the following
+#' parameters: `n = 100` and `sd = 0.05`. The seed was fixed to 1234.
+#'
+#' @format
+#' A list of length 100, where each element is an object of class 'persistence'.
+"persistence_sample"
