@@ -29,6 +29,7 @@ derivative works thereof, in binary and source code form.
 #ifndef HERA_BOUND_MATCH_HPP
 #define HERA_BOUND_MATCH_HPP
 
+
 #ifdef FOR_R_TDA
 #undef DEBUG_BOUND_MATCH
 #undef DEBUG_MATCHING
@@ -43,10 +44,10 @@ derivative works thereof, in binary and source code form.
 #include <chrono>
 #endif
 
-#ifdef FOR_R_TDA
-#include <Rcpp.h>
-#else
+#ifndef FOR_R_TDA
+
 #include <iostream>
+
 #endif
 
 namespace hera {
@@ -127,12 +128,9 @@ namespace hera {
             for (size_t idx = 0; idx < augPath.size(); ++idx) {
                 bool mustBeExposed { idx == 0 or idx == augPath.size() - 1 };
                 if (isExposed(augPath[idx]) != mustBeExposed) {
-#ifdef FOR_R_TDA
-                    Rcpp::Rcerr << "mustBeExposed = " << mustBeExposed << ", idx = " << idx << ", point " << augPath[idx]
-                              << std::endl;
-#else
+#ifndef FOR_R_TDA
                     std::cerr << "mustBeExposed = " << mustBeExposed << ", idx = " << idx << ", point " << augPath[idx]
-                                << std::endl;
+                              << std::endl;
 #endif
                 }
                 assert(isExposed(augPath[idx]) == mustBeExposed);
@@ -231,6 +229,9 @@ namespace hera {
             R max_dist = -1.0;
             MatchingEdge<R> edge;
             for (const auto& x : AToB) {
+                //std::cout << "max_dist = " << max_dist << std::endl;
+                //std::cout << "distance = " << dist_l_inf(x.first, x.second) << std::endl;
+
                 // for now skew edges may appear in the matching
                 // but they should not be returned to user
                 // if currrent edge is a skew edge, there must another edge
@@ -246,6 +247,8 @@ namespace hera {
                 if (max_dist < curr_dist) {
                     max_dist = curr_dist;
                     edge = x;
+                    //std::cout << "updated max_dist = " << max_dist << std::endl;
+                    //std::cout << "updated edge = " << x.first << " <-> " << x.second << std::endl;
                 }
             }
             return edge;
@@ -273,10 +276,12 @@ namespace hera {
 #ifdef VERBOSE_BOTTLENECK
             auto endMoment = hrClock.now();
             std::chrono::duration<double, std::milli> iterTime = endMoment - startMoment;
-            Rcpp::Rcout << "isMatchLess for r = " << r << " finished in " << std::chrono::duration<double, std::milli>(iterTime).count() << " ms." << std::endl;
+            std::cout << "isMatchLess for r = " << r << " finished in " << std::chrono::duration<double, std::milli>(iterTime).count() << " ms." << std::endl;
 #endif
             return result;
+
         }
+
 
         template<class R, class NO>
         void BoundMatchOracle<R, NO>::removeFromLayer(const DgmPoint& p, const int layerIdx)
@@ -312,11 +317,7 @@ namespace hera {
                         // layer
                         DgmPoint nextVertexA;
                         if (!M.getMatchedVertex(nextVertexB, nextVertexA)) {
-#ifdef FOR_R_TDA
-                            Rcpp::Rcerr << "Vertices in even layers must be matched! Unmatched: ";
-                            Rcpp::Rcerr << nextVertexB << std::endl;
-                            Rcpp::Rcerr << evenLayerIdx << "; " << layerGraph.size() << std::endl;
-#else
+#ifndef FOR_R_TDA
                             std::cerr << "Vertices in even layers must be matched! Unmatched: ";
                             std::cerr << nextVertexB << std::endl;
                             std::cerr << evenLayerIdx << "; " << layerGraph.size() << std::endl;
@@ -386,9 +387,7 @@ namespace hera {
                         }
                     }
                     if (augmentingPaths.empty()) {
-#ifdef FOR_R_TDA
-                        Rcpp::Rcerr << "augmenting paths must exist, but were not found!" << std::endl;
-#else
+#ifndef FOR_R_TDA
                         std::cerr << "augmenting paths must exist, but were not found!" << std::endl;
 #endif
                         throw std::runtime_error("bad epsilon?");
@@ -408,11 +407,11 @@ namespace hera {
         {
 #ifdef DEBUG_BOUND_MATCH
             for(auto& layer : layerGraph) {
-              Rcpp::Rcerr << "{ ";
+                std::cout << "{ ";
                 for(auto& p : layer) {
-                  Rcpp::Rcerr << p << "; ";
+                    std::cout << p << "; ";
                 }
-                Rcpp::Rcerr << "\b\b }" << std::endl;
+                std::cout << "\b\b }" << std::endl;
             }
 #endif
         }
@@ -421,7 +420,7 @@ namespace hera {
         void BoundMatchOracle<R, NO>::buildLayerGraph(Real r)
         {
 #ifdef VERBOSE_BOTTLENECK
-            Rcpp::Rcerr << "Entered buildLayerGraph, r = " << r << std::endl;
+            std::cout << "Entered buildLayerGraph, r = " << r << std::endl;
 #endif
             layerGraph.clear();
             DgmPointSet L1 = M.getExposedVertices();

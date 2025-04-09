@@ -30,9 +30,7 @@ derivative works thereof, in binary and source code form.
 #ifndef HERA_DIAGRAM_READER_H
 #define HERA_DIAGRAM_READER_H
 
-#ifdef FOR_R_TDA
-#include <Rcpp.h>
-#else
+#ifndef FOR_R_TDA
 #include <iostream>
 #endif
 
@@ -129,9 +127,7 @@ inline bool read_diagram_point_set(const char* fname, ContType_& result, int& de
     result.clear();
     std::ifstream f(fname);
     if (!f.good()) {
-#ifdef FOR_R_TDA
-        Rcpp::Rcerr << "Cannot open file " << fname << std::endl;
-#else
+#ifndef FOR_R_TDA
         std::cerr << "Cannot open file " << fname << std::endl;
 #endif
         return false;
@@ -193,9 +189,7 @@ inline bool read_diagram_point_set(const char* fname, ContType_& result, int& de
                 result.push_back(std::make_pair(x, y));
             } else {
                 if (!zero_pers_warning_printed) {
-#ifdef FOR_R_TDA
-                    Rcpp::Rcerr << "Warning: point with 0 persistence ignored in " << fname << ":" << lineNumber << "\n";
-#else
+#ifndef FOR_R_TDA
                     std::cerr << "Warning: point with 0 persistence ignored in " << fname << ":" << lineNumber << "\n";
 #endif
                     zero_pers_warning_printed = true;
@@ -203,17 +197,13 @@ inline bool read_diagram_point_set(const char* fname, ContType_& result, int& de
             }
         }
         catch (const std::invalid_argument& e) {
-#ifdef FOR_R_TDA
-            Rcpp::Rcerr << "Error in file " << fname << ", line number " << lineNumber << ": cannot parse \"" << line << "\"" << std::endl;
-#else
+#ifndef FOR_R_TDA
             std::cerr << "Error in file " << fname << ", line number " << lineNumber << ": cannot parse \"" << line << "\"" << std::endl;
 #endif
             return false;
         }
         catch (const std::out_of_range&) {
-#ifdef FOR_R_TDA
-            Rcpp::Rcerr << "Error while reading file " << fname << ", line number " << lineNumber << ": value too large in \"" << line << "\"" << std::endl;
-#else
+#ifndef FOR_R_TDA
             std::cerr << "Error while reading file " << fname << ", line number " << lineNumber << ": value too large in \"" << line << "\"" << std::endl;
 #endif
             return false;
@@ -256,18 +246,14 @@ inline bool read_diagram_dipha(const std::string& fname, unsigned int dim, ContT
     file.open(fname, std::ios::in | std::ios::binary);
 
     if (!file.is_open()) {
-#ifdef FOR_R_TDA
-        Rcpp::Rcerr << "Could not open file " << fname << "." << std::endl;
-#else
+#ifndef FOR_R_TDA
         std::cerr << "Could not open file " << fname << "." << std::endl;
 #endif
         return false;
     }
 
     if (read_le<int64_t>(file) != DIPHA_MAGIC) {
-#ifdef FOR_R_TDA
-        Rcpp::Rcerr << "File " << fname << " is not a valid DIPHA file." << std::endl;
-#else
+#ifndef FOR_R_TDA
         std::cerr << "File " << fname << " is not a valid DIPHA file." << std::endl;
 #endif
         file.close();
@@ -275,9 +261,7 @@ inline bool read_diagram_dipha(const std::string& fname, unsigned int dim, ContT
     }
 
     if (read_le<int64_t>(file) != DIPHA_PERSISTENCE_DIAGRAM) {
-#ifdef FOR_R_TDA
-        Rcpp::Rcerr << "File " << fname << " is not a valid DIPHA persistence diagram file." << std::endl;
-#else
+#ifndef FOR_R_TDA
         std::cerr << "File " << fname << " is not a valid DIPHA persistence diagram file." << std::endl;
 #endif
         file.close();
@@ -294,9 +278,7 @@ inline bool read_diagram_dipha(const std::string& fname, unsigned int dim, ContT
         double death = read_le<double>(file);
 
         if (death < birth) {
-#ifdef FOR_R_TDA
-            Rcpp::Rcerr << "File " << fname << " is malformed." << std::endl;
-#else
+#ifndef FOR_R_TDA
             std::cerr << "File " << fname << " is malformed." << std::endl;
 #endif
             file.close();
@@ -312,9 +294,7 @@ inline bool read_diagram_dipha(const std::string& fname, unsigned int dim, ContT
 
         if ((unsigned int)d == dim) {
             if (death == birth && !zero_pers_warning_printed) {
-#ifdef FOR_R_TDA
-                Rcpp::Rcerr << "Warning: point with 0 persistence ignored in " << fname << "." << std::endl;
-#else
+#ifndef FOR_R_TDA
                 std::cerr << "Warning: point with 0 persistence ignored in " << fname << "." << std::endl;
 #endif
                 zero_pers_warning_printed = true;
@@ -406,9 +386,7 @@ inline bool read_point_cloud(const char* fname, hera::ws::dnn::DynamicPointVecto
     result.clear();
     std::ifstream f(fname);
     if (!f.good()) {
-#ifdef FOR_R_TDA
-        Rcpp::Rcerr << "Cannot open file " << fname << std::endl;
-#else
+#ifndef FOR_R_TDA
         std::cerr << "Cannot open file " << fname << std::endl;
 #endif
         return false;
@@ -467,9 +445,7 @@ inline bool read_point_cloud(const char* fname, hera::ws::dnn::DynamicPointVecto
         std::istringstream iss(line);
         for(int d = 0; d < dimension; ++d) {
             if (not(iss >> x)) {
-#ifdef FOR_R_TDA
-                Rcpp::Rcerr << "Error in file " << fname << ", line number " << lineNumber << ": cannot parse \"" << line << "\"" << std::endl;
-#else
+#ifndef FOR_R_TDA
                 std::cerr << "Error in file " << fname << ", line number " << lineNumber << ": cannot parse \"" << line << "\"" << std::endl;
 #endif
                 return false;

@@ -51,3 +51,4 @@ phutil:::wassersteinDist(
   x = x$pairs[[2]],
   y = y$pairs[[2]]
 )
+

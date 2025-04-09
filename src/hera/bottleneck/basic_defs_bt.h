@@ -43,8 +43,8 @@ derivative works thereof, in binary and source code form.
 #include <string>
 #include <assert.h>
 
-#include "../common.h"
 #include "def_debug_bt.h"
+#include "../common.h"
 #include <iostream>
 
 namespace hera {

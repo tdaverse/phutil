@@ -40,7 +40,6 @@ derivative works thereof, in binary and source code form.
 #define PRINT_DETAILED_TIMING
 
 #ifdef FOR_R_TDA
-#include <Rcpp.h>
 #undef DEBUG_AUCTION
 #endif
 
@@ -167,17 +166,14 @@ void AuctionRunnerGS<R, AO, PC>::run_auction()
     } else {
         run_auction_phases();
 
+#ifdef DEBUG_AUCTION
         if (result.final_relative_error > params.delta and not params.tolerate_max_iter_exceeded) {
-#ifdef FOR_R_TDA
-            Rcpp::Rcerr << "Maximum iteration number exceeded, exiting. Current result is: ";
-            Rcpp::Rcerr << pow(result.cost, 1 / params.wasserstein_power) << std::endl;
-#else
             std::cerr << "Maximum iteration number exceeded, exiting. Current result is: ";
             std::cerr << pow(result.cost, 1 / params.wasserstein_power) << std::endl;
-#endif
             if (not params.tolerate_max_iter_exceeded)
                 throw std::runtime_error("Maximum iteration number exceeded");
         }
+#endif
     }
 
     result.compute_distance(params.wasserstein_power);
@@ -210,13 +206,8 @@ void AuctionRunnerGS<R, AO, PC>::run_auction_phase()
 #ifdef DEBUG_AUCTION
     for(size_t bidder_idx = 0; bidder_idx < num_bidders; ++bidder_idx) {
         if ( bidders_to_items[bidder_idx] < 0 or bidders_to_items[bidder_idx] >= (IdxType)num_bidders) {
-#ifdef FOR_R_TDA
-            Rcpp::Rcerr << "After auction terminated bidder " << bidder_idx;
-            Rcpp::Rcerr << " has no items assigned" << std::endl;
-#else
             std::cerr << "After auction terminated bidder " << bidder_idx;
             std::cerr << " has no items assigned" << std::endl;
-#endif
             throw std::runtime_error("Auction did not give a perfect matching");
         }
     }

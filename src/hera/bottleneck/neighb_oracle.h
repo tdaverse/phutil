@@ -37,6 +37,8 @@ derivative works thereof, in binary and source code form.
 #include "../dnn/geometry/euclidean-fixed.h"
 #include "../dnn/local/kd-tree.h"
 
+
+
 namespace hera {
 namespace bt {
 
@@ -135,15 +137,19 @@ public:
     {
         auto findRes = pointIdxLookup.find(p);
         assert(findRes != pointIdxLookup.end());
+        //std::cout <<  "Deleting point " <<  p << std::endl;
         size_t pointIdx { (*findRes).second };
+        //std::cout <<  "pointIdx =  " << pointIdx << std::endl;
         diagonalPoints.erase(p, false);
         kdtree->delete_point(dnnPointHandles[kdtreeItems[pointIdx]]);
     }
 
     void rebuild(const DgmPointSet& S, const Real rr)
     {
+        //std::cout <<  "Entered rebuild, r = " <<  rr << std::endl;
         r = rr;
         size_t dnnNumPoints = S.size();
+        //printDebug(isDebug, "S = ", S);
         if (dnnNumPoints  > 0) {
             pointIdxLookup.clear();
             pointIdxLookup.reserve(S.size());
@@ -189,6 +195,7 @@ public:
                 dnnPointHandles.push_back(&dnnPoints[i]);
             }
             DnnTraits traits;
+            //std::cout << "kdtree: " << dnnPointHandles.size() << " points" << std::endl;
             kdtree.reset(new dnn::KDTree<DnnTraits>(traits, dnnPointHandles));
         }
     }
@@ -196,16 +203,20 @@ public:
 
     bool getNeighbour(const DgmPoint& q, DgmPoint& result) const
     {
+        //std::cout << "getNeighbour for q = " << q << ", r = " << r << std::endl;
+        //std::cout << *this << std::endl;
         // distance between two diagonal points
         // is  0
         if (q.is_diagonal()) {
             if (!diagonalPoints.empty()) {
                 result = *diagonalPoints.cbegin();
+                //std::cout <<  "Neighbour found in diagonal points, res =  " <<  result;
                 return true;
             }
         }
         // check if kdtree is not empty
         if (0 == kdtree->get_num_points() ) {
+            //std::cout << "empty tree, no neighb." << std::endl;
             return false;
         }
         // if no neighbour found among diagonal points,
@@ -215,12 +226,16 @@ public:
         queryPoint[1] = q.getRealY();
         auto kdtreeResult = kdtree->findFirstR(queryPoint, r);
         if (kdtreeResult.empty()) {
+            //std::cout << "no neighbour within " << r << "found." << std::endl;
             return false;
         }
         if (kdtreeResult[0].d <= r + distEpsilon) {
             result = allPoints[kdtreeResult[0].p->id()];
+            //std::cout << "Neighbour found with kd-tree, index =  " << kdtreeResult[0].p->id() << std::endl;
+            //std::cout << "result =  " <<  result << std::endl;
             return true;
         }
+        //std::cout << "No neighbour found for r =  " << r << std::endl;
         return false;
     }
 
@@ -228,6 +243,7 @@ public:
 
     void getAllNeighbours(const DgmPoint& q, std::vector<DgmPoint>& result)
     {
+        //std::cout <<  "Entered getAllNeighbours for q = " << q << std::endl;
         result.clear();
         // add diagonal points, if necessary
         if (  q.is_diagonal() ) {
@@ -238,6 +254,7 @@ public:
         // delete diagonal points we found
         // to prevent finding them again
         for(auto& pt : result) {
+            //std::cout << "deleting DIAG point pt = " << pt << std::endl;
             deletePoint(pt);
         }
         size_t diagOffset = result.size();

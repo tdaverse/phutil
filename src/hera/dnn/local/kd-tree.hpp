@@ -5,12 +5,6 @@
 #include <queue>
 #include <stack>
 
-#ifdef FOR_R_TDA
-#include <Rcpp.h>
-#else
-#include <iostream>
-#endif
-
 #include "../parallel/tbb.h" // for task_group
 
 template<class T>
@@ -320,23 +314,14 @@ void
 hera::ws::dnn::KDTree<T>::
 printWeights(void)
 {
-#ifdef FOR_R_TDA
-    Rcpp::Rcerr << "weights_:" << std::endl;
+#ifndef FOR_R_TDA
+    std::cout << "weights_:" << std::endl;
     for(const auto ph : indices_) {
-        Rcpp::Rcerr << "idx = " << ph.second << ": (" << (ph.first)->at(0) << ", " << (ph.first)->at(1) << ") weight = " << weights_[ph.second] << std::endl;
+        std::cout << "idx = " << ph.second << ": (" << (ph.first)->at(0) << ", " << (ph.first)->at(1) << ") weight = " << weights_[ph.second] << std::endl;
     }
-    Rcpp::Rcerr << "subtree_weights_:" << std::endl;
+    std::cout << "subtree_weights_:" << std::endl;
     for(size_t idx = 0; idx < subtree_weights_.size(); ++idx) {
-        Rcpp::Rcerr << idx << " : " << subtree_weights_[idx] << std::endl;
-    }
-#else
-    std::cerr << "weights_:" << std::endl;
-    for(const auto ph : indices_) {
-      std::cerr << "idx = " << ph.second << ": (" << (ph.first)->at(0) << ", " << (ph.first)->at(1) << ") weight = " << weights_[ph.second] << std::endl;
-    }
-    std::cerr << "subtree_weights_:" << std::endl;
-    for(size_t idx = 0; idx < subtree_weights_.size(); ++idx) {
-      std::cerr << idx << " : " << subtree_weights_[idx] << std::endl;
+        std::cout << idx << " : " << subtree_weights_[idx] << std::endl;
     }
 #endif
 }
@@ -464,9 +449,11 @@ void hera::bt::dnn::KDTree<T>::update_n_elems(ssize_t idx, const int delta)
 // add delta to the number of points in node idx and update subtree_n_elems
 // for all parents of the node idx
 {
+    //std::cout << "subtree_n_elems.size = " << subtree_n_elems.size() << std::endl;
     // update the node itself
     while (idx != -1)
     {
+        //std::cout << idx << std::endl;
         subtree_n_elems[idx] += delta;
         idx = parents_[idx];
     }
@@ -510,6 +497,8 @@ void hera::bt::dnn::KDTree<T>::search(PointHandle q, ResultsFunctor& rf) const
 
     nodes.push(KDTreeNode(tree_.begin(), tree_.end(), 0));
 
+    //std::cout << "started kdtree::search" << std::endl;
+
     while (!nodes.empty())
     {
         HCIterator b, e; size_t i;
@@ -525,6 +514,14 @@ void hera::bt::dnn::KDTree<T>::search(PointHandle q, ResultsFunctor& rf) const
         if ( delete_flags_[m_idx] == 0 ) {
             DistanceType dist = traits().distance(q, *m);
             // + weights_[m - tree_.begin()];
+            //std::cout << "Supplied to functor: m : ";
+            //std::cout << "(" << (*(*m))[0] << ", " << (*(*m))[1] << ")";
+            //std::cout << " and q : ";
+            //std::cout << "(" << (*q)[0] << ", " << (*q)[1] << ")" << std::endl;
+            //std::cout << "dist^q + weight = " << dist << std::endl;
+            //std::cout << "weight = " << weights_[m - tree_.begin()] << std::endl;
+            //std::cout << "dist = " << traits().distance(q, *m) << std::endl;
+            //std::cout << "dist^q = " << pow(traits().distance(q, *m), wassersteinPower) << std::endl;
 
             D = rf(*m, dist);
         }
@@ -546,6 +543,7 @@ void hera::bt::dnn::KDTree<T>::search(PointHandle q, ResultsFunctor& rf) const
             }
         }
     }
+    //std::cout << "exited kdtree::search" << std::endl;
 }
 
 template<class T>

@@ -1,12 +1,6 @@
 #ifndef HERA_PARALLEL_H
 #define HERA_PARALLEL_H
 
-#ifdef FOR_R_TDA
-#include <Rcpp.h>
-#else
-#include <iostream>
-#endif
-
 #include <vector>
 
 #include <boost/range.hpp>
@@ -93,13 +87,7 @@ namespace dnn
     {
                         progress_timer(): start(tbb::tick_count::now())                 {}
                         ~progress_timer()
-                        {
-#ifdef FOR_R_TDA
-                          Rcpp::Rcerr << (tbb::tick_count::now() - start).seconds() << " s" << std::endl;
-#else
-                          std::cerr << (tbb::tick_count::now() - start).seconds() << " s" << std::endl;
-#endif
-                        }
+                        { std::cout << (tbb::tick_count::now() - start).seconds() << " s" << std::endl; }
 
         tbb::tick_count start;
     };

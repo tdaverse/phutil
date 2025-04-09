@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2022, M. Kerber, D. Morozov, A. Nigmetov
+Copyright (c) 2015, M. Kerber, D. Morozov, A. Nigmetov
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,20 +24,72 @@ perpetual license to install, use, modify, prepare derivative works, incorporate
 into other computer software, distribute, and sublicense such enhancements or
 derivative works thereof, in binary and source code form.
 
-*/
+  */
 
-#ifndef HERA_COMMON_H
-#define HERA_COMMON_H
+#ifndef AUCTION_ORACLE_KDTREE_PURE_GEOM_H
+#define AUCTION_ORACLE_KDTREE_PURE_GEOM_H
 
-#ifdef _WIN32
-#include <ciso646>
-#endif
 
-#include "common/infinity.h"
-#include "common/hash_combine.h"
-#include "common/point.h"
-#include "common/diagram_point.h"
-#include "common/diagram_traits.h"
-#include "common/diagram_reader.h"
+#include <map>
+#include <memory>
+#include <set>
+
+#include <boost/range/adaptor/transformed.hpp>
+
+namespace ba = boost::adaptors;
+
+#include "basic_defs_ws.h"
+#include "auction_oracle_base.h"
+#include <hera/dnn/geometry/euclidean-dynamic.h>
+#include <hera/dnn/local/kd-tree.h>
+
+namespace hera
+{
+namespace ws
+{
+
+template <class Real_ = double, class PointContainer_ = hera::ws::dnn::DynamicPointVector<Real_>>
+struct AuctionOracleKDTreePureGeom : AuctionOracleBase<Real_, PointContainer_> {
+
+    using Real = Real_;
+    using DynamicPointTraitsR = typename hera::ws::dnn::DynamicPointTraits<Real>;
+    using DiagramPointR = typename DynamicPointTraitsR::PointType;
+    using PointHandleR = typename DynamicPointTraitsR::PointHandle;
+    using PointContainer = PointContainer_;
+    using DebugOptimalBidR  = typename ws::DebugOptimalBid<Real>;
+
+    using DynamicPointTraits = hera::ws::dnn::DynamicPointTraits<Real>;
+    using KDTreeR = hera::ws::dnn::KDTree<DynamicPointTraits>;
+
+    AuctionOracleKDTreePureGeom(const PointContainer& bidders, const PointContainer& items, const AuctionParams<Real>& params);
+    ~AuctionOracleKDTreePureGeom();
+
+    // data members
+    // temporarily make everything public
+    DynamicPointTraits traits;
+    Real max_val_;
+    Real weight_adj_const_;
+    std::unique_ptr<KDTreeR> kdtree_;
+    std::vector<size_t> kdtree_items_;
+    // methods
+    void set_price(const IdxType items_idx, const Real new_price);
+    void set_prices(const std::vector<Real>& new_prices);
+    IdxValPair<Real> get_optimal_bid(const IdxType bidder_idx);
+    void adjust_prices();
+    void adjust_prices(const Real delta);
+
+    // debug routines
+    DebugOptimalBidR get_optimal_bid_debug(IdxType bidder_idx) const;
+    void sanity_check();
+
+    std::pair<Real, Real> get_minmax_price() const;
+
+};
+
+} // ws
+} // hera
+
+
+#include "auction_oracle_kdtree_pure_geom.hpp"
 
 #endif

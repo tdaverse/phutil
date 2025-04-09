@@ -8,9 +8,11 @@ double wassersteinDist(PairVector& diagramA,
                        const double internal_p = hera::get_infinity<double>(),
                        const double initial_epsilon = 0.0,
                        const double epsilon_common_ratio = 5.0,
-                       const unsigned int max_bids_per_round = 1,
-                       const unsigned int max_num_phases = std::numeric_limits<decltype(max_num_phases)>::max(),
+                       const int max_bids_per_round = 1,
+                       const int max_num_phases = std::numeric_limits<decltype(max_num_phases)>::max(),
                        const bool tolerate_max_iter_exceeded = false,
+                       const bool return_matching = false,
+                       const bool match_inf_points = true,
                        const bool print_relative_tolerance = false,
                        const bool verbose = false)
 {
@@ -24,6 +26,8 @@ double wassersteinDist(PairVector& diagramA,
   params.max_bids_per_round = max_bids_per_round;
   params.max_num_phases = max_num_phases;
   params.tolerate_max_iter_exceeded = tolerate_max_iter_exceeded;
+  params.return_matching = return_matching;
+  params.match_inf_points = match_inf_points;
 
   if (params.wasserstein_power < 1.0) {
     std::string msg = "Wasserstein_degree was \"" + std::to_string(params.wasserstein_power) + "\", must be a number >= 1.0. Cannot proceed.";
