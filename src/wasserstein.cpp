@@ -86,8 +86,6 @@ double wassersteinDist(PairVector& diagramA,
   return res.cost;
 }
 
-// @rdname distances
-//' @export
 [[cpp11::register]]
 double wassersteinDistance(const cpp11::doubles_matrix<>& x,
                            const cpp11::doubles_matrix<>& y,

@@ -1,8 +1,6 @@
 #include "hera/bottleneck.h"
 #include "diagram_parser.h"
 
-//' @rdname distances
-//' @export
 [[cpp11::register]]
 double bottleneckDistance(const cpp11::doubles_matrix<>& x,
                           const cpp11::doubles_matrix<>& y,
