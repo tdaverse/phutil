@@ -97,3 +97,33 @@ double wassersteinDistance(const cpp11::doubles_matrix<>& x,
   parseMatrix(y, diagramB);
   return wassersteinDist(diagramA, diagramB, wasserstein_power, delta);
 }
+
+[[cpp11::register]]
+cpp11::doubles wassersteinPairwiseDistances(const cpp11::list& x,
+                                            const double delta = 0.01,
+                                            const double wasserstein_power = 1.0,
+                                            const unsigned int ncores = 1)
+{
+  unsigned int N = x.size();
+  unsigned int K = N * (N - 1) / 2;
+  cpp11::writable::doubles result(K);
+  std::vector<PairVector> pairs(N);
+
+  for (int n = 0;n < N;++n)
+  {
+    auto diagram = cpp11::as_cpp<cpp11::doubles_matrix<>>(x[n]);
+    parseMatrix(diagram, pairs[n]);
+  }
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(ncores)
+#endif
+  for (int k = 0;k < K;++k)
+  {
+    unsigned int i = N - 2 - std::floor(std::sqrt(-8 * k + 4 * N * (N - 1) - 7) / 2.0 - 0.5);
+    unsigned int j = k + i + 1 - N * (N - 1) / 2 + (N - i) * ((N - i) - 1) / 2;
+    result[k] = wassersteinDist(pairs[i], pairs[j], wasserstein_power, delta);
+  }
+
+  return result;
+}

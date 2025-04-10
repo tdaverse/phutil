@@ -1,49 +1,27 @@
-x <- tdaunif::sample_2sphere(n = 100, sd = 0.05) |>
-  TDA::ripsDiag(
-    maxdimension = 1L,
-    maxscale = 1.6322
-  ) |>
-  getElement("diagram") |>
-  as_persistence()
-
-y <- tdaunif::sample_2sphere(n = 100, sd = 0.05) |>
-  TDA::ripsDiag(
-    maxdimension = 1L,
-    maxscale = 1.6322
-  ) |>
-  getElement("diagram") |>
-  as_persistence()
-
-phutil:::bottleneckDist(
-  x = x$pairs[[1]],
-  y = y$pairs[[1]],
-  delta = 0.0
+system.time(
+  D <- persistence_sample |>
+    map("pairs") |>
+    map(1) |>
+    phutil:::bottleneckPairwiseDistances(delta = 0.01, ncores = 1L)
 )
 
-phutil:::bottleneckDist(
-  x = x$pairs[[1]],
-  y = y$pairs[[1]],
-  delta = 0.01
+system.time(
+  D <- persistence_sample |>
+    map("pairs") |>
+    map(1) |>
+    phutil:::bottleneckPairwiseDistances(delta = 0.01, ncores = 2L)
 )
 
-phutil:::wassersteinDist(
-  x = x$pairs[[1]],
-  y = y$pairs[[1]]
+system.time(
+  D <- persistence_sample |>
+    map("pairs") |>
+    map(1) |>
+    phutil:::wassersteinPairwiseDistances(delta = 0.01, wasserstein_power = 1, ncores = 1L)
 )
 
-phutil:::bottleneckDist(
-  x = x$pairs[[2]],
-  y = y$pairs[[2]],
-  delta = 0.0
-)
-
-phutil:::bottleneckDist(
-  x = x$pairs[[2]],
-  y = y$pairs[[2]],
-  delta = 0.01
-)
-
-phutil:::wassersteinDist(
-  x = x$pairs[[2]],
-  y = y$pairs[[2]]
+system.time(
+  D <- persistence_sample |>
+    map("pairs") |>
+    map(1) |>
+    phutil:::wassersteinPairwiseDistances(delta = 0.01, wasserstein_power = 1, ncores = 2L)
 )

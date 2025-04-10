@@ -12,6 +12,13 @@ extern "C" SEXP _phutil_bottleneckDistance(SEXP x, SEXP y, SEXP delta) {
     return cpp11::as_sexp(bottleneckDistance(cpp11::as_cpp<cpp11::decay_t<const cpp11::doubles_matrix<>&>>(x), cpp11::as_cpp<cpp11::decay_t<const cpp11::doubles_matrix<>&>>(y), cpp11::as_cpp<cpp11::decay_t<const double>>(delta)));
   END_CPP11
 }
+// bottleneck.cpp
+cpp11::doubles bottleneckPairwiseDistances(const cpp11::list& x, const double delta, const unsigned int ncores);
+extern "C" SEXP _phutil_bottleneckPairwiseDistances(SEXP x, SEXP delta, SEXP ncores) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(bottleneckPairwiseDistances(cpp11::as_cpp<cpp11::decay_t<const cpp11::list&>>(x), cpp11::as_cpp<cpp11::decay_t<const double>>(delta), cpp11::as_cpp<cpp11::decay_t<const unsigned int>>(ncores)));
+  END_CPP11
+}
 // wasserstein.cpp
 double wassersteinDistance(const cpp11::doubles_matrix<>& x, const cpp11::doubles_matrix<>& y, const double delta, const double wasserstein_power);
 extern "C" SEXP _phutil_wassersteinDistance(SEXP x, SEXP y, SEXP delta, SEXP wasserstein_power) {
@@ -19,11 +26,20 @@ extern "C" SEXP _phutil_wassersteinDistance(SEXP x, SEXP y, SEXP delta, SEXP was
     return cpp11::as_sexp(wassersteinDistance(cpp11::as_cpp<cpp11::decay_t<const cpp11::doubles_matrix<>&>>(x), cpp11::as_cpp<cpp11::decay_t<const cpp11::doubles_matrix<>&>>(y), cpp11::as_cpp<cpp11::decay_t<const double>>(delta), cpp11::as_cpp<cpp11::decay_t<const double>>(wasserstein_power)));
   END_CPP11
 }
+// wasserstein.cpp
+cpp11::doubles wassersteinPairwiseDistances(const cpp11::list& x, const double delta, const double wasserstein_power, const unsigned int ncores);
+extern "C" SEXP _phutil_wassersteinPairwiseDistances(SEXP x, SEXP delta, SEXP wasserstein_power, SEXP ncores) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(wassersteinPairwiseDistances(cpp11::as_cpp<cpp11::decay_t<const cpp11::list&>>(x), cpp11::as_cpp<cpp11::decay_t<const double>>(delta), cpp11::as_cpp<cpp11::decay_t<const double>>(wasserstein_power), cpp11::as_cpp<cpp11::decay_t<const unsigned int>>(ncores)));
+  END_CPP11
+}
 
 extern "C" {
 static const R_CallMethodDef CallEntries[] = {
-    {"_phutil_bottleneckDistance",  (DL_FUNC) &_phutil_bottleneckDistance,  3},
-    {"_phutil_wassersteinDistance", (DL_FUNC) &_phutil_wassersteinDistance, 4},
+    {"_phutil_bottleneckDistance",           (DL_FUNC) &_phutil_bottleneckDistance,           3},
+    {"_phutil_bottleneckPairwiseDistances",  (DL_FUNC) &_phutil_bottleneckPairwiseDistances,  3},
+    {"_phutil_wassersteinDistance",          (DL_FUNC) &_phutil_wassersteinDistance,          4},
+    {"_phutil_wassersteinPairwiseDistances", (DL_FUNC) &_phutil_wassersteinPairwiseDistances, 4},
     {NULL, NULL, 0}
 };
 }

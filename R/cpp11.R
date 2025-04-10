@@ -4,6 +4,14 @@ bottleneckDistance <- function(x, y, delta) {
   .Call(`_phutil_bottleneckDistance`, x, y, delta)
 }
 
+bottleneckPairwiseDistances <- function(x, delta, ncores) {
+  .Call(`_phutil_bottleneckPairwiseDistances`, x, delta, ncores)
+}
+
 wassersteinDistance <- function(x, y, delta, wasserstein_power) {
   .Call(`_phutil_wassersteinDistance`, x, y, delta, wasserstein_power)
+}
+
+wassersteinPairwiseDistances <- function(x, delta, wasserstein_power, ncores) {
+  .Call(`_phutil_wassersteinPairwiseDistances`, x, delta, wasserstein_power, ncores)
 }
