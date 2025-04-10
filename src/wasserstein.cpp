@@ -1,6 +1,10 @@
 #include "hera/wasserstein.h"
 #include "diagram_parser.h"
 
+#include <cmath>
+#include <limits>
+#include <string>
+
 double wassersteinDist(PairVector& diagramA,
                        PairVector& diagramB,
                        const double wasserstein_power = 1.0,

@@ -1,6 +1,8 @@
 #include "hera/bottleneck.h"
 #include "diagram_parser.h"
 
+#include <string>
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
