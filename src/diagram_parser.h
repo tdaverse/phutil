@@ -1,4 +1,6 @@
 #include <cpp11.hpp>
+#include <utility>
+#include <vector>
 
 using PairVector = std::vector<std::pair<double,double>>;
 
