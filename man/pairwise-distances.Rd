@@ -6,29 +6,46 @@
 \alias{wasserstein_pairwise_distances}
 \title{Pairwise distances within a set of persistence diagrams}
 \usage{
-bottleneck_pairwise_distances(x, delta = 0.01, ncores = 1L)
+bottleneck_pairwise_distances(
+  x,
+  tol = 1e-04,
+  validate = TRUE,
+  dimension = 0L,
+  ncores = 1L
+)
 
 wasserstein_pairwise_distances(
   x,
-  delta = 0.01,
-  wasserstein_power = 1,
+  tol = 1e-04,
+  p = 1,
+  validate = TRUE,
+  dimension = 0L,
   ncores = 1L
 )
 }
 \arguments{
-\item{x}{A list of 2-column matrices specifying the set of persistence
-diagrams.}
+\item{x}{A list of either 2-column matrices or objects of class \link{persistence}
+specifying the set of persistence diagrams.}
 
-\item{delta}{A numeric value specifying the relative error. Defaults to
-\code{0.01}. For the Bottleneck distance, it can be set to \code{0.0} in which case
-the exact Bottleneck distance is computed, while an approximate Bottleneck
-distance is computed if \code{delta > 0.0}.}
+\item{tol}{A numeric value specifying the relative error. Defaults to \code{1e-4}.
+For the Bottleneck distance, it can be set to \code{0.0} in which case the exact
+Bottleneck distance is computed, while an approximate Bottleneck distance
+is computed if \code{tol > 0.0}.}
+
+\item{validate}{A boolean value specifying whether to validate the input
+persistence diagrams. Defaults to \code{TRUE}. If \code{FALSE}, the function will not
+check if the input persistence diagrams are valid. This can be useful for
+performance reasons, but it is recommended to keep it \code{TRUE} for safety.}
+
+\item{dimension}{An integer value specifying the homology dimension for which
+to compute the distance. Defaults to \code{0L}. This is only used if \code{x} and \code{y}
+are objects of class \link{persistence}.}
 
 \item{ncores}{An integer value specifying the number of cores to use for
 parallel computation. Defaults to \code{1L}.}
 
-\item{wasserstein_power}{A numeric value specifying the power of the
-Wasserstein distance. Defaults to \code{1.0}.}
+\item{p}{A numeric value specifying the power for the Wasserstein distance.
+Defaults to \code{1.0}.}
 }
 \value{
 An object of class 'dist' containing the pairwise distance matrix
@@ -42,13 +59,17 @@ the matrix contains the birth times and the second column contains the death
 times of the points.
 }
 \examples{
+spl <- persistence_sample[1:10]
+
 # Extract the list of 2-column matrices for dimension 0 in the sample
-x <- lapply(persistence_sample[1:10], function(x) x$pairs[[1]])
+x <- lapply(spl[1:10], function(x) x$pairs[[1]])
 
 # Compute the pairwise Bottleneck distances
-Db <- bottleneck_pairwise_distances(x, delta = 0.01)
+Db <- bottleneck_pairwise_distances(spl)
+Db <- bottleneck_pairwise_distances(x)
 
 # Compute the pairwise Wasserstein distances
-Dw <- wasserstein_pairwise_distances(x, delta = 0.01, wasserstein_power = 1.0)
+Dw <- wasserstein_pairwise_distances(spl)
+Dw <- wasserstein_pairwise_distances(x)
 
 }

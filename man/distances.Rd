@@ -6,24 +6,33 @@
 \alias{wasserstein_distance}
 \title{Distances between two persistence diagrams}
 \usage{
-bottleneck_distance(x, y, delta = 0.01)
+bottleneck_distance(x, y, tol = 1e-04, validate = TRUE, dimension = 0L)
 
-wasserstein_distance(x, y, delta = 0.01, wasserstein_power = 1)
+wasserstein_distance(x, y, tol = 1e-04, p = 1, validate = TRUE, dimension = 0L)
 }
 \arguments{
-\item{x}{A matrix of shape \eqn{n \times 2} specifying the first persistence
-diagram.}
+\item{x}{Either a matrix of shape \eqn{n \times 2} or an object of class
+\link{persistence} specifying the first persistence diagram.}
 
-\item{y}{A matrix of shape \eqn{m \times 2} specifying the second
-persistence diagram.}
+\item{y}{Either a matrix of shape \eqn{m \times 2} or an object of class
+\link{persistence} specifying the second persistence diagram.}
 
-\item{delta}{A numeric value specifying the relative error. Defaults to
-\code{0.01}. For the Bottleneck distance, it can be set to \code{0.0} in which case
-the exact Bottleneck distance is computed, while an approximate Bottleneck
-distance is computed if \code{delta > 0.0}.}
+\item{tol}{A numeric value specifying the relative error. Defaults to \code{1e-4}.
+For the Bottleneck distance, it can be set to \code{0.0} in which case the exact
+Bottleneck distance is computed, while an approximate Bottleneck distance
+is computed if \code{tol > 0.0}.}
 
-\item{wasserstein_power}{A numeric value specifying the power of the
-Wasserstein distance. Defaults to \code{1.0}.}
+\item{validate}{A boolean value specifying whether to validate the input
+persistence diagrams. Defaults to \code{TRUE}. If \code{FALSE}, the function will not
+check if the input persistence diagrams are valid. This can be useful for
+performance reasons, but it is recommended to keep it \code{TRUE} for safety.}
+
+\item{dimension}{An integer value specifying the homology dimension for which
+to compute the distance. Defaults to \code{0L}. This is only used if \code{x} and \code{y}
+are objects of class \link{persistence}.}
+
+\item{p}{A numeric value specifying the power for the Wasserstein distance.
+Defaults to \code{1.0}.}
 }
 \value{
 A numeric value storing the Bottleneck distance between the two
@@ -41,9 +50,19 @@ bottleneck_distance(
   persistence_sample[[2]]$pairs[[1]]
 )
 
+bottleneck_distance(
+  persistence_sample[[1]],
+  persistence_sample[[2]]
+)
+
 wasserstein_distance(
   persistence_sample[[1]]$pairs[[1]],
   persistence_sample[[2]]$pairs[[1]]
+)
+
+wasserstein_distance(
+  persistence_sample[[1]],
+  persistence_sample[[2]]
 )
 
 }

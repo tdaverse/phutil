@@ -1,10 +1,20 @@
 check_2column_matrix <- function(x, warn = TRUE) {
   if (!is.matrix(x)) {
-    cli::cli_abort("Input must be a matrix.")
+    cli::cli_abort(
+      c(
+        "{.arg x} must be a matrix.",
+        "i" = "{.arg x} is of class {.cls {class(x)}}."
+      )
+    )
   }
 
   if (ncol(x) != 2L) {
-    cli::cli_abort("Input must be a matrix with 2 columns.")
+    cli::cli_abort(
+      c(
+        "{.arg x} must be a matrix with 2 columns.",
+        "i" = "{.arg x} has {ncol(x)} columns."
+      )
+    )
   }
 
   if (!is.numeric(x)) {
