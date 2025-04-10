@@ -114,6 +114,16 @@ wasserstein_distance <- function(x, y,
     }
   }
 
+  if (p > 20) {
+    return(bottleneck_distance(
+      x = x,
+      y = y,
+      tol = tol,
+      validate = FALSE,
+      dimension = dimension
+    ))
+  }
+
   wassersteinDistance(
     x = x,
     y = y,
@@ -211,6 +221,16 @@ wasserstein_pairwise_distances <- function(x,
         )
       }
     }
+  }
+
+  if (p > 20) {
+    return(bottleneck_pairwise_distances(
+      x = x,
+      tol = tol,
+      validate = FALSE,
+      dimension = dimension,
+      ncores = ncores
+    ))
   }
 
   D <- wassersteinPairwiseDistances(

@@ -33,18 +33,21 @@ double wassersteinDist(PairVector& diagramA,
   params.return_matching = return_matching;
   params.match_inf_points = match_inf_points;
 
-  if (params.wasserstein_power < 1.0) {
+  if (params.wasserstein_power < 1.0)
+  {
     std::string msg = "Wasserstein_degree was \"" +
       std::to_string(params.wasserstein_power) +
       "\", must be a number >= 1.0. Cannot proceed.";
     cpp11::stop(msg.c_str());
   }
 
-  if (params.wasserstein_power == 1.0) {
+  if (params.wasserstein_power == 1.0)
+  {
     hera::remove_duplicates<Real>(diagramA, diagramB);
   }
 
-  if (params.delta <= 0.0) {
+  if (params.delta <= 0.0)
+  {
     std::string msg = "relative error was \"" +
       std::to_string(params.delta) +
       "\", must be a number > 0.0. Cannot proceed.";
@@ -65,14 +68,16 @@ double wassersteinDist(PairVector& diagramA,
 
   // if you want to specify initial value for epsilon and the factor
   // for epsilon-scaling
-  if (params.initial_epsilon < 0.0) {
+  if (params.initial_epsilon < 0.0)
+  {
     std::string msg = "initial-epsilon was \"" +
       std::to_string(params.initial_epsilon) +
       "\", must be a non-negative number. Cannot proceed.";
     cpp11::stop(msg.c_str());
   }
 
-  if (params.epsilon_common_ratio <= 1.0 and params.epsilon_common_ratio != 0.0) {
+  if (params.epsilon_common_ratio <= 1.0 and params.epsilon_common_ratio != 0.0)
+  {
     std::string msg = "epsilon-common-ratio was \"" +
       std::to_string(params.epsilon_common_ratio) +
       "\", must be a number > 1.0 or 0.0. Cannot proceed.";
@@ -87,7 +92,7 @@ double wassersteinDist(PairVector& diagramA,
   // if (print_relative_tolerance)
   //   Rcpp::Rcout << "Relative tolerance: " << res.final_relative_error << std::endl;
 
-  return res.cost;
+  return res.distance;
 }
 
 [[cpp11::register]]
