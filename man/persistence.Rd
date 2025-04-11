@@ -9,6 +9,7 @@
 \alias{as_persistence.matrix}
 \alias{as_persistence.diagram}
 \alias{as_persistence.PHom}
+\alias{as_persistence.hclust}
 \alias{print.persistence}
 \alias{format.persistence}
 \alias{get_pairs}
@@ -28,6 +29,8 @@ as_persistence(x, warn = TRUE, ...)
 \method{as_persistence}{diagram}(x, warn = TRUE, ...)
 
 \method{as_persistence}{PHom}(x, ...)
+
+\method{as_persistence}{hclust}(x, warn = TRUE, birth = NULL, ...)
 
 \method{print}{persistence}(x, ...)
 
@@ -54,6 +57,10 @@ whose first element is) an object of class 'diagram'.
 persistence data contained unordered pairs. Defaults to \code{TRUE}.}
 
 \item{...}{Parameters passed to methods.}
+
+\item{birth}{A numeric value specifying the height at which to declare all
+leaves were born. Defaults to \code{0} if all heights are non-negative and
+\code{-Inf} otherwise.}
 
 \item{dimension}{A non-negative integer specifying the homology dimension for
 which to recover a matrix of persistence pairs.}
@@ -115,4 +122,14 @@ as_persistence(x)
 get_pairs(x, dimension = 1)
 
 as.data.frame(x)
+
+# distances between cities
+euroclust <- hclust(eurodist, method = "ward.D")
+as_persistence(euroclust)
+
+# `hclust()` can accommodate negative distances
+d <- as.dist(rbind(c(0, 3, -4), c(3, 0, 5), c(-4, 5, 0)))
+hc <- hclust(d, method = "single")
+ph <- as_persistence(hc, birth = -10)
+get_pairs(ph, 0)
 }

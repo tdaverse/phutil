@@ -78,4 +78,16 @@ expect_equal(
   row_names
 )
 
+d <- dist(cbind(x = c(0, 3, 0), y = c(0, 0, 4)))
+hc <- hclust(d, method = "complete")
+hclust <- as_persistence(hc)
+expect_equal(hclust$pairs[[1]][, 1], rep(0, 3L))
+expect_snapshot_print(hclust, label = "print-hclust-persistence")
+# negative distances
+d2 <- d
+d2[2] <- -d2[2]
+hc2 <- hclust(d2, method = "single")
+hclust2 <- as_persistence(hc2)
+expect_equal(hclust2$pairs[[1]][, 1], rep(-Inf, 3L))
+
 options(opts)

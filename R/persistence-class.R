@@ -25,6 +25,9 @@
 #' @param ... Parameters passed to methods.
 #' @param dimension A non-negative integer specifying the homology dimension for
 #'   which to recover a matrix of persistence pairs.
+#' @param birth A numeric value specifying the height at which to declare all
+#'   leaves were born. Defaults to `0` if all heights are non-negative and
+#'   `-Inf` otherwise.
 #' @inheritParams base::as.data.frame
 
 #' @returns An object of class [`persistence`] which is a list of 2 elements:
@@ -62,6 +65,16 @@
 #' get_pairs(x, dimension = 1)
 #'
 #' as.data.frame(x)
+#'
+#' # distances between cities
+#' euroclust <- hclust(eurodist, method = "ward.D")
+#' as_persistence(euroclust)
+#'
+#' # `hclust()` can accommodate negative distances
+#' d <- as.dist(rbind(c(0, 3, -4), c(3, 0, 5), c(-4, 5, 0)))
+#' hc <- hclust(d, method = "single")
+#' ph <- as_persistence(hc, birth = -10)
+#' get_pairs(ph, 0)
 as_persistence <- function(x, warn = TRUE, ...) {
   UseMethod("as_persistence")
 }
@@ -196,6 +209,32 @@ as_persistence.PHom <- function(x, ...) {
     filtration = "Vietoris-Rips/cubical",
     ...
   )
+}
+
+#' @rdname persistence
+#' @export
+as_persistence.hclust <- function(x, warn = TRUE, birth = NULL, ...) {
+
+  if (is.null(birth)) {
+    birth <- if (min(x$height) < 0) -Inf else 0
+  }
+
+  if (birth > max(x$height)) {
+    cli::cli_abort(
+      "The birth value ({birth}) must be less than
+      the maximum height (max(x$height))."
+    )
+  }
+
+  res <- list(cbind(birth = birth, death = c(x$height, Inf)))
+
+  params <- list(
+    engine = paste0("stats::", rlang::call_name(x$call)),
+    filtration = paste(x$method, "linkage", sep = "-"),
+    call = x$call
+  )
+
+  as_persistence.list(res, warn = warn, rlang::splice(params))
 }
 
 #' @rdname persistence
