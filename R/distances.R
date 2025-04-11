@@ -12,7 +12,8 @@
 #' @param tol A numeric value specifying the relative error. Defaults to `1e-4`.
 #'   For the Bottleneck distance, it can be set to `0.0` in which case the exact
 #'   Bottleneck distance is computed, while an approximate Bottleneck distance
-#'   is computed if `tol > 0.0`.
+#'   is computed if `tol > 0.0`. For the Wasserstein distance, it must be
+#'   strictly positive.
 #' @param p A numeric value specifying the power for the Wasserstein distance.
 #'   Defaults to `1.0`.
 #' @param validate A boolean value specifying whether to validate the input
