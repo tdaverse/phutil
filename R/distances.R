@@ -46,6 +46,7 @@
 
 #' @returns A numeric value storing the Bottleneck distance between the two
 #'   persistence diagrams.
+#' @seealso [the Hera C++ library](https://github.com/anigmetov/hera)
 #'
 #' @examples
 #' bottleneck_distance(

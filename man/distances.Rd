@@ -86,3 +86,6 @@ wasserstein_distance(
 )
 
 }
+\seealso{
+\href{https://github.com/anigmetov/hera}{the Hera C++ library}
+}
