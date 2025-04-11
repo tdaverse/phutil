@@ -68,6 +68,8 @@ bottleneck_distance <- function(x, y,
     }
   }
 
+  x <- x[x[, 1] < x[, 2], , drop = FALSE]
+
   if (inherits(y, "persistence")) {
     y <- get_pairs(y, dimension = dimension)
   } else if (validate) {
@@ -78,6 +80,8 @@ bottleneck_distance <- function(x, y,
       )
     }
   }
+
+  y <- y[y[, 1] < y[, 2], , drop = FALSE]
 
   bottleneckDistance(
     x = x,
@@ -104,6 +108,8 @@ wasserstein_distance <- function(x, y,
     }
   }
 
+  x <- x[x[, 1] < x[, 2], , drop = FALSE]
+
   if (inherits(y, "persistence")) {
     y <- get_pairs(y, dimension = dimension)
   } else if (validate) {
@@ -114,6 +120,8 @@ wasserstein_distance <- function(x, y,
       )
     }
   }
+
+  y <- y[y[, 1] < y[, 2], , drop = FALSE]
 
   if (p > 20) {
     return(bottleneck_distance(
@@ -186,6 +194,8 @@ bottleneck_pairwise_distances <- function(x,
         )
       }
     }
+
+    x[[i]] <- x[[i]][x[[i]][, 1] < x[[i]][, 2], , drop = FALSE]
   }
 
   D <- bottleneckPairwiseDistances(
@@ -222,6 +232,8 @@ wasserstein_pairwise_distances <- function(x,
         )
       }
     }
+
+    x[[i]] <- x[[i]][x[[i]][, 1] < x[[i]][, 2], , drop = FALSE]
   }
 
   if (p > 20) {

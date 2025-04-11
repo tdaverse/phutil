@@ -25,10 +25,10 @@ check_2column_matrix <- function(x, warn = TRUE) {
     cli::cli_abort("Input must be a matrix with no missing values.")
   }
 
-  if (any(x[, 1L] >= x[, 2L])) {
+  if (any(x[, 1L] > x[, 2L])) {
     if (warn) {
       cli::cli_alert_warning(
-        "Birth values are expected to be stricly less than death values."
+        "Birth values are expected to be smaller than death values."
       )
     }
     return(FALSE)

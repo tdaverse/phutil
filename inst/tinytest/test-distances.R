@@ -56,3 +56,11 @@ expect_error(
   wasserstein_pairwise_distances(wrong_sample),
   "contains pairs with death prior to birth"
 )
+
+expect_equal(bottleneck_distance(x, cbind(1, 1)), 1)
+expect_equal(wasserstein_distance(x, cbind(1, 1)), 2)
+
+mod_sample <- persistence_sample[1L:3L]
+mod_sample[[1L]] <- cbind(1, 1)
+expect_equal(length(bottleneck_pairwise_distances(mod_sample)), 3L)
+expect_equal(length(wasserstein_pairwise_distances(mod_sample)), 3L)
