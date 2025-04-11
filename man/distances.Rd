@@ -52,7 +52,7 @@ the diagonal with infinite multiplicity. The \emph{\eqn{p}-Wasserstein} distance
 between \eqn{D_1} and \eqn{D_2} is defined as the infimum over all matchings
 of the expression
 
-\deqn{W_p(D_1,D_2) = \inf_{\varphi: X \to Y} \left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
+\deqn{W_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
 \right)^{\frac{1}{p}},}
 
 that can be thought of as the Minkowski distance between the diagrams viewed
@@ -62,7 +62,7 @@ is the infinity norm \eqn{\lVert (x_1,x_2) \rVert_\infty = \max(x_1,x_2)}. In
 the limit \eqn{p \to \infty}, the Wasserstein distance becomes the
 \emph{bottleneck distance}:
 
-\deqn{B(D_1,D_2) = \inf_{\varphi: X \to Y} \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
+\deqn{B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
 }
 \examples{
 bottleneck_distance(
