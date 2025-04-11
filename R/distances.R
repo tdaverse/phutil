@@ -7,7 +7,7 @@
 #'
 #' A matching \eqn{\varphi : D_1 \to D_2} between persistence diagrams is a
 #' bijection of multisets, where both diagrams are assumed to have all points on
-#' the diagonal with infinite multiplicity. The _\eqn{p}-Wasserstein_ distance
+#' the diagonal with infinite multiplicity. The _\eqn{p}-Wasserstein distance_
 #' between \eqn{D_1} and \eqn{D_2} is defined as the infimum over all matchings
 #' of the expression
 #'
