@@ -58,8 +58,9 @@ persistence data contained unordered pairs. Defaults to \code{TRUE}.}
 
 \item{...}{Parameters passed to methods.}
 
-\item{birth}{Numeric; the height at which to declare all leaves were born.
-Defaults to \code{0} if all heights are non-negative and \code{-Inf} otherwise.}
+\item{birth}{A numeric value specifying the height at which to declare all
+leaves were born. Defaults to \code{0} if all heights are non-negative and
+\code{-Inf} otherwise.}
 
 \item{dimension}{A non-negative integer specifying the homology dimension for
 which to recover a matrix of persistence pairs.}

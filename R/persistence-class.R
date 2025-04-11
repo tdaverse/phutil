@@ -25,8 +25,9 @@
 #' @param ... Parameters passed to methods.
 #' @param dimension A non-negative integer specifying the homology dimension for
 #'   which to recover a matrix of persistence pairs.
-#' @param birth Numeric; the height at which to declare all leaves were born.
-#'   Defaults to `0` if all heights are non-negative and `-Inf` otherwise.
+#' @param birth A numeric value specifying the height at which to declare all
+#'   leaves were born. Defaults to `0` if all heights are non-negative and
+#'   `-Inf` otherwise.
 #' @inheritParams base::as.data.frame
 
 #' @returns An object of class [`persistence`] which is a list of 2 elements:
@@ -217,7 +218,13 @@ as_persistence.hclust <- function(x, warn = TRUE, birth = NULL, ...) {
   if (is.null(birth)) {
     birth <- if (min(x$height) < 0) -Inf else 0
   }
-  stopifnot(birth <= min(x$height))
+
+  if (birth > max(x$height)) {
+    cli::cli_abort(
+      "The birth value ({birth}) must be less than
+      the maximum height (max(x$height))."
+    )
+  }
 
   res <- list(cbind(birth = birth, death = c(x$height, Inf)))
 
