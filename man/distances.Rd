@@ -53,7 +53,7 @@ between \eqn{D_1} and \eqn{D_2} is defined as the infimum over all matchings
 of the expression
 
 \deqn{W_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
-\right)^{\frac{1}{p}},}
+\right)^{\frac{1}{p}}}
 
 that can be thought of as the Minkowski distance between the diagrams viewed
 as vectors on the shared coordinates defined by the matching \eqn{\varphi}.
