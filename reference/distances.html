@@ -94,8 +94,29 @@ Defaults to <code>1.0</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A numeric value storing the Bottleneck distance between the two
-persistence diagrams.</p>
+    <p>A numeric value storing either the Bottleneck or the Wasserstein
+distance between the two persistence diagrams.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>A matching \(\varphi : D_1 \to D_2\) between persistence diagrams is a
+bijection of multisets, where both diagrams are assumed to have all points on
+the diagonal with infinite multiplicity. The <em>\(p\)-Wasserstein distance</em>
+between \(D_1\) and \(D_2\) is defined as the infimum over all matchings
+of the expression</p>
+<p>$$W_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
+\right)^{\frac{1}{p}}$$</p>
+<p>that can be thought of as the Minkowski distance between the diagrams viewed
+as vectors on the shared coordinates defined by the matching \(\varphi\).
+The norm \(\lVert \cdot \rVert\) can be arbitrary; as implemented here, it
+is the infinity norm \(\lVert (x_1,x_2) \rVert_\infty = \max(x_1,x_2)\). In
+the limit \(p \to \infty\), the Wasserstein distance becomes the
+<em>bottleneck distance</em>:</p>
+<p>$$B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.$$</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="https://github.com/anigmetov/hera" class="external-link">the Hera C++ library</a></p></div>
     </div>
 
     <div class="section level2">
