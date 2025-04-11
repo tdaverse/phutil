@@ -22,3 +22,6 @@ Suggests:
 Imports: 
     cli,
     rlang
+LinkingTo: 
+    BH,
+    cpp11

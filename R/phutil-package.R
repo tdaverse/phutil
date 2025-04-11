@@ -2,5 +2,6 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @useDynLib phutil, .registration = TRUE
 ## usethis namespace: end
 NULL
