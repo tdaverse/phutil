@@ -76,6 +76,9 @@ in the form of the 'PHom' class,</p></li>
 <span><span class="co"># S3 method for class 'PHom'</span></span>
 <span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># S3 method for class 'hclust'</span></span>
+<span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">x</span>, warn <span class="op">=</span> <span class="cn">TRUE</span>, birth <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># S3 method for class 'persistence'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
@@ -111,6 +114,12 @@ persistence data contained unordered pairs. Defaults to <code>TRUE</code>.</p></
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Parameters passed to methods.</p></dd>
+
+
+<dt id="arg-birth">birth<a class="anchor" aria-label="anchor" href="#arg-birth"></a></dt>
+<dd><p>A numeric value specifying the height at which to declare all
+leaves were born. Defaults to <code>0</code> if all heights are non-negative and
+<code>-Inf</code> otherwise.</p></dd>
 
 
 <dt id="arg-dimension">dimension<a class="anchor" aria-label="anchor" href="#arg-dimension"></a></dt>
@@ -288,6 +297,25 @@ format (i.e. full names, capitals where need, etc.).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 100         0 0.00000000 0.008162723</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 101         1 0.38239273 1.632187167</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 102         1 0.07209847 0.075896319</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># distances between cities</span></span></span>
+<span class="r-in"><span><span class="va">euroclust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="va">eurodist</span>, method <span class="op">=</span> <span class="st">"ward.D"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">as_persistence</span><span class="op">(</span><span class="va">euroclust</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Persistence Data</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are 21 pairs in dimension 0 respectively.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Computed from a Ward.D-Linkage filtration using `stats::hclust()`.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> With unknown parameters.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># `hclust()` can accommodate negative distances</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">as.dist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span>, <span class="op">-</span><span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">hc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="va">d</span>, method <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ph</span> <span class="op">&lt;-</span> <span class="fu">as_persistence</span><span class="op">(</span><span class="va">hc</span>, birth <span class="op">=</span> <span class="op">-</span><span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">get_pairs</span><span class="op">(</span><span class="va">ph</span>, <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      birth death</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   -10    -4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   -10     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   -10   Inf</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
