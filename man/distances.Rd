@@ -45,6 +45,25 @@ diagrams of the same homology dimension. The diagrams must be represented as
 2-column matrices. The first column of the matrix contains the birth times
 and the second column contains the death times of the points.
 }
+\details{
+A matching \eqn{\varphi : D_1 \to D_2} between persistence diagrams
+is a bijection of multisets, where both diagrams are assumed to have all
+points on the diagonal with infinite multiplicity. The
+\emph{\eqn{p}-Wasserstein} distance between \eqn{D_1} and \eqn{D_2} is defined
+as the infimum over all matchings of the expression
+
+\deqn{W_p(D_1,D_2) = \left( \sum_{x \in D_1}{\lVert x - \varphi(x)
+  \rVert^p} \right)^{\frac{1}{p}}}
+
+that can be thought of as the Minkowski distance between the diagrams
+viewed as vectors on the shared coordinates defined by the matching
+\eqn{\varphi}. The norm \eqn{\lVert \cdot \rVert} can be arbitrary; as
+implemented here, it is the infitity norm \eqn{\lVert (x_1,x_2)
+  \rVert_\infty = \max(x_1,x_2)}. In the limit \eqn{p \to \infty}, the
+Wasserstein distance becomes the \emph{bottleneck distance}:
+
+\deqn{B(D_1,D_2) = \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}}
+}
 \examples{
 bottleneck_distance(
   persistence_sample[[1]]$pairs[[1]],
