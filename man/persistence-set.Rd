@@ -15,6 +15,8 @@ as_persistence_set(x)
 }
 \arguments{
 \item{x}{A list of objects of class \link{persistence}.}
+
+\item{...}{Additional arguments passed to the function.}
 }
 \value{
 An object of class 'persistence_set' containing the set of

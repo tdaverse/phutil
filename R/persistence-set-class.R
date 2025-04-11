@@ -3,6 +3,7 @@
 #' An 'S3' class object for storing sets of persistence diagrams
 #'
 #' @param x A list of objects of class [persistence].
+#' @param ... Additional arguments passed to the function.
 #'
 #' @returns An object of class 'persistence_set' containing the set of
 #'   persistence diagrams.
