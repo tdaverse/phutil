@@ -7,8 +7,20 @@ expect_error(wasserstein_distance(y, x))
 
 x <- cbind(birth = c(1, 2), death = c(3, 4))
 
+expect_error(
+  bottleneck_distance(x, y, tol = -1.0),
+  'relative error was "-1.000000", must be a number >= 0.0. Cannot proceed.'
+)
 expect_equal(bottleneck_distance(x, y, tol = 0.0), 1)
 expect_equal(bottleneck_distance(x, y), 1)
+expect_error(
+  wasserstein_distance(x, y, tol = -1.0),
+  'relative error was "-1.000000", must be a number > 0.0. Cannot proceed.'
+)
+expect_error(
+  wasserstein_distance(x, y, p = 0),
+  'Wasserstein_degree was "0.000000", must be a number >= 1.0. Cannot proceed.'
+)
 expect_error(wasserstein_distance(x, y, tol = 0.0, p = 1))
 expect_equal(wasserstein_distance(x, y, p = 1), 2)
 expect_equal(round(wasserstein_distance(x, y, p = 2), digits = 6L), 1.414214)

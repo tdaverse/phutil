@@ -24,7 +24,7 @@ double bottleneckDist(const PairVector& diagramA,
     return hera::bottleneckDistExact(diagramA, diagramB, decPrecision);
   }
 
-  std::string msg = "delta was \"" +
+  std::string msg = "relative error was \"" +
     std::to_string(delta) +
     "\", must be a number >= 0.0. Cannot proceed.";
   cpp11::stop(msg.c_str());
