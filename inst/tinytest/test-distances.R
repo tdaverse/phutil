@@ -22,6 +22,7 @@ expect_error(
   'Wasserstein_degree was "0.000000", must be a number >= 1.0. Cannot proceed.'
 )
 expect_error(wasserstein_distance(x, y, tol = 0.0, p = 1))
+expect_equal(wasserstein_distance(x, y, p = 21), 1)
 expect_equal(wasserstein_distance(x, y, p = 1), 2)
 expect_equal(round(wasserstein_distance(x, y, p = 2), digits = 6L), 1.414214)
 
@@ -35,6 +36,9 @@ expect_equal(
 )
 
 out <- bottleneck_pairwise_distances(persistence_sample[1L:3L])
+expect_equal(length(out), 3L)
+
+out <- wasserstein_pairwise_distances(persistence_sample[1L:3L], p = 21)
 expect_equal(length(out), 3L)
 
 out <- wasserstein_pairwise_distances(persistence_sample[1L:3L])

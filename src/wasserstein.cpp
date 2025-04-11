@@ -54,43 +54,7 @@ double wassersteinDist(PairVector& diagramA,
     cpp11::stop(msg.c_str());
   }
 
-  // default for internal metric is l_infinity
-  if (std::isinf(params.internal_p)) {
-    params.internal_p = hera::get_infinity<Real>();
-  }
-
-  if (not hera::is_p_valid_norm<Real>(params.internal_p)) {
-    std::string msg = "internal-p was \"" +
-      std::to_string(params.internal_p) +
-      "\", must be a number >= 1.0 or inf. Cannot proceed.";
-    cpp11::stop(msg.c_str());
-  }
-
-  // if you want to specify initial value for epsilon and the factor
-  // for epsilon-scaling
-  if (params.initial_epsilon < 0.0)
-  {
-    std::string msg = "initial-epsilon was \"" +
-      std::to_string(params.initial_epsilon) +
-      "\", must be a non-negative number. Cannot proceed.";
-    cpp11::stop(msg.c_str());
-  }
-
-  if (params.epsilon_common_ratio <= 1.0 and params.epsilon_common_ratio != 0.0)
-  {
-    std::string msg = "epsilon-common-ratio was \"" +
-      std::to_string(params.epsilon_common_ratio) +
-      "\", must be a number > 1.0 or 0.0. Cannot proceed.";
-    cpp11::stop(msg.c_str());
-  }
-
-  if (params.max_bids_per_round == 0)
-    params.max_bids_per_round = std::numeric_limits<decltype(params.max_bids_per_round)>::max();
-
   auto res = hera::wasserstein_cost_detailed(diagramA, diagramB, params);
-
-  // if (print_relative_tolerance)
-  //   Rcpp::Rcout << "Relative tolerance: " << res.final_relative_error << std::endl;
 
   return res.distance;
 }
