@@ -1,0 +1,179 @@
+---
+title: "Validation and Benchmark of Wasserstein Distances"
+output: rmarkdown::pdf_document
+vignette: >
+  %\VignetteIndexEntry{Validation and Benchmark of Wasserstein Distances}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteDepends{tdaunif,bench}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette introduces the Wasserstein and bottleneck distances between persistence diagrams and their implementations in {phutil}, adapted from [Hera](https://github.com/anigmetov/hera), by way of two tasks:
+1. Validate the implementations on an example computed by hand.
+2. Benchmark the implementations against those provided by {TDA} (adapted from Dionysus).
+
+```{r setup}
+library(TDA)
+library(phutil)
+```
+
+## Definitions
+
+
+
+## Validation
+
+The following persistence diagrams---let's denote them $D_1$ and $D_2$---provide a tractable example.
+For convenience, we omit dimensionality and focus only on the matrix representations.
+
+```{r define small PDs}
+pd1 <- rbind(
+  c(1, 3),
+  c(3, 5)
+)
+pd2 <- rbind(
+  c(3, 4)
+)
+```
+
+We overlay both diagrams in one plot.
+Note that the off-diagonal points $(1,3)$ of $D_1$ and $(3,4)$ of $D_2$ form a coordinate right triangle with the diagonal point $(3,3)$. This implies that pairing $(1,3)$ with the diagonal will always obtain an optimal matching, regardless of the norm.[^pythagorean]
+Conversely, $(3,4)$ subtends a coordinate right triangle with the other off-diagonal point $(3,5)$ of $D_1$ and the diagonal point $(4,4)$, which (since $(1,3)$ is unavailable) implies that these two off-diagonal points will always optimally match.
+
+[^pythagorean]: I think this is true but need to prove it.
+
+```{r plot small PDs, fig.width=4, fig.height=4, fig.align='center'}
+#| fig.cap=
+#| "Overlaid persistence diagrams $D_1$ (circles) and $D_2$ (diamond)."
+par(mar = c(4, 4, 1, 1) + .1)
+plot(
+  NA_real_,
+  xlim = c(0, 6), ylim = c(0, 6), asp = 1, xlab = "birth", ylab = "death"
+)
+abline(a = 0, b = 1)
+points(pd1, pch = 1)
+points(pd2, pch = 5)
+par(mar = c(5, 4, 4, 2) + .1)
+```
+
+Based on these observations, the Wasserstein distance using the $q$-norm half-plane metric and the $p$-norm "matched space" metric is:
+$$W_{q,p}(D_1,D_2) = ( {\lVert a \rVert_q}^p + {\lVert b - x \rVert_q}^p )^{\frac{1}{p}}$$
+Using this expression, we will calculate several Wasserstein distances by hand.
+We will consider the half-plane Minkowski metrics with $q=1,2,\infty$ and the "matched space" metrics with $p=1,2,\infty$.
+
+
+
+```{=latex}
+\begin{table}[h]
+\centering
+\begin{tabular}{ c | c c | c c c }
+               & $\lVert a \rVert$ & $\lVert b-x \rVert$ &
+         $W_1$ &      $W_2$        &  $W_\infty$         \\
+\hline
+$\ell_1$       &        $2$        &         $1$         &
+           $3$ & $\sqrt{5}$        &         $2$         \\
+$\ell_2$       & $\sqrt{2}$        &         $1$         &
+$1 + \sqrt{2}$ & $\sqrt{3}$        &  $\sqrt{2}$         \\
+$\ell_\infty$  &        $1$        &         $1$         &
+           $2$ & $\sqrt{2}$        &         $1$         \\
+\end{tabular}
+\caption{Distances between optimally paired features and Wasserstein distances between $D_1$ and $D_2$ for several choices of half-plane and ``matched space'' metrics.}
+\end{table}
+```
+
+The results make intuitive sense; for example, the values change monotonically along each row and column.
+Let us now validate the bottom row---using the $\ell_\infty$ distance on the half-plane---using both Hela (as exposed through {phutil}) and Dionysus (as exposed through {TDA}):
+
+```{r validate small PDs with Hera}
+wasserstein_distance(pd1, pd2, p = 1, tol = 1e-8)
+wasserstein_distance(pd1, pd2, p = 2, tol = 1e-8)
+bottleneck_distance(pd1, pd2, tol = 1e-8)
+```
+
+In order to compute distances with {TDA}, we must restructure the PDs to include a `"dimension"` column.
+Note also that `TDA::wasserstein()` does not take the $1/p$th power after computing the sum of $p$th powers; we do this manually to more easily compare results:
+
+```{r validate small PDs with Dionysus}
+wasserstein(cbind(0, pd1), cbind(0, pd2), p = 1, dimension = 0)
+wasserstein(cbind(0, pd1), cbind(0, pd2), p = 2, dimension = 0)^(1/2)
+bottleneck(cbind(0, pd1), cbind(0, pd2), dimension = 0)
+```
+
+## Benchmarks
+
+
+
+```{r benchmark phutil and TDA on small PDs}
+dpd1 <- cbind(0, pd1); dpd2 <- cbind(0, pd2)
+bench::mark(
+  TDA = {
+    c(
+      wasserstein(dpd1, dpd2, p = 1, dimension = 0),
+      wasserstein(dpd1, dpd2, p = 2, dimension = 0)^(1/2),
+      bottleneck(dpd1, dpd2, dimension = 0)
+    )
+  },
+  phutil = {
+    c(
+      wasserstein_distance(pd1, pd2, p = 1, tol = 1e-8),
+      wasserstein_distance(pd1, pd2, p = 2, tol = 1e-8),
+      bottleneck_distance(pd1, pd2, tol = 1e-8)
+    )
+  }
+)
+```
+
+
+
+```{r compute large PDs}
+tdaunif::sample_trefoil(n = 120, sd = .05) |> 
+  ripsDiag(maxdimension = 2, maxscale = 6) |> 
+  as_persistence() -> pd1
+tdaunif::sample_arch_spiral(n = 120, arms = 2) |>
+  ripsDiag(maxdimension = 2, maxscale = 6) |> 
+  as_persistence() -> pd2
+```
+
+
+
+```{r benchmark phutil and TDA on large PDs}
+# TODO: Write `as.matrix()` method for "persistence" class.
+# TODO: Write `as_diagram()` function for "persistence" objects.
+# FIXME: Ensure that empty PDs are handled correctly.
+dpd1 <- as.matrix(as.data.frame(pd1)); dpd2 <- as.matrix(as.data.frame(pd2))
+bench::mark(
+  TDA = {
+    c(
+      wasserstein(dpd1, dpd2, dimension = 0, p = 1),
+      wasserstein(dpd1, dpd2, dimension = 0, p = 2)^(1/2),
+      bottleneck(dpd1, dpd2, dimension = 0),
+      wasserstein(dpd1, dpd2, dimension = 1, p = 1),
+      wasserstein(dpd1, dpd2, dimension = 1, p = 2)^(1/2),
+      bottleneck(dpd1, dpd2, dimension = 1)#,
+      # wasserstein(dpd1, dpd2, dimension = 2, p = 1),
+      # wasserstein(dpd1, dpd2, dimension = 2, p = 2)^(1/2),
+      # bottleneck(dpd1, dpd2, dimension = 2)
+    )
+  },
+  phutil = {
+    c(
+      wasserstein_distance(pd1, pd2, dimension = 0, p = 1, tol = 1e-8),
+      wasserstein_distance(pd1, pd2, dimension = 0, p = 2, tol = 1e-8),
+      bottleneck_distance(pd1, pd2, dimension = 0, tol = 1e-8),
+      wasserstein_distance(pd1, pd2, dimension = 1, p = 1, tol = 1e-8),
+      wasserstein_distance(pd1, pd2, dimension = 1, p = 2, tol = 1e-8),
+      bottleneck_distance(pd1, pd2, dimension = 1, tol = 1e-8)#,
+      # wasserstein_distance(pd1, pd2, dimension = 2, p = 1, tol = 1e-8),
+      # wasserstein_distance(pd1, pd2, dimension = 2, p = 2, tol = 1e-8),
+      # bottleneck_distance(pd1, pd2, dimension = 2, tol = 1e-8)
+    )
+  }
+)
+```

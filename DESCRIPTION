@@ -17,11 +17,16 @@ BugReports: https://github.com/tdaverse/phutil/issues
 Depends: 
     R (>= 3.5)
 LazyData: true
-Suggests: 
-    tinytest, tinysnapshot
 Imports: 
     cli,
     rlang
+Suggests: 
+    tinytest,
+    tinysnapshot,
+    knitr,
+    rmarkdown,
+    tdaunif
 LinkingTo: 
     BH,
     cpp11
+VignetteBuilder: knitr
