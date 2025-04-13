@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 ```
 
 This vignette introduces the Wasserstein and bottleneck distances between persistence diagrams and their implementations in {phutil}, adapted from [Hera](https://github.com/anigmetov/hera), by way of two tasks:
+
 1. Validate the implementations on an example computed by hand.
 2. Benchmark the implementations against those provided by {TDA} (adapted from Dionysus).
 
@@ -26,13 +27,33 @@ library(phutil)
 
 ## Definitions
 
+_Persistence diagrams_ are multisets (sets with multiplicity) of points in the plane that encode the interval decompositions of persistent modules obtained from filtrations of data (e.g. Vietoris--Rips filtrations of point clouds and sublevel set filtrations of numerical arrays).
+Most applications consider only ordinary persistent homology, so that all points like in the upper-half plane; and most involve non-negative-valued filtrations, so that all points like in the first quadrant. The examples in this vignette will be typical in this respect.
 
+We'll distinguish between persistence diagrams, which encode persistent homology of a single degree, and _persistence data_, which comprises persistent pairs of all degrees (with degree labels). Whereas a diagram is typically stored as a 2-column matrix (birth and death values), data are typically stored as a 3-column matrix (with integer degrees).
+
+The most common distance metrics between persistence diagrams exploit the family of _Minkowski distances_ $D_p$ between points in $\mathbb{R}^n$ defined, for $1 \leq p < \infty$, as follows:
+$$D_p(x,y) = \left(\sum_{i=1}^{n}{(x_i - y_i)^p}\right)^{1/p}$$
+In the limit $p \to \infty$, this expression approaches the following auxiliary definition:
+$$D_\infty(x,y) = \max_{i=1}^{n}{\lvert x_i - y_i \rvert}$$
+As the parameter $p$ ranges between $1$ and $\infty$, three of its values yield familiar distance metrics: The taxicab distance $D_1$, the Pythagorean distance $D_2$, and the Chebyshev distance $D_\infty$.
+
+The [_Kantorovich_ or _Wasserstein metric_](https://en.wikipedia.org/wiki/Wasserstein_metric) derives from the problem of optimal transport: What is the minimum cost of relocating one distribution to another?[^kantorovich]
+In the space of persistence diagrams, only finitely many points lie off the diagonal, though every point on the diagonal is taken to be included with multiplicity $\mathbb{N}$.
+So the cost of relocating one diagram $X$ to another $Y$ amounts to (a) the cost of relocating some off-diagonal points to other off-diagonal points plus (b) the cost of relocating the remaining off-diagonal points to the diagonal (and vice-versa).
+
+[^kantorovich]: With time, this more appropriate attribution may become more common. I'd like to at least provide an alias function `kantorovich_distance()` to help that process along.
+
+This cost depends crucially on how the off-diagonal points are matched, where a _matching_ is any bijective map $\varphi : X \to Y$, though in practice we assume that almost all diagonal points are matched to themselves and incur no cost.
+The cost of relocating a point $x$ to its matched point $\varphi(x)$ is typically taken to be the Minkowski distance $D_q(x,\varphi(x)) = \lVert x - \varphi(x) \rVert_q$, while the total cost of the relocation is taken to be the Minkowski magnitude $\lVert ( D_q(x,\varphi(x)) )_{x \in X} \rVert_p$ of the vector of these matched-point distances.
+For $p < \infty$, this yields the formula:
+$$W_{q,p}(X,Y) = \inf_{\varphi : X \to Y}{\left( \sum_{x \in X}{{\lVert x-\varphi(x) \rVert_q}^p} \right)^{1/p}}$$
 
 ## Validation
 
 ### Distances between nontrivial diagrams
 
-The following persistence diagrams---let's denote them $D_1$ and $D_2$---provide a tractable example.
+The following persistence diagrams---let's denote them $X$ and $Y$---provide a tractable example.
 For convenience, we omit dimensionality and focus only on the matrix representations.
 
 ```{r define small PDs}
@@ -46,15 +67,15 @@ pd2 <- rbind(
 ```
 
 We overlay both diagrams in Figure \ref{fig:small}.
-Note that the off-diagonal points $(1,3)$ of $D_1$ and $(3,4)$ of $D_2$ form a coordinate right triangle with the diagonal point $(3,3)$. This implies that pairing $(1,3)$ with the diagonal will always obtain an optimal matching, regardless of the norm.[^pythagorean]
-Conversely, $(3,4)$ subtends a coordinate right triangle with the other off-diagonal point $(3,5)$ of $D_1$ and the diagonal point $(4,4)$, which (since $(1,3)$ is unavailable) implies that these two off-diagonal points will always optimally match.
+Note that the off-diagonal points $(1,3)$ of $X$ and $(3,4)$ of $Y$ form a coordinate right triangle with the diagonal point $(3,3)$. This implies that pairing $(1,3)$ with the diagonal will always obtain an optimal matching, regardless of the norm.[^pythagorean]
+Conversely, $(3,4)$ subtends a coordinate right triangle with the other off-diagonal point $(3,5)$ of $X$ and the diagonal point $(4,4)$, which (since $(1,3)$ is unavailable) implies that these two off-diagonal points will always optimally match.
 
 [^pythagorean]: I think this is true but need to prove it.
 
 ```{r plot small PDs, fig.width=4, fig.height=4, fig.align='center'}
 #| fig.cap=
 #| "\\label{fig:small}
-#|  Overlaid persistence diagrams $D_1$ (circles) and $D_2$ (diamond)."
+#|  Overlaid persistence diagrams $X$ (circles) and $Y$ (diamond)."
 par(mar = c(4, 4, 1, 1) + .1)
 plot(
   NA_real_,
@@ -67,11 +88,11 @@ par(mar = c(5, 4, 4, 2) + .1)
 ```
 
 Based on these observations, the Wasserstein distance using the $q$-norm half-plane metric and the $p$-norm "matched space" metric is:
-$$W_{q,p}(D_1,D_2) = ( {\lVert a \rVert_q}^p + {\lVert b - x \rVert_q}^p )^{1/p}$$
+$$W_{q,p}(X,Y) = ( {\lVert a \rVert_q}^p + {\lVert b - x \rVert_q}^p )^{1/p}$$
 Using this expression, we will calculate several Wasserstein distances by hand.
 We will consider the half-plane Minkowski metrics with $q=1,2,\infty$ and the "matched space" metrics with $p=1,2,\infty$.
 
-First, with $q=1$, we get $\lVert a \rVert_q = 1+1=2$ and $\lVert b - x \rVert_q = 0+1=1$. So the $1,p$-Wasserstein distance will be the $p$-Minkowski norm of the vector $(2,1)$, given by $W_{1,p}(D_1,D_2) = (2^p + 1^p)^{1/p}$. This nets us the values $W_{1,1}(D_1,D_2) = 3$ and $W_{1,2}(D_1,D_2) = \sqrt{5}$. And then $W_{1,\infty}(D_1,D_2) = \max(2,1) = 2$.
+First, with $q=1$, we get $\lVert a \rVert_q = 1+1=2$ and $\lVert b - x \rVert_q = 0+1=1$. So the $1,p$-Wasserstein distance will be the $p$-Minkowski norm of the vector $(2,1)$, given by $W_{1,p}(X,Y) = (2^p + 1^p)^{1/p}$. This nets us the values $W_{1,1}(X,Y) = 3$ and $W_{1,2}(X,Y) = \sqrt{5}$. And then $W_{1,\infty}(X,Y) = \max(2,1) = 2$.
 The reader is invited to complete the rest of Table \ref{tab:small}.
 
 ```{=latex}
@@ -88,7 +109,7 @@ $1 + \sqrt{2}$ & $\sqrt{3}$        &  $\sqrt{2}$         \\
 $\ell_\infty$  &        $1$        &         $1$         &
            $2$ & $\sqrt{2}$        &         $1$         \\
 \end{tabular}
-\caption{\label{tab:small}Distances between optimally paired features and Wasserstein distances between $D_1$ and $D_2$ for several choices of half-plane and ``matched space'' metrics.}
+\caption{\label{tab:small}Distances between optimally paired features and Wasserstein distances between $X$ and $Y$ for several choices of half-plane and ``matched space'' metrics.}
 \end{table}
 ```
 
