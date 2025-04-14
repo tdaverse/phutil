@@ -15,15 +15,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette introduces the Wasserstein and bottleneck distances between persistence diagrams and their implementations in {phutil}, adapted from [Hera](https://github.com/anigmetov/hera), by way of two tasks:
+This vignette introduces the Wasserstein and bottleneck distances between persistence diagrams and their implementations in {phutil}, adapted from Hera,[^hera] by way of two tasks:
 
 1. Validate the implementations on an example computed by hand.
 2. Benchmark the implementations against those provided by {TDA} (adapted from Dionysus).
+
+[^hera]: <https://github.com/anigmetov/hera>
 
 ```{r setup}
 library(TDA)
 library(phutil)
 ```
+
+We will also use the {tdaunif} package to generate larger point clouds and the {bench} package to perform benchmark tests.
 
 ## Definitions
 
@@ -38,13 +42,14 @@ In the limit $p \to \infty$, this expression approaches the following auxiliary 
 $$D_\infty(x,y) = \max_{i=1}^{n}{\lvert x_i - y_i \rvert}$$
 As the parameter $p$ ranges between $1$ and $\infty$, three of its values yield familiar distance metrics: The taxicab distance $D_1$, the Pythagorean distance $D_2$, and the Chebyshev distance $D_\infty$.
 
-The [_Kantorovich_ or _Wasserstein metric_](https://en.wikipedia.org/wiki/Wasserstein_metric) derives from the problem of optimal transport: What is the minimum cost of relocating one distribution to another?[^kantorovich]
+The _Kantorovich_ or _Wasserstein metric_[^wasserstein] derives from the problem of optimal transport: What is the minimum cost of relocating one distribution to another?[^kantorovich]
 In the space of persistence diagrams, only finitely many points lie off the diagonal, though every point on the diagonal is taken to be included with multiplicity $\mathbb{N}$.
 So the cost of relocating one diagram $X$ to another $Y$ amounts to (a) the cost of relocating some off-diagonal points to other off-diagonal points plus (b) the cost of relocating the remaining off-diagonal points to the diagonal (and vice-versa).
 
-[^kantorovich]: With time, this more appropriate attribution may become more common. I'd like to at least provide an alias function `kantorovich_distance()` to help that process along.
+[^wasserstein]: <https://en.wikipedia.org/wiki/Wasserstein_metric>
+[^kantorovich]: TODO: With time, this more appropriate attribution may become more common. I'd like to at least provide an alias function `kantorovich_distance()` to help that process along.
 
-This cost depends crucially on how the off-diagonal points are matched, where a _matching_ is any bijective map $\varphi : X \to Y$, though in practice we assume that almost all diagonal points are matched to themselves and incur no cost.
+This cost depends on how the off-diagonal points are matched, where a _matching_ is any bijective map $\varphi : X \to Y$, though in practice we assume that almost all diagonal points are matched to themselves and incur no cost.
 The cost of relocating a point $x$ to its matched point $\varphi(x)$ is typically taken to be the Minkowski distance $D_q(x,\varphi(x)) = \lVert x - \varphi(x) \rVert_q$, while the total cost of the relocation is taken to be the Minkowski magnitude $\lVert ( D_q(x,\varphi(x)) )_{x \in X} \rVert_p$ of the vector of these matched-point distances.
 For $p < \infty$, this yields the formula:
 $$W_{q,p}(X,Y) = \inf_{\varphi : X \to Y}{\left( \sum_{x \in X}{{\lVert x-\varphi(x) \rVert_q}^p} \right)^{1/p}}$$
@@ -70,7 +75,7 @@ We overlay both diagrams in Figure \ref{fig:small}.
 Note that the off-diagonal points $(1,3)$ of $X$ and $(3,4)$ of $Y$ form a coordinate right triangle with the diagonal point $(3,3)$. This implies that pairing $(1,3)$ with the diagonal will always obtain an optimal matching, regardless of the norm.[^pythagorean]
 Conversely, $(3,4)$ subtends a coordinate right triangle with the other off-diagonal point $(3,5)$ of $X$ and the diagonal point $(4,4)$, which (since $(1,3)$ is unavailable) implies that these two off-diagonal points will always optimally match.
 
-[^pythagorean]: I think this is true but need to prove it.
+[^pythagorean]: TODO: I think this is true but need to prove it.
 
 ```{r plot small PDs, fig.width=4, fig.height=4, fig.align='center'}
 #| fig.cap=
