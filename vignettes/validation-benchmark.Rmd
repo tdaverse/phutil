@@ -5,7 +5,7 @@ vignette: >
   %\VignetteIndexEntry{Validation and Benchmark of Wasserstein Distances}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{tdaunif,bench}
+  %\VignetteDepends{tdaunif,bench,ggplot2}
 ---
 
 ```{r, include = FALSE}
@@ -80,7 +80,8 @@ Conversely, $(3,4)$ subtends a coordinate right triangle with the other off-diag
 ```{r plot small PDs, fig.width=4, fig.height=4, fig.align='center'}
 #| fig.cap=
 #| "\\label{fig:small}
-#|  Overlaid persistence diagrams $X$ (circles) and $Y$ (diamond)."
+#|  Overlaid persistence diagrams $X$ (circles) and $Y$ (diamond)
+#|  with dashed segments connecting optimally matched pairs."
 par(mar = c(4, 4, 1, 1) + .1)
 plot(
   NA_real_,
@@ -89,6 +90,7 @@ plot(
 abline(a = 0, b = 1)
 points(pd1, pch = 1)
 points(pd2, pch = 5)
+segments(pd1[, 1], pd1[, 2], c(2, pd2[, 1]), c(2, pd2[, 2]), lty = 2)
 par(mar = c(5, 4, 4, 2) + .1)
 ```
 
@@ -138,37 +140,35 @@ bottleneck(cbind(0, pd1), cbind(0, pd2), dimension = 0)
 
 ### Distances from the trivial diagram
 
-An important edge case for these functions is when one persistence diagram is trivial, i.e. contains only the diagnoal so is "empty" of off-diagonal points.
+An important edge case for these functions is when one persistence diagram is trivial, i.e. contains only the diagonal so is "empty" of off-diagonal points.
 This can occur unexpectedly in comparisons of persistence data, as the data may be large but higher-degree features present in one set but absent in another.
+To validate the distances in this case, we create an empty matrix of persistent pairs and run the same code:
 
-
-
-```{r validate small PD vs empty with Hera}
+```{r validate small PD vs empty}
+# TODO: Change default to `tol = 1e-8` (floating-point precision).
+# empty PD
 pd0 <- matrix(NA_real_, nrow = 0, ncol = 2)
+# with dimension column
+dpd0 <- cbind(matrix(NA_real_, nrow = 0, ncol = 1), pd0)
+# distance from empty using phutil/Hera
 wasserstein_distance(pd0, pd1, p = 1, tol = 1e-8)
 wasserstein_distance(pd0, pd1, p = 2, tol = 1e-8)
 bottleneck_distance(pd0, pd1, tol = 1e-8)
-```
-
-
-
-```{r validate small PD vs empty with Dionysus}
-dpd0 <- cbind(matrix(NA_real_, nrow = 0, ncol = 1), pd0)
+# distance from empty using TDA/Dionysus
 wasserstein(dpd0, cbind(0, pd1), p = 1, dimension = 0)
 sqrt(wasserstein(dpd0, cbind(0, pd1), p = 2, dimension = 0))
 bottleneck(dpd0, cbind(0, pd1), dimension = 0)
 ```
 
-
-
+**FIXME:** This alternative validation fails.
 
 ```{r small PDs with one empty}
-pd1 <- cbind(
+pd3 <- cbind(
   dimension = c(0, 1, 2),
   birth     = c(0, 1, 2),
   death     = c(5, 4, 3)
 )
-pd2 <- cbind(
+pd4 <- cbind(
   dimension = c(0, 1),
   birth     = c(0, 2),
   death     = c(4, 3)
@@ -177,46 +177,47 @@ pd2 <- cbind(
 
 
 
-```{r validate small PDs with one empty with Hera}
+```{r validate small PDs with one empty}
 # TODO: Enable `*_distance()` functions to handle 3-column matrix or data frame,
 # perhaps by executing `as_persistence()` internally.
-wasserstein_distance(as_persistence(pd1), as_persistence(pd2), p = 1, dimension = 2, tol = 1e-8)
-wasserstein_distance(as_persistence(pd1), as_persistence(pd2), p = 2, dimension = 2, tol = 1e-8)
-bottleneck_distance(as_persistence(pd1), as_persistence(pd2), dimension = 2, tol = 1e-8)
-```
-
-
-
-```{r validate small PDs with one empty with Dionysus}
-wasserstein(pd1, pd2, p = 1, dimension = 2)
-sqrt(wasserstein(pd1, pd2, p = 2, dimension = 2))
-bottleneck(pd1, pd2, dimension = 2)
+# distance from empty using phutil/Hera
+wasserstein_distance(as_persistence(pd3), as_persistence(pd4), p = 1, dimension = 2, tol = 1e-8)
+wasserstein_distance(as_persistence(pd3), as_persistence(pd4), p = 2, dimension = 2, tol = 1e-8)
+bottleneck_distance(as_persistence(pd3), as_persistence(pd4), dimension = 2, tol = 1e-8)
+# distance from empty using TDA/Dionysus
+wasserstein(pd3, pd4, p = 1, dimension = 2)
+sqrt(wasserstein(pd3, pd4, p = 2, dimension = 2))
+bottleneck(pd3, pd4, dimension = 2)
 ```
 
 ## Benchmarks
 
-
+To illustrate the benchmarking process, and to have a small-scale example against which to compare the large(r)-scale results, we use the first example above.
+We define new objects for the `cbind()` operations to prevent them from inflating the {TDA} runtimes.
 
 ```{r benchmark phutil and TDA on small PDs}
-pd1 <- rbind(c(1, 3), c(3, 5))
-pd2 <- rbind(c(3, 4))
+#| fig.width=6, fig.height=2, fig.align='center',
+#| fig.cap=
+#| "\\label{fig:benchmark-small}
+#|  Benchmark comparison of Dionysus via {TDA} and Hera via {phutil}
+#|  on small persistence diagrams:
+#|  Violin plots of runtime distributions on a common scale."
 dpd1 <- cbind(0, pd1); dpd2 <- cbind(0, pd2)
-bench::mark(
-  TDA = {
-    c(
-      wasserstein(dpd1, dpd2, dimension = 0, p = 1),
-      sqrt(wasserstein(dpd1, dpd2, dimension = 0, p = 2)),
-      bottleneck(dpd1, dpd2, dimension = 0)
-    )
-  },
-  phutil = {
-    c(
-      wasserstein_distance(pd1, pd2, p = 1, tol = 1e-8),
-      wasserstein_distance(pd1, pd2, p = 2, tol = 1e-8),
-      bottleneck_distance(pd1, pd2, tol = 1e-8)
-    )
-  }
+bm1 <- bench::mark(
+  TDA = wasserstein(dpd1, dpd2, dimension = 0, p = 1),
+  phutil = wasserstein_distance(pd1, pd2, p = 1, tol = 1e-8)
 )
+bm2 <- bench::mark(
+  TDA = sqrt(wasserstein(dpd1, dpd2, dimension = 0, p = 2)),
+  phutil = wasserstein_distance(pd1, pd2, p = 2, tol = 1e-8)
+)
+bminf <- bench::mark(
+  TDA = bottleneck(dpd1, dpd2, dimension = 0),
+  phutil = bottleneck_distance(pd1, pd2, tol = 1e-8)
+)
+bm1$p <- 1; bm2$p <- 2; bminf$p <- Inf
+ggplot2::autoplot(rbind(bm1, bm2, bminf), type = "violin") +
+  ggplot2::labs(x = NULL, y = NULL)
 ```
 
 
