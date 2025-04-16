@@ -203,6 +203,8 @@ bottleneck(Z, W, dimension = 2)
 
 ### Distances between small diagrams
 
+**REVIEW:** Is it helpful to benchmark on the small data? We're probably picking up differences in data conversion rather than in the algorithms.
+
 **TODO:** Instead of repeating a single calculation, generate random small PDs and benchmark computations on the lot of them?
 
 To illustrate the benchmarking process, and to have a small-scale example against which to compare the large(r)-scale results, we use the first example above.
@@ -216,20 +218,20 @@ We define new objects for the `cbind()` operations to prevent them from inflatin
 #|  on small persistence diagrams:
 #|  Violin plots of runtime distributions on a common scale."
 X_ <- cbind(0, X); Y_ <- cbind(0, Y)
-bm1 <- bench::mark(
+bm_1 <- bench::mark(
   TDA = wasserstein(X_, Y_, dimension = 0, p = 1),
   phutil = wasserstein_distance(X, Y, p = 1, tol = 1e-8)
 )
-bm2 <- bench::mark(
+bm_2 <- bench::mark(
   TDA = sqrt(wasserstein(X_, Y_, dimension = 0, p = 2)),
   phutil = wasserstein_distance(X, Y, p = 2, tol = 1e-8)
 )
-bminf <- bench::mark(
+bm_inf <- bench::mark(
   TDA = bottleneck(X_, Y_, dimension = 0),
   phutil = bottleneck_distance(X, Y, tol = 1e-8)
 )
-bm1$p <- 1; bm2$p <- 2; bminf$p <- Inf
-ggplot2::autoplot(rbind(bm1, bm2, bminf), type = "violin") +
+bm_1$p <- 1; bm_2$p <- 2; bm_inf$p <- Inf
+ggplot2::autoplot(rbind(bm_1, bm_2, bm_inf), type = "violin") +
   ggplot2::labs(x = NULL, y = NULL)
 ```
 
@@ -254,7 +256,7 @@ tdaunif::sample_arch_spiral(n = 120, arms = 2, sd = .05) |>
 
 
 
-```{r benchmark phutil and TDA on large PDs}
+```{r benchmark phutil and TDA on large PDs original, include=FALSE}
 # TODO: Write `as.matrix()` method for "persistence" class.
 # TODO: Write `as_diagram()` function for "persistence" objects.
 # FIXME: Ensure that empty PDs are handled correctly.
@@ -287,4 +289,106 @@ bench::mark(
     )
   }
 )
+```
+
+```{r benchmark phutil and TDA on large PDs}
+#| fig.width=6, fig.height=3, fig.align='center',
+#| fig.cap=
+#| "\\label{fig:benchmark-large}
+#|  Benchmark comparison of Dionysus via {TDA} and Hera via {phutil}
+#|  on large persistence diagrams:
+#|  Violin plots of runtime distributions on a common scale."
+# TODO: Write `as.matrix()` method for "persistence" class.
+# TODO: Write `as_diagram()` function for "persistence" objects.
+# FIXME: Ensure that empty PDs are handled correctly.
+PD1_ <- as.matrix(as.data.frame(PD1)); PD2_ <- as.matrix(as.data.frame(PD2))
+# degree-0
+bm_0_1 <- bench::mark(
+  TDA = wasserstein(PD1_, PD2_, dimension = 0, p = 1),
+  phutil = wasserstein_distance(PD1, PD2, dimension = 0, p = 1, tol = 1e-8)
+)
+bm_0_2 <- bench::mark(
+  TDA = sqrt(wasserstein(PD1_, PD2_, dimension = 0, p = 2)),
+  phutil = wasserstein_distance(PD1, PD2, dimension = 0, p = 2, tol = 1e-8)
+)
+bm_0_inf <- bench::mark(
+  TDA = bottleneck(PD1_, PD2_, dimension = 0),
+  phutil = bottleneck_distance(PD1, PD2, dimension = 0, tol = 1e-8)
+)
+bm_0_1$degree <- bm_0_2$degree <- bm_0_inf$degree <- 0
+bm_0_1$p <- 1; bm_0_2$p <- 2; bm_0_inf$p <- Inf
+# degree-1
+bm_1_1 <- bench::mark(
+  TDA = wasserstein(PD1_, PD2_, dimension = 0, p = 1),
+  phutil = wasserstein_distance(PD1, PD2, dimension = 0, p = 1, tol = 1e-8)
+)
+bm_1_2 <- bench::mark(
+  TDA = sqrt(wasserstein(PD1_, PD2_, dimension = 0, p = 2)),
+  phutil = wasserstein_distance(PD1, PD2, dimension = 0, p = 2, tol = 1e-8)
+)
+bm_1_inf <- bench::mark(
+  TDA = bottleneck(PD1_, PD2_, dimension = 0),
+  phutil = bottleneck_distance(PD1, PD2, dimension = 0, tol = 1e-8)
+)
+bm_1_1$degree <- bm_1_2$degree <- bm_1_inf$degree <- 1
+bm_1_1$p <- 1; bm_1_2$p <- 2; bm_1_inf$p <- Inf
+# # degree-2
+# bm_2_1 <- bench::mark(
+#   TDA = wasserstein(PD1_, PD2_, dimension = 0, p = 1),
+#   phutil = wasserstein_distance(PD1, PD2, dimension = 0, p = 1, tol = 1e-8)
+# )
+# bm_2_2 <- bench::mark(
+#   TDA = sqrt(wasserstein(PD1_, PD2_, dimension = 0, p = 2)),
+#   phutil = wasserstein_distance(PD1, PD2, dimension = 0, p = 2, tol = 1e-8)
+# )
+# bm_2_inf <- bench::mark(
+#   TDA = bottleneck(PD1_, PD2_, dimension = 0),
+#   phutil = bottleneck_distance(PD1, PD2, dimension = 0, tol = 1e-8)
+# )
+# bm_2_1$degree <- bm_2_2$degree <- bm_2_inf$degree <- 2
+# bm_2_1$p <- 1; bm_2_2$p <- 2; bm_2_inf$p <- Inf
+# plot
+bm_large <- rbind(
+  bm_0_1, bm_0_2, bm_0_inf,
+  bm_1_1, bm_1_2, bm_1_inf#,
+  # bm_2_1, bm_2_2, bm_2_inf
+)
+ggplot2::autoplot(bm_large, type = "violin") +
+  ggplot2::labs(x = NULL, y = NULL)
+```
+
+```{r benchmark phutil and TDA on large PDs experimental, include=FALSE}
+#| fig.width=6, fig.height=3, fig.align='center',
+#| fig.cap=
+#| "\\label{fig:benchmark-large}
+#|  Benchmark comparison of Dionysus via {TDA} and Hera via {phutil}
+#|  on large persistence diagrams:
+#|  Violin plots of runtime distributions on a common scale."
+# TODO: Write `as.matrix()` method for "persistence" class.
+# TODO: Write `as_diagram()` function for "persistence" objects.
+# FIXME: Ensure that empty PDs (degree-2) are handled correctly.
+PD1_ <- as.matrix(as.data.frame(PD1)); PD2_ <- as.matrix(as.data.frame(PD2))
+# apply over degrees
+# TODO: Switch to `seq(0, 2)` once empty diagrams are handled correctly.
+bm_large <- lapply(seq(0, 1), function(deg) {
+  bm_1 <- bench::mark(
+    TDA = wasserstein(PD1_, PD2_, dimension = deg, p = 1),
+    phutil = wasserstein_distance(PD1, PD2, dimension = deg, p = 1, tol = 1e-8)
+  )
+  bm_2 <- bench::mark(
+    TDA = sqrt(wasserstein(PD1_, PD2_, dimension = deg, p = 2)),
+    phutil = wasserstein_distance(PD1, PD2, dimension = deg, p = 2, tol = 1e-8)
+  )
+  bm_inf <- bench::mark(
+    TDA = bottleneck(PD1_, PD2_, dimension = deg),
+    phutil = bottleneck_distance(PD1, PD2, dimension = deg, tol = 1e-8)
+  )
+  bm_1$degree <- bm_2$degree <- bm_inf$degree <- deg
+  bm_1$p <- 1; bm_2$p <- 2; bm_inf$p <- Inf
+  rbind(bm_1, bm_2, bm_inf)
+})
+bm_large <- do.call(rbind, bm_large)
+# plot
+ggplot2::autoplot(bm_large, type = "violin") +
+  ggplot2::labs(x = NULL, y = NULL)
 ```
