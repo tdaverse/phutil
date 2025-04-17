@@ -42,12 +42,11 @@ In the limit $p \to \infty$, this expression approaches the following auxiliary 
 $$D_\infty(x,y) = \max_{i=1}^{n}{\lvert x_i - y_i \rvert}$$
 As the parameter $p$ ranges between $1$ and $\infty$, three of its values yield familiar distance metrics: The taxicab distance $D_1$, the Pythagorean distance $D_2$, and the Chebyshev distance $D_\infty$.
 
-The _Kantorovich_ or _Wasserstein metric_[^wasserstein] derives from the problem of optimal transport: What is the minimum cost of relocating one distribution to another?[^kantorovich]
+The _Kantorovich_ or _Wasserstein metric_[^wasserstein] derives from the problem of optimal transport: What is the minimum cost of relocating one distribution to another?
 In the space of persistence diagrams, only finitely many points lie off the diagonal, though every point on the diagonal is taken to be included with multiplicity $\mathbb{N}$.
 So the cost of relocating one diagram $X$ to another $Y$ amounts to (a) the cost of relocating some off-diagonal points to other off-diagonal points plus (b) the cost of relocating the remaining off-diagonal points to the diagonal (and vice-versa).
 
 [^wasserstein]: <https://en.wikipedia.org/wiki/Wasserstein_metric>
-[^kantorovich]: TODO: With time, this more appropriate attribution may become more common. I'd like to at least provide an alias function `kantorovich_distance()` to help that process along.
 
 This cost then depends entirely on how the off-diagonal points are matched, where a _matching_ is any bijective map $\varphi : X \to Y$, though in practice we assume that almost all diagonal points are matched to themselves and incur no cost.
 The cost $D(x,\varphi(x))$ of relocating a point $x$ to its matched point $\varphi(x)$ is typically taken to be a Minkowski distance $D_q(x,\varphi(x)) = \lVert x - \varphi(x) \rVert_q$, while the total cost of the relocation is taken to be the $\ell_p$ norm $\lVert ( D(x,\varphi(x)) )_{x \in X} \rVert_p$ of the vector of matched-point distances.
