@@ -205,8 +205,6 @@ bottleneck(Z, W, dimension = 2)
 
 **REVIEW:** Is it helpful to benchmark on the small data? We're probably picking up differences in data conversion rather than in the algorithms.
 
-**TODO:** Instead of repeating a single calculation, generate random small PDs and benchmark computations on the lot of them?
-
 To illustrate the benchmarking process, and to have a small-scale example against which to compare the large(r)-scale results, we use the first example above.
 We define new objects for the `cbind()` operations to prevent them from inflating the {TDA} runtimes.
 
@@ -268,8 +266,6 @@ PDs2 <- lapply(seq(n), function(i) {
 
 
 ```{r benchmark phutil and TDA on large PDs original, include=FALSE}
-# TODO: Write `as.matrix()` method for "persistence" class.
-# TODO: Write `as_diagram()` function for "persistence" objects.
 # FIXME: Ensure that empty PDs are handled correctly.
 PD1_ <- as.matrix(as.data.frame(PD1)); PD2_ <- as.matrix(as.data.frame(PD2))
 bench::mark(
