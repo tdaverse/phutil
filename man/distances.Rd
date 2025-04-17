@@ -4,11 +4,14 @@
 \alias{distances}
 \alias{bottleneck_distance}
 \alias{wasserstein_distance}
+\alias{kantorovich_distance}
 \title{Distances between two persistence diagrams}
 \usage{
 bottleneck_distance(x, y, tol = 1e-04, validate = TRUE, dimension = 0L)
 
 wasserstein_distance(x, y, tol = 1e-04, p = 1, validate = TRUE, dimension = 0L)
+
+kantorovich_distance(x, y, tol = 1e-04, p = 1, validate = TRUE, dimension = 0L)
 }
 \arguments{
 \item{x}{Either a matrix of shape \eqn{n \times 2} or an object of class
@@ -63,6 +66,9 @@ the limit \eqn{p \to \infty}, the Wasserstein distance becomes the
 \emph{bottleneck distance}:
 
 \deqn{B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
+
+The Wasserstein metric is also called the Kantorovich metric in recognition
+of the originator of the metric.
 }
 \examples{
 bottleneck_distance(
