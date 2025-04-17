@@ -13,6 +13,7 @@
 \alias{print.persistence}
 \alias{format.persistence}
 \alias{get_pairs}
+\alias{as.matrix.persistence}
 \alias{as.data.frame.persistence}
 \title{An \code{S3} class for storing persistence data}
 \usage{
@@ -37,6 +38,8 @@ as_persistence(x, warn = TRUE, ...)
 \method{format}{persistence}(x, ...)
 
 get_pairs(x, dimension, ...)
+
+\method{as.matrix}{persistence}(x, ...)
 
 \method{as.data.frame}{persistence}(x, row.names = NULL, optional = TRUE, ...)
 }

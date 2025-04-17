@@ -158,14 +158,54 @@ as_persistence.data.frame <- function(x, warn = TRUE, ...) {
   if (!all(c("dimension", "birth", "death") %in% colnames(x))) {
     cli::cli_abort("The data frame must have columns named {.var dimension}, {.var birth} and {.var death}.")
   }
-  x <- split_df_by_dimension(x)
+
+  # ensure usable integer dimensions
+  x$dimension <- as.integer(x$dimension)
+  if (any(x$dimension) < 0L | is.infinite(x$dimension) | is.na(x$dimension)) {
+    cli::cli_warn("Negative, infinite, and missing dimensions will be omitted.")
+    x <- x[x$dimension >= 0L & is.finite(x$dimension) & ! is.na(dimension), ,
+           drop = FALSE]
+  }
+  deg_max <- max(x$dimension)
+
+  # split and matrify
+  # TODO: Benchmark against refactor using `split()` options.
+  x <- base::split(x, x$dimension)
+  x <- lapply(
+    x,
+    function(.x) .x <- unname(as.matrix(.x))[, seq(2L, 3L), drop = FALSE]
+  )
+
+  # insert matrices for any missing degrees
+  deg_miss <- setdiff(seq(0L, deg_max), as.integer(names(x)))
+  if (length(deg_miss) > 0L) {
+    x[as.character(deg_miss)] <-
+      replicate(length(deg_miss), matrix(NA_real_, nrow = 0L, ncol = 2L))
+    x <- x[order(as.integer(names(x)))]
+  }
+
   as_persistence(x, warn = warn, ...)
 }
 
 #' @rdname persistence
 #' @export
 as_persistence.matrix <- function(x, warn = TRUE, ...) {
-  x <- as.data.frame(x)
+  if (ncol(x) != 3L) {
+    cli::cli_abort("The matrix must have 3 columns.")
+  }
+
+  deg_int <- as.integer(x[, 1L])
+  deg_max <- max(deg_int)
+
+  x <- lapply(split(x[, c(2L, 3L)], x[, 1L]), matrix, ncol = 2L)
+
+  deg_miss <- setdiff(seq(0L, deg_max), deg_int)
+  if (length(deg_miss) > 0L) {
+    x[as.character(deg_miss)] <-
+      replicate(length(deg_miss), matrix(NA_real_, nrow = 0L, ncol = 2L))
+    x <- x[order(as.integer(names(x)))]
+  }
+
   as_persistence(x, warn = warn, ...)
 }
 
@@ -291,6 +331,22 @@ get_pairs <- function(x, dimension, ...) {
   } else {
     matrix(NA_real_, nrow = 0L, ncol = 2L)
   }
+}
+
+#' @rdname persistence
+#' @export
+as.matrix.persistence <- function(x, ...) {
+  if (length(x$pairs) == 0L) {
+    res <- matrix(NA_real_, nrow = 0L, ncol = 3L)
+  } else {
+    res <- mapply(
+      function(...) { suppressWarnings(cbind(...)) },
+      seq_along(x$pairs) - 1L, x$pairs
+    )
+    res <- do.call(rbind, res)
+  }
+  colnames(res) <- c("dimension", "birth", "death")
+  return(res)
 }
 
 #' @rdname persistence
