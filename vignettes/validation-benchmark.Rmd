@@ -304,7 +304,6 @@ bench::mark(
 
 ```{r benchmark phutil and TDA on large PDs}
 # TODO: Write `as.matrix()` method for "persistence" class.
-# TODO: Write `as_diagram()` function for "persistence" objects.
 # FIXME: Ensure that empty PDs are handled correctly.
 PDs1_ <- lapply(lapply(PDs1, as.data.frame), as.matrix)
 PDs2_ <- lapply(lapply(PDs2, as.data.frame), as.matrix)
