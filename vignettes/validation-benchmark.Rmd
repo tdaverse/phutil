@@ -34,7 +34,7 @@ We will also use the {tdaunif} package to generate larger point clouds and the {
 _Persistence diagrams_ are multisets (sets with multiplicity) of points in the plane that encode the interval decompositions of persistent modules obtained from filtrations of data (e.g. Vietoris--Rips filtrations of point clouds and cubical filtrations of numerical arrays).
 Most applications consider only ordinary persistent homology, so that all points live in the upper-half plane; and most involve non-negative-valued filtrations, so that all points live in the first quadrant. The examples in this vignette will be no exceptions.
 
-We'll distinguish between persistence diagrams, which encode persistent homology of a single degree, and _persistence data_, which comprises persistent pairs of many degrees (and annotated as such). Whereas a diagram is typically represented as a 2-column matrix with columns for birth and death values, data are typically represented as a 3-column matrix with an additional column for (whole number) degrees.
+We'll distinguish between persistence diagrams, which encode usually encode one degree of a persistence module, and _persistence data_, which comprises persistent pairs of many degrees (and annotated as such). Whereas a diagram is typically represented as a 2-column matrix with columns for birth and death values, data are typically represented as a 3-column matrix with an additional column for (whole number) degrees.
 
 The most common distance metrics between persistence diagrams exploit the family of _Minkowski distances_ $D_p$ between points in $\mathbb{R}^n$ defined, for $1 \leq p < \infty$, as follows:
 $$D_p(x,y) = \left(\sum_{i=1}^{n}{(x_i - y_i)^p}\right)^{1/p}$$
@@ -45,18 +45,23 @@ As the parameter $p$ ranges between $1$ and $\infty$, three of its values yield 
 The _Kantorovich_ or _Wasserstein metric_[^wasserstein] derives from the problem of optimal transport: What is the minimum cost of relocating one distribution to another?
 In the space of persistence diagrams, only finitely many points lie off the diagonal, though every point on the diagonal is taken to be included with multiplicity $\mathbb{N}$.
 So the cost of relocating one diagram $X$ to another $Y$ amounts to (a) the cost of relocating some off-diagonal points to other off-diagonal points plus (b) the cost of relocating the remaining off-diagonal points to the diagonal (and vice-versa).
+This cost then depends entirely on how the off-diagonal points are matched, where a _matching_ is any bijective map $\varphi : X \to Y$, though in practice we assume that almost all diagonal points are matched to themselves and incur no cost.
 
 [^wasserstein]: <https://en.wikipedia.org/wiki/Wasserstein_metric>
 
-This cost then depends entirely on how the off-diagonal points are matched, where a _matching_ is any bijective map $\varphi : X \to Y$, though in practice we assume that almost all diagonal points are matched to themselves and incur no cost.
-The cost $D(x,\varphi(x))$ of relocating a point $x$ to its matched point $\varphi(x)$ is typically taken to be a Minkowski distance $D_q(x,\varphi(x)) = \lVert x - \varphi(x) \rVert_q$, while the total cost of the relocation is taken to be the $\ell_p$ norm $\lVert ( D(x,\varphi(x)) )_{x \in X} \rVert_p$ of the vector of matched-point distances.
-This yields the formulae
-$$W_{q,p}(X,Y) = \inf_{\varphi : X \to Y}{\left( \sum_{x \in X}{{\lVert x-\varphi(x) \rVert_q}^p} \right)^{1/p}}$$
-for $p < \infty$ and
-$$W_{q,\infty}(X,Y) = \inf_{\varphi : X \to Y}{\max_{x \in X}{\lVert x-\varphi(x) \rVert_q}}$$
-for $p = \infty$.[^indexing]
+The cost $D(x,\varphi(x))$ of relocating a point $x$ to its matched point $\varphi(x)$ is typically taken to be a Minkowski distance $D_q(x,\varphi(x)) = \lVert x - \varphi(x) \rVert_q$, defined by the $L^q$ norm on $\mathbb{R}^2$.
+(While simple, this geometric treatment elides that the points in the plane encode the collection of interval modules into which the persistence module decomposes.
+Other metrics have been proposed for this space, but we restrict to this family here.)
 
-[^indexing]: What is the preferred notation for this two-parameter family? Wikipedia uses $W_p[L_q](X,Y)$, but i have not seen that in the literature (yet).
+The total cost of the relocation is canonically taken to be the Minkowski distance $\left( \sum_{x \in X}{D(x,\varphi(x))^p} \right)^{1/p}$ of the vector of matched-point distances.
+The Wasserstein distance is defined to be the infimum of this value over all possible matches.
+This yields the formulae
+$$W_p^q(X,Y) = \inf_{\varphi : X \to Y}{\left( \sum_{x \in X}{{\lVert x-\varphi(x) \rVert_q}^p} \right)^{1/p}}$$
+for $p < \infty$ and
+$$W_\infty^q(X,Y) = \inf_{\varphi : X \to Y}{\max_{x \in X}{\lVert x-\varphi(x) \rVert_q}}$$
+for $p = \infty$.
+
+See [Cohen-Steiner &al (2010)](https://doi.org/10.1007/s10208-010-9060-6) and [Bubenik &al (2023)](https://doi.org/10.1007/s41468-022-00103-8) for detailed treatments and stability results on these families of metrics.
 
 ## Validation
 
@@ -101,11 +106,11 @@ par(mar = c(5, 4, 4, 2) + .1)
 ```
 
 Based on these observations, we get this expression for the Wasserstein distance using the $q$-norm half-plane metric and the $p$-norm "matched space" metric:
-$$W_{q,p}(X,Y) = ( {\lVert a \rVert_q}^p + {\lVert b \rVert_q}^p )^{1/p}$$
+$$W_p^q(X,Y) = ( {\lVert a \rVert_q}^p + {\lVert b \rVert_q}^p )^{1/p}$$
 where $a = (1,-1)$ and $b = (0,-1)$ are the vectors between matched points.
 We can now calculate Wasserstein distances "by hand"; we'll consider those using the half-plane Minkowski metrics with $q=1,2,\infty$ and the "matched space" metrics with $p=1,2,\infty$.
 
-First, with $q=1$, we get $\lVert a \rVert_q = 1+1=2$ and $\lVert b \rVert_q = 0+1=1$. So the $1,p$-Wasserstein distance will be the $p$-Minkowski norm of the vector $(2,1)$, given by $W_{1,p}(X,Y) = (2^p + 1^p)^{1/p}$. This nets us the values $W_{1,1}(X,Y) = 3$ and $W_{1,2}(X,Y) = \sqrt{5}$. And then $W_{1,\infty}(X,Y) = \max(2,1) = 2$.
+First, with $q=1$, we get $\lVert a \rVert_q = 1+1=2$ and $\lVert b \rVert_q = 0+1=1$. So the $1,p$-Wasserstein distance will be the $p$-Minkowski norm of the vector $(2,1)$, given by $W_p^1(X,Y) = (2^p + 1^p)^{1/p}$. This nets us the values $W_1^1(X,Y) = 3$ and $W_2^1(X,Y) = \sqrt{5}$. And then $W_\infty^1(X,Y) = \max(2,1) = 2$.
 The reader is invited to complete the rest of Table \ref{tab:small}.
 
 ```{=latex}
@@ -115,11 +120,11 @@ The reader is invited to complete the rest of Table \ref{tab:small}.
                & $\lVert a \rVert$ & $\lVert b-x \rVert$ &
          $W_1$ &      $W_2$        &  $W_\infty$         \\
 \hline
-$\ell_1$       &        $2$        &         $1$         &
+$L^1$       &        $2$        &         $1$         &
            $3$ & $\sqrt{5}$        &         $2$         \\
-$\ell_2$       & $\sqrt{2}$        &         $1$         &
+$L^2$       & $\sqrt{2}$        &         $1$         &
 $1 + \sqrt{2}$ & $\sqrt{3}$        &  $\sqrt{2}$         \\
-$\ell_\infty$  &        $1$        &         $1$         &
+$L^\infty$  &        $1$        &         $1$         &
            $2$ & $\sqrt{2}$        &         $1$         \\
 \end{tabular}
 \caption{\label{tab:small}Distances between optimally paired features and Wasserstein distances between $X$ and $Y$ for several choices of half-plane and ``matched space'' metrics.}
@@ -127,7 +132,7 @@ $\ell_\infty$  &        $1$        &         $1$         &
 ```
 
 The results make intuitive sense; for example, the values change monotonically along each row and column.
-Let us now validate the bottom row---using the $\ell_\infty$ distance on the half-plane, giving the popular _bottleneck distance_---using both Hela, as exposed through {phutil}, and Dionysus, as exposed through {TDA}:
+Let us now validate the bottom row---using the $L^\infty$ distance on the half-plane, giving the popular _bottleneck distance_---using both Hela, as exposed through {phutil}, and Dionysus, as exposed through {TDA}:
 
 ```{r validate small PDs with Hera}
 # TODO: Change default to `tol = 1e-8`.
@@ -149,7 +154,7 @@ bottleneck(cbind(0, X), cbind(0, Y), dimension = 0)
 
 An important edge case is when one persistence diagram is trivial, i.e. contains only the diagonal so is "empty" of off-diagonal points.
 This can occur unexpectedly in comparisons of persistence data, as the data may be large but higher-degree features present in one set but absent in another.
-To validate the distances in this case, we create an empty diagram $E$ and use the same code to compare it to $X$. The point $(3,5)$ of $X$ will be matched to the diagonal $(4,4)$, which yields the same $\infty$-distance $1$ so the $\ell_\infty$ Wasserstein distances will be the same as before.
+To validate the distances in this case, we create an empty diagram $E$ and use the same code to compare it to $X$. The point $(3,5)$ of $X$ will be matched to the diagonal $(4,4)$, which yields the same $\infty$-distance $1$ so the $L^\infty$ Wasserstein distances will be the same as before.
 
 ```{r validate small PD vs empty}
 # empty PD
