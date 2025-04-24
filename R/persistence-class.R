@@ -156,7 +156,9 @@ as_persistence.data.frame <- function(x, warn = TRUE, ...) {
     cli::cli_abort("The data frame must have 3 columns.")
   }
   if (!all(c("dimension", "birth", "death") %in% colnames(x))) {
-    cli::cli_abort("The data frame must have columns named {.var dimension}, {.var birth} and {.var death}.")
+    cli::cli_abort(
+      "The data frame must have columns named {.var dimension}, {.var birth} and {.var death}."
+    )
   }
   x <- split_df_by_dimension(x)
   as_persistence(x, warn = warn, ...)
@@ -179,7 +181,11 @@ as_persistence.diagram <- function(x, warn = TRUE, ...) {
   }
   params <- list(
     data = info$call$X,
-    engine = paste0(rlang::call_ns(info$call), "::", rlang::call_name(info$call)),
+    engine = paste0(
+      rlang::call_ns(info$call),
+      "::",
+      rlang::call_name(info$call)
+    ),
     filtration = filt_nm,
     call = info$call
   )
@@ -214,7 +220,6 @@ as_persistence.PHom <- function(x, ...) {
 #' @rdname persistence
 #' @export
 as_persistence.hclust <- function(x, warn = TRUE, birth = NULL, ...) {
-
   if (is.null(birth)) {
     birth <- if (min(x$height) < 0) -Inf else 0
   }
@@ -260,9 +265,13 @@ format.persistence <- function(x, ...) {
 
   cli::cli_format_method({
     cli::cli_h1("Persistence Data")
-    cli::cli_alert_info('There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim) - 1L} respectively.')
+    cli::cli_alert_info(
+      'There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim) - 1L} respectively.'
+    )
     if (filt_nm == "?" && x$metadata$engine == "?") {
-      cli::cli_alert_warning("Both filtration and computation engine are unknown.")
+      cli::cli_alert_warning(
+        "Both filtration and computation engine are unknown."
+      )
     } else if (filt_nm == "?") {
       cli::cli_alert_info("Computed using {.fn {x$metadata$engine}}.")
       cli::cli_alert_warning("Filtration is unknown.")
@@ -270,7 +279,9 @@ format.persistence <- function(x, ...) {
       cli::cli_alert_info("Computed from a {filt_nm} filtration.")
       cli::cli_alert_warning("Computation engine is unknown.")
     } else {
-      cli::cli_alert_info("Computed from a {filt_nm} filtration using {.fn {x$metadata$engine}}.")
+      cli::cli_alert_info(
+        "Computed from a {filt_nm} filtration using {.fn {x$metadata$engine}}."
+      )
     }
     if (is.null(param_nms)) {
       cli::cli_alert_warning("With unknown parameters.")
@@ -295,10 +306,12 @@ get_pairs <- function(x, dimension, ...) {
 
 #' @rdname persistence
 #' @export
-as.data.frame.persistence <- function(x,
-                                      row.names = NULL,
-                                      optional = TRUE,
-                                      ...) {
+as.data.frame.persistence <- function(
+  x,
+  row.names = NULL,
+  optional = TRUE,
+  ...
+) {
   npts <- sapply(x$pairs, nrow)
   dimension <- rep(seq_along(x$pairs) - 1L, npts)
   pairs <- Reduce(rbind, x$pairs)
