@@ -135,14 +135,14 @@ The results make intuitive sense; for example, the values change monotonically a
 Let us now validate the bottom row---using the $L^\infty$ distance on the half-plane, giving the popular _bottleneck distance_---using both Hela, as exposed through {phutil}, and Dionysus, as exposed through {TDA}:
 
 ```{r validate small PDs with Hera}
-# TODO: Change default to `tol = 1e-8`.
+# TODO: Remove explicit tolerance specification once default is shrunk (#32).
 wasserstein_distance(X, Y, p = 1, tol = 1e-8)
 wasserstein_distance(X, Y, p = 2, tol = 1e-8)
 bottleneck_distance(X, Y, tol = 1e-8)
 ```
 
 In order to compute distances with {TDA}, we must restructure the PDs to include a `"dimension"` column.
-Note also that `TDA::wasserstein()` does not take the $1/p$th power after computing the sum of $p$th powers; we do this manually to get consistent results:
+Note also that `TDA::wasserstein()` does not take the $1/p$th power after computing the sum of $p$th powers; we do this manually to get comparable results:
 
 ```{r validate small PDs with Dionysus}
 wasserstein(cbind(0, X), cbind(0, Y), p = 1, dimension = 0)
@@ -205,53 +205,12 @@ bottleneck(Z, W, dimension = 2)
 
 ## Benchmarks
 
-### Distances between small diagrams
-
-**REVIEW:** Is it helpful to benchmark on the small data? We're probably picking up differences in data conversion rather than in the algorithms.
-
-To illustrate the benchmarking process, and to have a small-scale example against which to compare the large(r)-scale results, we use the first example above.
-We define new objects for the `cbind()` operations to prevent them from inflating the {TDA} runtimes.
-
-```{r benchmark phutil and TDA on small PDs}
-#| fig.width=6, fig.height=2, fig.align='center',
-#| fig.cap=
-#| "\\label{fig:benchmark-small}
-#|  Benchmark comparison of Dionysus via {TDA} and Hera via {phutil}
-#|  on small persistence diagrams:
-#|  Violin plots of runtime distributions on a common scale."
-X_ <- cbind(0, X); Y_ <- cbind(0, Y)
-bm_1 <- bench::mark(
-  TDA = wasserstein(X_, Y_, dimension = 0, p = 1),
-  phutil = wasserstein_distance(X, Y, p = 1, tol = 1e-8)
-)
-bm_2 <- bench::mark(
-  TDA = sqrt(wasserstein(X_, Y_, dimension = 0, p = 2)),
-  phutil = wasserstein_distance(X, Y, p = 2, tol = 1e-8)
-)
-bm_inf <- bench::mark(
-  TDA = bottleneck(X_, Y_, dimension = 0),
-  phutil = bottleneck_distance(X, Y, tol = 1e-8)
-)
-bm_1$p <- 1; bm_2$p <- 2; bm_inf$p <- Inf
-ggplot2::autoplot(rbind(bm_1, bm_2, bm_inf), type = "violin") +
-  ggplot2::labs(x = NULL, y = NULL)
-```
-
-{TDA} clearly outperforms {phutil} on these cases.
-Moreover, though both implementations take longer to compute bottleneck distances, {phutil} runtimes are more substantially lengthened.
-
-### Distances between large(r) diagrams
-
-For a larger-scale test, we compute PDs from point clouds sampled with noise from two one-dimensional manifolds embedded in $\mathbb{R}^3$: the circle as a trefoil knot and the segment as a two-armed archimedian spiral.
+For a straightforward benchmark test, we compute PDs from point clouds sampled with noise from two one-dimensional manifolds embedded in $\mathbb{R}^3$: the circle as a trefoil knot and the segment as a two-armed archimedian spiral.
 To prevent the results from being sensitive to an accident of a single sample, we generate lists of 24 samples and benchmark only one iteration of each function on each.
 
-```{r compute large PDs current, include=FALSE}
-set.seed(28415)
-S1 <- tdaunif::sample_trefoil(n = 120, sd = .05)
-PD1 <- as_persistence(ripsDiag(S1, maxdimension = 2, maxscale = 6))
-S2 <- tdaunif::sample_arch_spiral(n = 120, arms = 2, sd = .05)
-PD2 <- as_persistence(ripsDiag(S2, maxdimension = 2, maxscale = 6))
-```
+**TODO:** Compute these PDs and save the results rather than generate them fresh. I think this can be done specifically for the vignette, i.e. without making the results an installed data set. I tried caching results[^cache] but could not get it to work.
+
+[^cache]: <https://yihui.org/knitr/options/#cache>
 
 ```{r compute large PDs}
 set.seed(28415)
@@ -267,133 +226,69 @@ PDs2 <- lapply(seq(n), function(i) {
 })
 ```
 
+Both implementations are used to compute distances between successive pairs of diagrams.
+The computations are annotated by homological degree and Wasserstein power so that these results can be compared separately.
 
-
-```{r benchmark phutil and TDA on large PDs original, include=FALSE}
-# FIXME: Ensure that empty PDs are handled correctly.
-PD1_ <- as.matrix(as.data.frame(PD1)); PD2_ <- as.matrix(as.data.frame(PD2))
-bench::mark(
-  TDA = {
-    c(
-      wasserstein(PD1_, PD2_, dimension = 0, p = 1),
-      sqrt(wasserstein(PD1_, PD2_, dimension = 0, p = 2)),
-      bottleneck(PD1_, PD2_, dimension = 0),
-      wasserstein(PD1_, PD2_, dimension = 1, p = 1),
-      sqrt(wasserstein(PD1_, PD2_, dimension = 1, p = 2)),
-      bottleneck(PD1_, PD2_, dimension = 1)#,
-      # wasserstein(PD1_, PD2_, dimension = 2, p = 1),
-      # sqrt(wasserstein(PD1_, PD2_, dimension = 2, p = 2)),
-      # bottleneck(PD1_, PD2_, dimension = 2)
-    )
-  },
-  phutil = {
-    c(
-      wasserstein_distance(PD1, PD2, dimension = 0, p = 1, tol = 1e-8),
-      wasserstein_distance(PD1, PD2, dimension = 0, p = 2, tol = 1e-8),
-      bottleneck_distance(PD1, PD2, dimension = 0, tol = 1e-8),
-      wasserstein_distance(PD1, PD2, dimension = 1, p = 1, tol = 1e-8),
-      wasserstein_distance(PD1, PD2, dimension = 1, p = 2, tol = 1e-8),
-      bottleneck_distance(PD1, PD2, dimension = 1, tol = 1e-8)#,
-      # wasserstein_distance(PD1, PD2, dimension = 2, p = 1, tol = 1e-8),
-      # wasserstein_distance(PD1, PD2, dimension = 2, p = 2, tol = 1e-8),
-      # bottleneck_distance(PD1, PD2, dimension = 2, tol = 1e-8)
-    )
-  }
-)
-```
-
-```{r benchmark phutil and TDA on large PDs}
-# TODO: Write `as.matrix()` method for "persistence" class.
-# FIXME: Ensure that empty PDs are handled correctly.
+```{r benchmark phutil and TDA}
+# FIXME: Ensure that empty PDs (dimension 2 below) are handled correctly.
 PDs1_ <- lapply(lapply(PDs1, as.data.frame), as.matrix)
 PDs2_ <- lapply(lapply(PDs2, as.data.frame), as.matrix)
-# degree-0
-bm_0_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-  bench::mark(
-    TDA = wasserstein(PDs1_[[i]], PDs2_[[i]], dimension = 0, p = 1),
-    phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]], dimension = 0, p = 1, tol = 1e-8),
-    iterations = 1
-  )
-}))
-bm_0_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-  bench::mark(
-    TDA = sqrt(wasserstein(PDs1_[[i]], PDs2_[[i]], dimension = 0, p = 2)),
-    phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]], dimension = 0, p = 2, tol = 1e-8),
-    iterations = 1
-  )
-}))
-bm_0_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-  bench::mark(
-    TDA = bottleneck(PDs1_[[i]], PDs2_[[i]], dimension = 0),
-    phutil = bottleneck_distance(PDs1[[i]], PDs2[[i]], dimension = 0, tol = 1e-8),
-    iterations = 1
-  )
-}))
-bm_0_1$degree <- bm_0_2$degree <- bm_0_inf$degree <- 0
-bm_0_1$p <- 1; bm_0_2$p <- 2; bm_0_inf$p <- Inf
-# degree-1
-bm_1_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-  bench::mark(
-    TDA = wasserstein(PDs1_[[i]], PDs2_[[i]], dimension = 1, p = 1),
-    phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]], dimension = 1, p = 1, tol = 1e-8),
-    iterations = 1
-  )
-}))
-bm_1_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-  bench::mark(
-    TDA = sqrt(wasserstein(PDs1_[[i]], PDs2_[[i]], dimension = 1, p = 2)),
-    phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]], dimension = 1, p = 2, tol = 1e-8),
-    iterations = 1
-  )
-}))
-bm_1_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-  bench::mark(
-    TDA = bottleneck(PDs1_[[i]], PDs2_[[i]], dimension = 1),
-    phutil = bottleneck_distance(PDs1[[i]], PDs2[[i]], dimension = 1, tol = 1e-8),
-    iterations = 1
-  )
-}))
-bm_1_1$degree <- bm_1_2$degree <- bm_1_inf$degree <- 1
-bm_1_1$p <- 1; bm_1_2$p <- 2; bm_1_inf$p <- Inf
-# # degree-2
-# bm_2_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-#   bench::mark(
-#     TDA = wasserstein(PDs1_[[i]], PDs2_[[i]], dimension = 2, p = 1),
-#     phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]], dimension = 2, p = 1, tol = 1e-8),
-#     iterations = 1
-#   )
-# }))
-# bm_2_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-#   bench::mark(
-#     TDA = sqrt(wasserstein(PDs1_[[i]], PDs2_[[i]], dimension = 2, p = 2)),
-#     phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]], dimension = 2, p = 2, tol = 1e-8),
-#     iterations = 1
-#   )
-# }))
-# bm_2_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-#   bench::mark(
-#     TDA = bottleneck(PDs1_[[i]], PDs2_[[i]], dimension = 2),
-#     phutil = bottleneck_distance(PDs1[[i]], PDs2[[i]], dimension = 2, tol = 1e-8),
-#     iterations = 1
-#   )
-# }))
-# bm_2_1$degree <- bm_2_2$degree <- bm_2_inf$degree <- 2
-# bm_2_1$p <- 1; bm_2_2$p <- 2; bm_2_inf$p <- Inf
-# collate
-bm_large <- rbind(
-  bm_0_1, bm_0_2, bm_0_inf,
-  bm_1_1, bm_1_2, bm_1_inf#,
-  # bm_2_1, bm_2_2, bm_2_inf
-)
+# iterate over homological degrees and Wasserstein powers
+bm_all <- list()
+PDs_i <- seq_along(PDs1)
+# FIXME: Replace with `seq(0, 2)` once bugs are resolved.
+for (dimension in seq(0, 1)) {
+  # compute
+  bm_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
+    bench::mark(
+      TDA = wasserstein(PDs1_[[i]], PDs2_[[i]],
+                        dimension = dimension, p = 1),
+      phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]],
+                                    dimension = dimension, p = 1, tol = 1e-8),
+      iterations = 1
+    )
+  }))
+  bm_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
+    bench::mark(
+      TDA = sqrt(wasserstein(PDs1_[[i]], PDs2_[[i]],
+                             dimension = dimension, p = 2)),
+      phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]],
+                                    dimension = dimension, p = 2, tol = 1e-8),
+      iterations = 1
+    )
+  }))
+  bm_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
+    bench::mark(
+      TDA = bottleneck(PDs1_[[i]], PDs2_[[i]],
+                       dimension = dimension),
+      phutil = bottleneck_distance(PDs1[[i]], PDs2[[i]],
+                                   dimension = dimension, tol = 1e-8),
+      iterations = 1
+    )
+  }))
+  # annotate
+  bm_1$power <- 1; bm_2$power <- 2; bm_inf$power <- Inf
+  # combine
+  bm_res <- rbind(bm_1, bm_2, bm_inf)
+  bm_res$degree <- dimension
+  # collate
+  bm_all <- c(bm_all, list(bm_res))
+}
+bm_all <- do.call(rbind, bm_all)
 ```
+
+Figure \ref{fig:benchmark} compares the distributions of runtimes by homological degree (column) and Wasserstein power (row).
+We note that Dionysus via {TDA} clearly outperforms Hera via {phutil} on degree-1 and -2 PDs, which in these cases have many fewer features.
+However, the tables are turned in degree 0, in which the PDs have many more features.
+While by no means exhaustive and not necessarily representative, these results suggest that Hera via {phutil} scales more efficiently than Dionysus via {TDA} and should therefore be preferred for projects involving more feature-rich data sets.
 
 ```{r visualize large PDs benchmark}
 #| fig.width=6, fig.height=3, fig.align='center',
 #| fig.cap=
-#| "\\label{fig:benchmark-large}
-#|  Benchmark comparison of Dionysus via {TDA} and Hera via {phutil}
+#| "\\label{fig:benchmark}
+#|  Benchmark comparison of Dionysus via \\{TDA\\} and Hera via \\{phutil\\}
 #|  on large persistence diagrams:
 #|  Violin plots of runtime distributions on a common scale."
-ggplot2::autoplot(bm_large, type = "violin") +
+ggplot2::autoplot(bm_all, type = "violin") +
   ggplot2::labs(x = NULL, y = NULL)
 ```
