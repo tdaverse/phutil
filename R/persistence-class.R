@@ -101,10 +101,6 @@ as_persistence.list <- function(x, warn = TRUE, ...) {
 
   # Handle persistence data stored in `x`
 
-  if (length(x) == 0L) {
-    cli::cli_abort("The list is empty.")
-  }
-
   valid_elements <- sapply(
     x,
     function(.x) check_2column_matrix(.x, warn = warn)
@@ -172,6 +168,10 @@ as_persistence.data.frame <- function(x, warn = TRUE, ...) {
     )
   }
 
+  if (nrow(x) == 0L) {
+    as_persistence(list(), ...)
+  }
+
   # ensure usable integer dimensions
   x$dimension <- as.integer(x$dimension)
   useful_dimensions <- x$dimension >= 0L &
@@ -222,7 +222,7 @@ as_persistence.matrix <- function(x, warn = TRUE, ...) {
       "dimension",
       "birth",
       "death",
-      paste0("extra_", seq_len(n_columns - 3L))
+      if (n_columns > 3L) paste0("extra_", seq_len(n_columns - 3L))
     )
   }
 
@@ -283,7 +283,7 @@ as_persistence.hclust <- function(x, warn = TRUE, birth = NULL, ...) {
 
   if (birth > max(x$height)) {
     cli::cli_abort(
-      "The birth value ({birth}) must be less than the maximum height (max(x$height))."
+      "The birth value ({birth}) must be less than the maximum height ({max(x$height)})."
     )
   }
 
@@ -308,8 +308,10 @@ print.persistence <- function(x, ...) {
 #' @export
 format.persistence <- function(x, ...) {
   ndim <- length(x$pairs)
-  npts <- sapply(x$pairs, nrow)
-  max_npts <- max(npts)
+  if (ndim > 0L) {
+    npts <- sapply(x$pairs, nrow)
+    max_npts <- max(npts)
+  }
   param_vals <- x$metadata$parameters
   param_nms <- NULL
   if (!is.null(param_vals) && length(param_vals) > 0L) {
@@ -320,9 +322,13 @@ format.persistence <- function(x, ...) {
 
   cli::cli_format_method({
     cli::cli_h1("Persistence Data")
-    cli::cli_alert_info(
-      "There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim) - 1L} respectively."
-    )
+    if (ndim == 0L) {
+      cli::cli_alert_info("There is no pair.")
+    } else {
+      cli::cli_alert_info(
+        "There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim) - 1L} respectively."
+      )
+    }
     if (filt_nm == "?" && x$metadata$engine == "?") {
       cli::cli_alert_warning(
         "Both filtration and computation engine are unknown."
@@ -366,11 +372,11 @@ as.matrix.persistence <- function(x, ...) {
     res <- matrix(NA_real_, nrow = 0L, ncol = 3L)
   } else {
     res <- mapply(
-      function(...) {
-        suppressWarnings(cbind(...))
-      },
+      function(.x, .i) cbind(.i, .x),
+      x$pairs,
       seq_along(x$pairs) - 1L,
-      x$pairs
+      SIMPLIFY = FALSE,
+      USE.NAMES = FALSE
     )
     res <- do.call(rbind, res)
   }

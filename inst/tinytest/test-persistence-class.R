@@ -2,8 +2,6 @@ using("tinysnapshot")
 
 opts <- options(cli.width = 80)
 
-expect_error(as_persistence(list()))
-
 m <- as.matrix(noisy_circle_ripserr)
 
 mat <- as_persistence(m)
@@ -86,6 +84,7 @@ expect_equal(
 
 d <- dist(cbind(x = c(0, 3, 0), y = c(0, 0, 4)))
 hc <- hclust(d, method = "complete")
+expect_error(as_persistence(hc, birth = 6))
 hclust <- as_persistence(hc)
 expect_equal(hclust$pairs[[1]][, 1], rep(0, 3L))
 expect_snapshot_print(hclust, label = "print-hclust-persistence")
@@ -120,5 +119,39 @@ expect_message(
   as_persistence(y),
   pattern = "Negative, infinite, and missing dimensions will be omitted."
 )
+
+# Test that as_persistence() errors out if provided with a matrix with
+# less than 3 columns
+x <- matrix(1:6, ncol = 2)
+expect_error(
+  as_persistence(x),
+  pattern = "The matrix must have at least 3 columns."
+)
+
+# Test that as_persistence() correctly processes unnamed matrices
+x <- matrix(1:6, ncol = 3)
+expect_inherits(as_persistence(x), "persistence")
+
+# Test that as.matrix.persistence() works
+
+## Test that as.matrix.persistence() return 0-row matrix if no pairs are
+## present
+x <- as_persistence(list())
+expect_inherits(as.matrix(x), "matrix")
+expect_equal(nrow(as.matrix(x)), 0L)
+expect_equal(ncol(as.matrix(x)), 3L)
+expect_equal(colnames(as.matrix(x)), c("dimension", "birth", "death"))
+
+## Test that as.matrix.persistence() returns a matrix with the correct number of
+## rows and columns
+x <- as_persistence(list(
+  matrix(c(0, 1, 2, 3), ncol = 2),
+  matrix(c(0, 1, 2, 3), ncol = 2)
+))
+xm <- as.matrix(x)
+expect_inherits(xm, "matrix")
+expect_equal(xm[, "dimension"], c(0L, 0L, 1L, 1L))
+expect_equal(xm[, "birth"], c(0, 1, 0, 1))
+expect_equal(xm[, "death"], c(2, 3, 2, 3))
 
 options(opts)
