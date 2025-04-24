@@ -96,4 +96,29 @@ hc2 <- hclust(d2, method = "single")
 hclust2 <- as_persistence(hc2)
 expect_equal(hclust2$pairs[[1]][, 1], rep(-Inf, 3L))
 
+# Test that persistence is correctly structured when some degrees are missing
+x <- data.frame(
+  dimension = c(0L, 3L, 0L, 2L),
+  birth = c(0.0, 0.5, 0.2, 0.7),
+  death = c(0.5, 1.0, 0.3, 1.2),
+  morevar = c(1L, 2L, 3L, 4L)
+)
+xp <- as_persistence(x)
+expect_length(xp$pairs, 4L)
+expect_equal(sapply(xp$pairs, nrow), c(2L, 0L, 1L, 1L))
+expect_equal(sapply(xp$pairs, ncol), rep(2L, 4L))
+
+# Test that persistence complains when some "dimension" values are not whole
+# numbers
+y <- data.frame(
+  dimension = c(0L, 3L, NA, 2L),
+  birth = c(0.0, 0.5, 0.2, 0.7),
+  death = c(0.5, 1.0, 0.3, 1.2),
+  morevar = c(1L, 2L, 3L, 4L)
+)
+expect_message(
+  as_persistence(y),
+  pattern = "Negative, infinite, and missing dimensions will be omitted."
+)
+
 options(opts)

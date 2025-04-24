@@ -178,7 +178,9 @@ as_persistence.data.frame <- function(x, warn = TRUE, ...) {
     is.finite(x$dimension) &
     !is.na(x$dimension)
   if (!all(useful_dimensions)) {
-    cli::cli_warn("Negative, infinite, and missing dimensions will be omitted.")
+    cli::cli_alert_warning(
+      "Negative, infinite, and missing dimensions will be omitted."
+    )
     x <- x[useful_dimensions, , drop = FALSE]
   }
 
