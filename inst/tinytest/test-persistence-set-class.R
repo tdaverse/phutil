@@ -1,3 +1,7 @@
+using("tinysnapshot")
+
+opts <- options(cli.width = 80)
+
 # Create test data
 test_persistence <- list(
   as_persistence(list(matrix(1:4, 2, 2))),
@@ -23,3 +27,8 @@ expect_error(as_persistence_set(list(test_persistence[[1]], "not_persistence")))
 result <- as_persistence_set(test_persistence)
 expect_true("list" %in% class(result))
 expect_true("persistence_set" %in% class(result))
+
+# Test format and print methods
+expect_snapshot_print(result, label = "print-persistence-set-class")
+
+options(opts)
