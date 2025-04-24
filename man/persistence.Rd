@@ -13,6 +13,7 @@
 \alias{print.persistence}
 \alias{format.persistence}
 \alias{get_pairs}
+\alias{as.matrix.persistence}
 \alias{as.data.frame.persistence}
 \title{An \code{S3} class for storing persistence data}
 \usage{
@@ -38,6 +39,8 @@ as_persistence(x, warn = TRUE, ...)
 
 get_pairs(x, dimension, ...)
 
+\method{as.matrix}{persistence}(x, ...)
+
 \method{as.data.frame}{persistence}(x, row.names = NULL, optional = TRUE, ...)
 }
 \arguments{
@@ -47,9 +50,10 @@ object of class \code{\link{persistence}}. Currently supported forms are:
 \item a \eqn{\geq 3}-column matrix (or object coercible to one) with
 dimension/degree, start/birth and end/death columns,
 \item a list whose first element is such an object,
-\item an object of class 'PHom' as returned by \href{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}{\code{ripserr::vietoris_rips()}},
-\item (a list as returned by a \verb{*Diag()} function in \strong{TDA}
-(e.g. \href{https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag}{\code{TDA::ripsDiag()}})
+\item an object of class 'PHom' as returned by
+\href{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}{\code{ripserr::vietoris_rips()}},
+\item (a list as returned by a \verb{*Diag()} function in \strong{TDA} (e.g.
+\href{https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag}{\code{TDA::ripsDiag()}})
 whose first element is) an object of class 'diagram'.
 }}
 
@@ -93,7 +97,8 @@ second column).
 \item \code{data}: The name of the object containing the original data on which the
 persistence data was computed.
 \item \code{engine}: The name of the package and the function of this package that
-computed the persistence data in the form \code{"package_name::package_function"}.
+computed the persistence data in the form
+\code{"package_name::package_function"}.
 \item \code{filtration}: The filtration used in the computation in a human-readable
 format (i.e. full names, capitals where need, etc.).
 \item \code{parameters}: A list of parameters used in the computation.
@@ -102,14 +107,22 @@ format (i.e. full names, capitals where need, etc.).
 }
 }
 \description{
-A collection of functions to coerce persistence data into objects of class \code{\link{persistence}} (See \strong{Value} section for more details on this class). It is currently possible to coerce
-persistence data from the following sources:
+A collection of functions to coerce persistence data into objects of class
+\code{\link{persistence}} (See \strong{Value} section for more details on this class). It is
+currently possible to coerce persistence data from the following sources:
 \itemize{
 \item a matrix with at least 3 columns (dimension/degree, start/birth, end/death)
-as returned by \href{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}{\code{ripserr::vietoris_rips()}}
+as returned by
+\href{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}{\code{ripserr::vietoris_rips()}}
 in the form of the 'PHom' class,
 \item a list as returned by any \verb{*Diag()} function in the \strong{TDA} package.
 }
+}
+\details{
+\strong{Caution.} When providing an \emph{unnamed} input matrix, the matrix coercer
+assumes that it has at least 3 columns, with the first column being the
+dimension/degree, the second column being the start/birth and the third
+column being the end/death.
 }
 \examples{
 as_persistence(noisy_circle_ripserr)

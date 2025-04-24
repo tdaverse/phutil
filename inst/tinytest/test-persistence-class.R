@@ -2,11 +2,9 @@ using("tinysnapshot")
 
 opts <- options(cli.width = 80)
 
-expect_error(as_persistence(list()))
+m <- as.matrix(noisy_circle_ripserr)
 
-M <- as.matrix(noisy_circle_ripserr)
-
-mat <- as_persistence(M)
+mat <- as_persistence(m)
 expect_equal(mat$metadata$data, "?")
 expect_equal(mat$metadata$engine, "?")
 expect_equal(mat$metadata$filtration, "?")
@@ -15,18 +13,18 @@ expect_equal(mat$metadata$parameters, list())
 expect_snapshot_print(mat, label = "print-mat-persistence")
 
 params <- list(maxdimension = 1L, maxscale = 1.6322)
-mat <- as_persistence(M, engine = "ripserr::vietoris_rips", parameters = params)
+mat <- as_persistence(m, engine = "ripserr::vietoris_rips", parameters = params)
 expect_equal(mat$metadata$engine, "ripserr::vietoris_rips")
 expect_equal(mat$metadata$parameters, params)
 expect_snapshot_print(mat, label = "print-mat-persistence-engine")
 
-mat <- as_persistence(M, filtration = "vietoris-rips")
+mat <- as_persistence(m, filtration = "vietoris-rips")
 expect_equal(mat$metadata$filtration, "vietoris-rips")
 expect_snapshot_print(mat, label = "print-mat-persistence-filtration")
 
-wrong_df <- noisy_circle_ripserr
-wrong_df$morevar <- 1L
-expect_error(as_persistence(wrong_df))
+more_df <- noisy_circle_ripserr
+more_df$morevar <- 1L
+expect_true(inherits(as_persistence(more_df), "persistence"))
 
 wrong_df <- noisy_circle_ripserr
 wrong_df$dimension <- NULL
@@ -68,7 +66,7 @@ expect_snapshot_print(
 )
 
 expect_equal(ncol(get_pairs(tda_rips, dimension = 1)), 2L)
-expect_error(get_pairs(M, dimension = 1))
+expect_error(get_pairs(m, dimension = 1))
 expect_equal(nrow(get_pairs(tda_rips, dimension = 2)), 0L)
 expect_equal(ncol(get_pairs(tda_rips, dimension = 2)), 2L)
 
@@ -86,6 +84,7 @@ expect_equal(
 
 d <- dist(cbind(x = c(0, 3, 0), y = c(0, 0, 4)))
 hc <- hclust(d, method = "complete")
+expect_error(as_persistence(hc, birth = 6))
 hclust <- as_persistence(hc)
 expect_equal(hclust$pairs[[1]][, 1], rep(0, 3L))
 expect_snapshot_print(hclust, label = "print-hclust-persistence")
@@ -95,5 +94,70 @@ d2[2] <- -d2[2]
 hc2 <- hclust(d2, method = "single")
 hclust2 <- as_persistence(hc2)
 expect_equal(hclust2$pairs[[1]][, 1], rep(-Inf, 3L))
+
+# Test that persistence is correctly structured when some degrees are missing
+x <- data.frame(
+  dimension = c(0L, 3L, 0L, 2L),
+  birth = c(0.0, 0.5, 0.2, 0.7),
+  death = c(0.5, 1.0, 0.3, 1.2),
+  morevar = c(1L, 2L, 3L, 4L)
+)
+xp <- as_persistence(x)
+expect_length(xp$pairs, 4L)
+expect_equal(sapply(xp$pairs, nrow), c(2L, 0L, 1L, 1L))
+expect_equal(sapply(xp$pairs, ncol), rep(2L, 4L))
+
+# Test that persistence complains when some "dimension" values are not whole
+# numbers
+y <- data.frame(
+  dimension = c(0L, 3L, NA, 2L),
+  birth = c(0.0, 0.5, 0.2, 0.7),
+  death = c(0.5, 1.0, 0.3, 1.2),
+  morevar = c(1L, 2L, 3L, 4L)
+)
+expect_message(
+  as_persistence(y),
+  pattern = "Negative, infinite, and missing dimensions will be omitted."
+)
+
+# Test that as_persistence() errors out if provided with a matrix with
+# less than 3 columns
+x <- matrix(1:6, ncol = 2)
+expect_error(
+  as_persistence(x),
+  pattern = "The matrix must have at least 3 columns."
+)
+
+# Test that as_persistence() correctly processes unnamed matrices
+x <- matrix(1:6, ncol = 3)
+expect_inherits(as_persistence(x), "persistence")
+
+# Test that as.matrix.persistence() works
+
+## Test that as.matrix.persistence() return 0-row matrix if no pairs are
+## present
+x <- data.frame(
+  dimension = integer(),
+  birth = numeric(),
+  death = numeric()
+)
+xp <- as_persistence(x)
+expect_snapshot_print(xp, label = "print-empty-persistence")
+expect_inherits(as.matrix(xp), "matrix")
+expect_equal(nrow(as.matrix(xp)), 0L)
+expect_equal(ncol(as.matrix(xp)), 3L)
+expect_equal(colnames(as.matrix(xp)), c("dimension", "birth", "death"))
+
+## Test that as.matrix.persistence() returns a matrix with the correct number of
+## rows and columns
+x <- as_persistence(list(
+  matrix(c(0, 1, 2, 3), ncol = 2),
+  matrix(c(0, 1, 2, 3), ncol = 2)
+))
+xm <- as.matrix(x)
+expect_inherits(xm, "matrix")
+expect_equal(xm[, "dimension"], c(0L, 0L, 1L, 1L))
+expect_equal(xm[, "birth"], c(0, 1, 0, 1))
+expect_equal(xm[, "death"], c(2, 3, 2, 3))
 
 options(opts)

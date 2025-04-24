@@ -2,8 +2,10 @@ Package: phutil
 Title: Persistence Homology Utilities
 Version: 0.0.0.9000
 Authors@R: 
-    person("Aymeric", "Stamm", , "aymeric.stamm@cnrs.fr", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-8725-3654"))
+    c(person("Aymeric", "Stamm", , "aymeric.stamm@cnrs.fr", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-8725-3654")),
+      person("Jason Cory", "Brunson", email = "cornelioid@gmail.com",
+           role = c("ctb")))
 Description: Implements a class for hosting persistence homology information in
     the form of a persistence diagram. The package also provides a set of
     functions to manipulate persistence diagrams, such as coercing them to
