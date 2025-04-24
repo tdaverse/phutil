@@ -64,3 +64,9 @@ mod_sample <- persistence_sample[1L:3L]
 mod_sample[[1L]] <- cbind(1, 1)
 expect_equal(length(bottleneck_pairwise_distances(mod_sample)), 3L)
 expect_equal(length(wasserstein_pairwise_distances(mod_sample)), 3L)
+
+expect_equal(kantorovich_distance(x, y), wasserstein_distance(x, y))
+expect_equal(
+  kantorovich_pairwise_distances(mod_sample),
+  wasserstein_pairwise_distances(mod_sample)
+)
