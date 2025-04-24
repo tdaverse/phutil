@@ -23,6 +23,9 @@
 #'
 #' \deqn{B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
 #'
+#' The Wasserstein metric is also called the Kantorovich metric in recognition
+#' of the originator of the metric.
+#'
 #' @param x Either a matrix of shape \eqn{n \times 2} or an object of class
 #'   [persistence] specifying the first persistence diagram.
 #' @param y Either a matrix of shape \eqn{m \times 2} or an object of class
@@ -167,6 +170,26 @@ wasserstein_distance <- function(
   )
 }
 
+#' @rdname distances
+#' @export
+kantorovich_distance <- function(
+  x,
+  y,
+  tol = 1e-4,
+  p = 1.0,
+  validate = TRUE,
+  dimension = 0L
+) {
+  wasserstein_distance(
+    x = x,
+    y = y,
+    tol = tol,
+    p = p,
+    validate = validate,
+    dimension = dimension
+  )
+}
+
 #' Pairwise distances within a set of persistence diagrams
 #'
 #' This collection of functions computes the pairwise distance matrix between
@@ -289,4 +312,24 @@ wasserstein_pairwise_distances <- function(
   attr(D, "method") <- "wasserstein"
   attr(D, "class") <- "dist"
   D
+}
+
+#' @rdname pairwise-distances
+#' @export
+kantorovich_pairwise_distances <- function(
+  x,
+  tol = 1e-4,
+  p = 1.0,
+  validate = TRUE,
+  dimension = 0L,
+  ncores = 1L
+) {
+  wasserstein_pairwise_distances(
+    x = x,
+    tol = tol,
+    p = p,
+    validate = validate,
+    dimension = dimension,
+    ncores = ncores
+  )
 }

@@ -4,6 +4,7 @@
 \alias{pairwise-distances}
 \alias{bottleneck_pairwise_distances}
 \alias{wasserstein_pairwise_distances}
+\alias{kantorovich_pairwise_distances}
 \title{Pairwise distances within a set of persistence diagrams}
 \usage{
 bottleneck_pairwise_distances(
@@ -15,6 +16,15 @@ bottleneck_pairwise_distances(
 )
 
 wasserstein_pairwise_distances(
+  x,
+  tol = 1e-04,
+  p = 1,
+  validate = TRUE,
+  dimension = 0L,
+  ncores = 1L
+)
+
+kantorovich_pairwise_distances(
   x,
   tol = 1e-04,
   p = 1,
