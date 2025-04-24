@@ -8,7 +8,7 @@ Description: Implements a class for hosting persistence homology information in
     the form of a persistence diagram. The package also provides a set of
     functions to manipulate persistence diagrams, such as coercing them to
     different formats for compatibility with other packages or plotting them.
-License: GPL (>= 3)
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
