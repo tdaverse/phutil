@@ -4,9 +4,9 @@ opts <- options(cli.width = 80)
 
 expect_error(as_persistence(list()))
 
-M <- as.matrix(noisy_circle_ripserr)
+m <- as.matrix(noisy_circle_ripserr)
 
-mat <- as_persistence(M)
+mat <- as_persistence(m)
 expect_equal(mat$metadata$data, "?")
 expect_equal(mat$metadata$engine, "?")
 expect_equal(mat$metadata$filtration, "?")
@@ -15,18 +15,18 @@ expect_equal(mat$metadata$parameters, list())
 expect_snapshot_print(mat, label = "print-mat-persistence")
 
 params <- list(maxdimension = 1L, maxscale = 1.6322)
-mat <- as_persistence(M, engine = "ripserr::vietoris_rips", parameters = params)
+mat <- as_persistence(m, engine = "ripserr::vietoris_rips", parameters = params)
 expect_equal(mat$metadata$engine, "ripserr::vietoris_rips")
 expect_equal(mat$metadata$parameters, params)
 expect_snapshot_print(mat, label = "print-mat-persistence-engine")
 
-mat <- as_persistence(M, filtration = "vietoris-rips")
+mat <- as_persistence(m, filtration = "vietoris-rips")
 expect_equal(mat$metadata$filtration, "vietoris-rips")
 expect_snapshot_print(mat, label = "print-mat-persistence-filtration")
 
-wrong_df <- noisy_circle_ripserr
-wrong_df$morevar <- 1L
-expect_error(as_persistence(wrong_df))
+more_df <- noisy_circle_ripserr
+more_df$morevar <- 1L
+expect_true(inherits(as_persistence(more_df), "persistence"))
 
 wrong_df <- noisy_circle_ripserr
 wrong_df$dimension <- NULL
@@ -68,7 +68,7 @@ expect_snapshot_print(
 )
 
 expect_equal(ncol(get_pairs(tda_rips, dimension = 1)), 2L)
-expect_error(get_pairs(M, dimension = 1))
+expect_error(get_pairs(m, dimension = 1))
 expect_equal(nrow(get_pairs(tda_rips, dimension = 2)), 0L)
 expect_equal(ncol(get_pairs(tda_rips, dimension = 2)), 2L)
 

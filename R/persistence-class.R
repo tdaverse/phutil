@@ -1,11 +1,18 @@
 #' An `S3` class for storing persistence data
 #'
-#' A collection of functions to coerce persistence data into objects of class [`persistence`] (See **Value** section for more details on this class). It is currently possible to coerce
-#' persistence data from the following sources:
+#' A collection of functions to coerce persistence data into objects of class
+#' [`persistence`] (See __Value__ section for more details on this class). It is
+#' currently possible to coerce persistence data from the following sources:
 #' - a matrix with at least 3 columns (dimension/degree, start/birth, end/death)
-#' as returned by [`ripserr::vietoris_rips()`](https://tdaverse.github.io/ripserr/reference/vietoris_rips.html)
+#' as returned by
+#' [`ripserr::vietoris_rips()`](https://tdaverse.github.io/ripserr/reference/vietoris_rips.html)
 #' in the form of the 'PHom' class,
-#' - a list as returned by any `*Diag()` function in the **TDA** package.
+#' - a list as returned by any `*Diag()` function in the __TDA__ package.
+#'
+#' __Caution.__ When providing an _unnamed_ input matrix, the matrix coercer
+#' assumes that it has at least 3 columns, with the first column being the
+#' dimension/degree, the second column being the start/birth and the third
+#' column being the end/death.
 #'
 #' @name persistence
 #'
@@ -15,9 +22,10 @@
 #' - a \eqn{\geq 3}-column matrix (or object coercible to one) with
 #' dimension/degree, start/birth and end/death columns,
 #' - a list whose first element is such an object,
-#' - an object of class 'PHom' as returned by [`ripserr::vietoris_rips()`](https://tdaverse.github.io/ripserr/reference/vietoris_rips.html),
-#' - (a list as returned by a `*Diag()` function in **TDA**
-#' (e.g. [`TDA::ripsDiag()`](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag))
+#' - an object of class 'PHom' as returned by
+#' [`ripserr::vietoris_rips()`](https://tdaverse.github.io/ripserr/reference/vietoris_rips.html),
+#' - (a list as returned by a `*Diag()` function in __TDA__ (e.g.
+#' [`TDA::ripsDiag()`](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag))
 #' whose first element is) an object of class 'diagram'.
 #'
 #' @param warn A boolean specifying whether to issue a warning if the input
@@ -47,7 +55,8 @@
 #'   - `data`: The name of the object containing the original data on which the
 #'   persistence data was computed.
 #'   - `engine`: The name of the package and the function of this package that
-#'   computed the persistence data in the form `"package_name::package_function"`.
+#'   computed the persistence data in the form
+#'   `"package_name::package_function"`.
 #'   - `filtration`: The filtration used in the computation in a human-readable
 #'   format (i.e. full names, capitals where need, etc.).
 #'   - `parameters`: A list of parameters used in the computation.
@@ -152,10 +161,12 @@ as_persistence.persistence <- function(x, warn = TRUE, ...) {
 #' @rdname persistence
 #' @export
 as_persistence.data.frame <- function(x, warn = TRUE, ...) {
-  if (ncol(x) != 3L) {
-    cli::cli_abort("The data frame must have 3 columns.")
+  required_variables <- c("dimension", "birth", "death")
+  n_required <- length(required_variables)
+  if (ncol(x) < n_required) {
+    cli::cli_abort("The data frame must have at least {n_required} columns.")
   }
-  if (!all(c("dimension", "birth", "death") %in% colnames(x))) {
+  if (!all(required_variables %in% colnames(x))) {
     cli::cli_abort(
       "The data frame must have columns named {.var dimension}, {.var birth} and {.var death}."
     )
@@ -163,55 +174,58 @@ as_persistence.data.frame <- function(x, warn = TRUE, ...) {
 
   # ensure usable integer dimensions
   x$dimension <- as.integer(x$dimension)
-  if (any(x$dimension) < 0L | is.infinite(x$dimension) | is.na(x$dimension)) {
+  useful_dimensions <- x$dimension >= 0L &
+    is.finite(x$dimension) &
+    !is.na(x$dimension)
+  if (!all(useful_dimensions)) {
     cli::cli_warn("Negative, infinite, and missing dimensions will be omitted.")
-    x <- x[
-      x$dimension >= 0L & is.finite(x$dimension) & !is.na(dimension),
-      ,
-      drop = FALSE
-    ]
+    x <- x[useful_dimensions, , drop = FALSE]
   }
-  deg_max <- max(x$dimension)
 
   # split and matrify
   # TODO: Benchmark against refactor using `split()` options.
   x <- base::split(x, x$dimension)
   x <- lapply(
     x,
-    function(.x) .x <- unname(as.matrix(.x))[, seq(2L, 3L), drop = FALSE]
+    function(.x) base::unname(as.matrix(.x[, c("birth", "death")]))
   )
 
-  # insert matrices for any missing degrees
-  deg_miss <- setdiff(seq(0L, deg_max), as.integer(names(x)))
-  if (length(deg_miss) > 0L) {
-    x[as.character(deg_miss)] <-
-      replicate(length(deg_miss), matrix(NA_real_, nrow = 0L, ncol = 2L))
+  # handle missing dimensions
+  actual_degrees <- as.integer(names(x))
+  all_degrees <- seq(0L, max(actual_degrees))
+  missing_degrees <- setdiff(all_degrees, actual_degrees)
+  n_missing_degrees <- length(missing_degrees)
+
+  if (n_missing_degrees > 0L) {
+    x[as.character(missing_degrees)] <-
+      replicate(n_missing_degrees, matrix(NA_real_, nrow = 0L, ncol = 2L))
     x <- x[order(as.integer(names(x)))]
   }
 
+  x <- unname(x)
   as_persistence(x, warn = warn, ...)
 }
 
 #' @rdname persistence
 #' @export
 as_persistence.matrix <- function(x, warn = TRUE, ...) {
-  if (ncol(x) != 3L) {
-    cli::cli_abort("The matrix must have 3 columns.")
+  n_columns <- ncol(x)
+  if (n_columns < 3L) {
+    cli::cli_abort("The matrix must have at least 3 columns.")
   }
 
-  deg_int <- as.integer(x[, 1L])
-  deg_max <- max(deg_int)
-
-  x <- lapply(split(x[, c(2L, 3L)], x[, 1L]), matrix, ncol = 2L)
-
-  deg_miss <- setdiff(seq(0L, deg_max), deg_int)
-  if (length(deg_miss) > 0L) {
-    x[as.character(deg_miss)] <-
-      replicate(length(deg_miss), matrix(NA_real_, nrow = 0L, ncol = 2L))
-    x <- x[order(as.integer(names(x)))]
+  column_names <- colnames(x)
+  if (is.null(column_names)) {
+    colnames(x) <- c(
+      "dimension",
+      "birth",
+      "death",
+      paste0("extra_", seq_len(n_columns - 3L))
+    )
   }
 
-  as_persistence(x, warn = warn, ...)
+  x <- as.data.frame(x)
+  as_persistence.data.frame(x, warn = warn, ...)
 }
 
 #' @rdname persistence
@@ -250,10 +264,8 @@ as_persistence.diagram <- function(x, warn = TRUE, ...) {
 #' @rdname persistence
 #' @export
 as_persistence.PHom <- function(x, ...) {
-  # coerce to matrix and reroute to default method
-  # (will need to change if 'PHom' class changes)
-  as_persistence.matrix(
-    as.matrix(x),
+  as_persistence.data.frame(
+    x,
     engine = "ripserr::<vietoris_rips/cubical>",
     filtration = "Vietoris-Rips/cubical",
     ...
@@ -269,8 +281,7 @@ as_persistence.hclust <- function(x, warn = TRUE, birth = NULL, ...) {
 
   if (birth > max(x$height)) {
     cli::cli_abort(
-      "The birth value ({birth}) must be less than
-      the maximum height (max(x$height))."
+      "The birth value ({birth}) must be less than the maximum height (max(x$height))."
     )
   }
 
@@ -297,7 +308,6 @@ format.persistence <- function(x, ...) {
   ndim <- length(x$pairs)
   npts <- sapply(x$pairs, nrow)
   max_npts <- max(npts)
-  pad_size <- max(nchar(npts))
   param_vals <- x$metadata$parameters
   param_nms <- NULL
   if (!is.null(param_vals) && length(param_vals) > 0L) {
@@ -309,7 +319,7 @@ format.persistence <- function(x, ...) {
   cli::cli_format_method({
     cli::cli_h1("Persistence Data")
     cli::cli_alert_info(
-      'There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim) - 1L} respectively.'
+      "There are {npts} {cli::qty(max_npts)}pair{?s} in {cli::qty(ndim)}dimension{?s} {seq_len(ndim) - 1L} respectively."
     )
     if (filt_nm == "?" && x$metadata$engine == "?") {
       cli::cli_alert_warning(
@@ -363,7 +373,7 @@ as.matrix.persistence <- function(x, ...) {
     res <- do.call(rbind, res)
   }
   colnames(res) <- c("dimension", "birth", "death")
-  return(res)
+  res
 }
 
 #' @rdname persistence

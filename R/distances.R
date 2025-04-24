@@ -11,7 +11,8 @@
 #' between \eqn{D_1} and \eqn{D_2} is defined as the infimum over all matchings
 #' of the expression
 #'
-#' \deqn{W_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
+#' \deqn{W_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
+#' \left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
 #' \right)^{\frac{1}{p}}}
 #'
 #' that can be thought of as the Minkowski distance between the diagrams viewed
@@ -21,7 +22,8 @@
 #' the limit \eqn{p \to \infty}, the Wasserstein distance becomes the
 #' _bottleneck distance_:
 #'
-#' \deqn{B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
+#' \deqn{B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
+#' \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
 #'
 #' The Wasserstein metric is also called the Kantorovich metric in recognition
 #' of the originator of the metric.
@@ -249,18 +251,18 @@ bottleneck_pairwise_distances <- function(
     x[[i]] <- x[[i]][x[[i]][, 1] < x[[i]][, 2], , drop = FALSE]
   }
 
-  D <- bottleneckPairwiseDistances(
+  distance_matrix <- bottleneckPairwiseDistances(
     x = x,
     delta = tol,
     ncores = ncores
   )
-  attr(D, "Size") <- length(x)
-  attr(D, "Labels") <- indices
-  attr(D, "Diag") <- FALSE
-  attr(D, "Upper") <- FALSE
-  attr(D, "method") <- "bottleneck"
-  attr(D, "class") <- "dist"
-  D
+  attr(distance_matrix, "Size") <- length(x)
+  attr(distance_matrix, "Labels") <- indices
+  attr(distance_matrix, "Diag") <- FALSE
+  attr(distance_matrix, "Upper") <- FALSE
+  attr(distance_matrix, "method") <- "bottleneck"
+  attr(distance_matrix, "class") <- "dist"
+  distance_matrix
 }
 
 #' @rdname pairwise-distances
@@ -299,19 +301,19 @@ wasserstein_pairwise_distances <- function(
     ))
   }
 
-  D <- wassersteinPairwiseDistances(
+  distance_matrix <- wassersteinPairwiseDistances(
     x = x,
     delta = tol,
     wasserstein_power = p,
     ncores = ncores
   )
-  attr(D, "Size") <- length(x)
-  attr(D, "Labels") <- indices
-  attr(D, "Diag") <- FALSE
-  attr(D, "Upper") <- FALSE
-  attr(D, "method") <- "wasserstein"
-  attr(D, "class") <- "dist"
-  D
+  attr(distance_matrix, "Size") <- length(x)
+  attr(distance_matrix, "Labels") <- indices
+  attr(distance_matrix, "Diag") <- FALSE
+  attr(distance_matrix, "Upper") <- FALSE
+  attr(distance_matrix, "method") <- "wasserstein"
+  attr(distance_matrix, "class") <- "dist"
+  distance_matrix
 }
 
 #' @rdname pairwise-distances
