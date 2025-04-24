@@ -54,12 +54,18 @@ expect_equal(sapply(tda_rips$pairs, ncol), c(2L, 2L))
 expect_equal(as.character(tda_rips$metadata$data), "noisy_circle_points")
 expect_equal(tda_rips$metadata$engine, "TDA::ripsDiag")
 expect_equal(tda_rips$metadata$filtration, "Vietoris-Rips")
-expect_equal(as.character(tda_rips$metadata$call), c("TDA::ripsDiag", "noisy_circle_points", "1", "1.6322"))
+expect_equal(
+  as.character(tda_rips$metadata$call),
+  c("TDA::ripsDiag", "noisy_circle_points", "1", "1.6322")
+)
 expect_equal(length(tda_rips$metadata$parameters), 2L)
 expect_equal(names(tda_rips$metadata$parameters), c("maxdimension", "maxscale"))
 expect_equal(tda_rips$metadata$parameters$maxdimension, 1L)
 expect_equal(tda_rips$metadata$parameters$maxscale, 1.6322)
-expect_snapshot_print(as_persistence(tda_rips), label = "print-tda-rips-persistence")
+expect_snapshot_print(
+  as_persistence(tda_rips),
+  label = "print-tda-rips-persistence"
+)
 
 expect_equal(ncol(get_pairs(tda_rips, dimension = 1)), 2L)
 expect_error(get_pairs(M, dimension = 1))

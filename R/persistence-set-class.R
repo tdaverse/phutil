@@ -26,8 +26,10 @@ as_persistence_set <- function(x) {
   }
 
   # Check if all elements are of class 'persistence'
-  if (!all(sapply(x, inherits, "persistence"))) {
-    cli::cli_abort("All elements of the list must be of class 'persistence'.")
+  for (i in seq_along(x)) {
+    if (!inherits(x[[i]], "persistence")) {
+      cli::cli_abort("Element {i} is not of class 'persistence'.")
+    }
   }
 
   class(x) <- c("persistence_set", class(x))
@@ -38,9 +40,10 @@ as_persistence_set <- function(x) {
 #' @export
 format.persistence_set <- function(x, ...) {
   cli::cli_format_method({
-    cli::cli_text("A set of persistence diagrams with {.val {length(x)}} elements.")
-    cli::cli_text("Each element is a persistence diagram of class {.cls persistence}.")
-    cli::cli_text("The diagrams are stored in the list as 2-column matrices.")
+    cli::cli_h1("Persistence Data Set")
+    cli::cli_alert_info(
+      "A collection of {.val {length(x)}} persistence diagrams."
+    )
   })
 }
 

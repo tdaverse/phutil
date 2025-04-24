@@ -73,10 +73,13 @@ NULL
 
 #' @rdname distances
 #' @export
-bottleneck_distance <- function(x, y,
-                                tol = 1e-4,
-                                validate = TRUE,
-                                dimension = 0L) {
+bottleneck_distance <- function(
+  x,
+  y,
+  tol = 1e-4,
+  validate = TRUE,
+  dimension = 0L
+) {
   if (inherits(x, "persistence")) {
     x <- get_pairs(x, dimension = dimension)
   } else if (validate) {
@@ -112,11 +115,14 @@ bottleneck_distance <- function(x, y,
 
 #' @rdname distances
 #' @export
-wasserstein_distance <- function(x, y,
-                                 tol = 1e-4,
-                                 p = 1.0,
-                                 validate = TRUE,
-                                 dimension = 0L) {
+wasserstein_distance <- function(
+  x,
+  y,
+  tol = 1e-4,
+  p = 1.0,
+  validate = TRUE,
+  dimension = 0L
+) {
   if (inherits(x, "persistence")) {
     x <- get_pairs(x, dimension = dimension)
   } else if (validate) {
@@ -197,11 +203,13 @@ NULL
 
 #' @rdname pairwise-distances
 #' @export
-bottleneck_pairwise_distances <- function(x,
-                                          tol = 1e-4,
-                                          validate = TRUE,
-                                          dimension = 0L,
-                                          ncores = 1L) {
+bottleneck_pairwise_distances <- function(
+  x,
+  tol = 1e-4,
+  validate = TRUE,
+  dimension = 0L,
+  ncores = 1L
+) {
   indices <- seq_along(x)
   for (i in indices) {
     if (inherits(x[[i]], "persistence")) {
@@ -234,12 +242,14 @@ bottleneck_pairwise_distances <- function(x,
 
 #' @rdname pairwise-distances
 #' @export
-wasserstein_pairwise_distances <- function(x,
-                                           tol = 1e-4,
-                                           p = 1.0,
-                                           validate = TRUE,
-                                           dimension = 0L,
-                                           ncores = 1L) {
+wasserstein_pairwise_distances <- function(
+  x,
+  tol = 1e-4,
+  p = 1.0,
+  validate = TRUE,
+  dimension = 0L,
+  ncores = 1L
+) {
   indices <- seq_along(x)
   for (i in indices) {
     if (inherits(x[[i]], "persistence")) {
