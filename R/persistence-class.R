@@ -169,7 +169,7 @@ as_persistence.data.frame <- function(x, warn = TRUE, ...) {
   }
 
   if (nrow(x) == 0L) {
-    as_persistence(list(), ...)
+    return(as_persistence(list(), ...))
   }
 
   # ensure usable integer dimensions

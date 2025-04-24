@@ -136,11 +136,16 @@ expect_inherits(as_persistence(x), "persistence")
 
 ## Test that as.matrix.persistence() return 0-row matrix if no pairs are
 ## present
-x <- as_persistence(list())
-expect_inherits(as.matrix(x), "matrix")
-expect_equal(nrow(as.matrix(x)), 0L)
-expect_equal(ncol(as.matrix(x)), 3L)
-expect_equal(colnames(as.matrix(x)), c("dimension", "birth", "death"))
+x <- data.frame(
+  dimension = integer(),
+  birth = numeric(),
+  death = numeric()
+)
+xp <- as_persistence(x)
+expect_inherits(as.matrix(xp), "matrix")
+expect_equal(nrow(as.matrix(xp)), 0L)
+expect_equal(ncol(as.matrix(xp)), 3L)
+expect_equal(colnames(as.matrix(xp)), c("dimension", "birth", "death"))
 
 ## Test that as.matrix.persistence() returns a matrix with the correct number of
 ## rows and columns
