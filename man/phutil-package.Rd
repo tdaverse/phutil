@@ -20,5 +20,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Aymeric Stamm \email{aymeric.stamm@cnrs.fr} (\href{https://orcid.org/0000-0002-8725-3654}{ORCID})
 
+Other contributors:
+\itemize{
+  \item Jason Cory Brunson \email{cornelioid@gmail.com} [contributor]
+}
+
 }
 \keyword{internal}
