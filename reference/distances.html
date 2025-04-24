@@ -49,7 +49,9 @@ and the second column contains the death times of the points.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bottleneck_distance</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, tol <span class="op">=</span> <span class="fl">1e-04</span>, validate <span class="op">=</span> <span class="cn">TRUE</span>, dimension <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">wasserstein_distance</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, tol <span class="op">=</span> <span class="fl">1e-04</span>, p <span class="op">=</span> <span class="fl">1</span>, validate <span class="op">=</span> <span class="cn">TRUE</span>, dimension <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">wasserstein_distance</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, tol <span class="op">=</span> <span class="fl">1e-04</span>, p <span class="op">=</span> <span class="fl">1</span>, validate <span class="op">=</span> <span class="cn">TRUE</span>, dimension <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">kantorovich_distance</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, tol <span class="op">=</span> <span class="fl">1e-04</span>, p <span class="op">=</span> <span class="fl">1</span>, validate <span class="op">=</span> <span class="cn">TRUE</span>, dimension <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -113,6 +115,8 @@ is the infinity norm \(\lVert (x_1,x_2) \rVert_\infty = \max(x_1,x_2)\). In
 the limit \(p \to \infty\), the Wasserstein distance becomes the
 <em>bottleneck distance</em>:</p>
 <p>$$B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.$$</p>
+<p>The Wasserstein metric is also called the Kantorovich metric in recognition
+of the originator of the metric.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
