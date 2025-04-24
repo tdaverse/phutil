@@ -37,17 +37,6 @@ check_2column_matrix <- function(x, warn = TRUE) {
   TRUE
 }
 
-split_df_by_dimension <- function(x) {
-  x <- base::split(x, x$dimension)
-  names(x) <- NULL
-  lapply(x, function(.x) {
-    .x$dimension <- NULL
-    .x <- as.matrix(.x)
-    colnames(.x) <- NULL
-    .x
-  })
-}
-
 capitalize <- function(x) {
   gsub("(?<=\\b)([a-z])", "\\U\\1", tolower(x), perl = TRUE)
 }
