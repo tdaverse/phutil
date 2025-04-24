@@ -142,6 +142,7 @@ x <- data.frame(
   death = numeric()
 )
 xp <- as_persistence(x)
+expect_snapshot_print(xp, label = "print-empty-persistence")
 expect_inherits(as.matrix(xp), "matrix")
 expect_equal(nrow(as.matrix(xp)), 0L)
 expect_equal(ncol(as.matrix(xp)), 3L)
