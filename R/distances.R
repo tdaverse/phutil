@@ -172,7 +172,23 @@ wasserstein_distance <- function(
 
 #' @rdname distances
 #' @export
-kantorovich_distance <- wasserstein_distance
+kantorovich_distance <- function(
+  x,
+  y,
+  tol = 1e-4,
+  p = 1.0,
+  validate = TRUE,
+  dimension = 0L
+) {
+  wasserstein_distance(
+    x = x,
+    y = y,
+    tol = tol,
+    p = p,
+    validate = validate,
+    dimension = dimension
+  )
+}
 
 #' Pairwise distances within a set of persistence diagrams
 #'
@@ -300,4 +316,20 @@ wasserstein_pairwise_distances <- function(
 
 #' @rdname pairwise-distances
 #' @export
-kantorovich_pairwise_distances <- wasserstein_pairwise_distances
+kantorovich_pairwise_distances <- function(
+  x,
+  tol = 1e-4,
+  p = 1.0,
+  validate = TRUE,
+  dimension = 0L,
+  ncores = 1L
+) {
+  wasserstein_pairwise_distances(
+    x = x,
+    tol = tol,
+    p = p,
+    validate = validate,
+    dimension = dimension,
+    ncores = ncores
+  )
+}
