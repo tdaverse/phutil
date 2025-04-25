@@ -381,7 +381,7 @@ results suggest that Hera via {phutil} scales more efficiently than Dionysus via
 data sets.
 
 ```{r visualize large PDs benchmark}
-#| fig.width=6, fig.height=3, fig.align='center',
+#| fig.width=6, fig.height=3, fig.align='center', fig.retina=2,
 #| fig.cap=
 #| "\\label{fig:benchmark}
 #|  Benchmark comparison of Dionysus via \\{TDA\\} and Hera via \\{phutil\\}
