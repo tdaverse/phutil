@@ -5,7 +5,7 @@ vignette: >
   %\VignetteIndexEntry{Validation and Benchmark of Wasserstein Distances}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{bench,ggplot2,tdaunif}
+  %\VignetteDepends{bench,ggplot2,TDA}
 ---
 
 ```{r, include = FALSE}
