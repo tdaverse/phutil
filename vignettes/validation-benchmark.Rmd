@@ -1,11 +1,11 @@
 ---
 title: "Validation and Benchmark of Wasserstein Distances"
-output: rmarkdown::pdf_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Validation and Benchmark of Wasserstein Distances}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{tdaunif,bench,ggplot2}
+  %\VignetteDepends{bench,ggplot2,tdaunif}
 ---
 
 ```{r, include = FALSE}
@@ -15,10 +15,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette introduces the Wasserstein and bottleneck distances between persistence diagrams and their implementations in {phutil}, adapted from Hera,[^hera] by way of two tasks:
+This vignette introduces the Wasserstein and bottleneck distances between
+persistence diagrams and their implementations in {phutil}, adapted from
+Hera,[^hera] by way of two tasks:
 
 1. Validate the implementations on an example computed by hand.
-2. Benchmark the implementations against those provided by {TDA} (adapted from Dionysus).
+2. Benchmark the implementations against those provided by {TDA} (adapted from
+Dionysus).
 
 [^hera]: <https://github.com/anigmetov/hera>
 
@@ -27,51 +30,95 @@ library(TDA)
 library(phutil)
 ```
 
-We will also use the {tdaunif} package to generate larger point clouds and the {bench} package to perform benchmark tests.
+We will also use the {tdaunif} package to generate larger point clouds and the
+{bench} package to perform benchmark tests.
 
 ## Definitions
 
-_Persistence diagrams_ are multisets (sets with multiplicity) of points in the plane that encode the interval decompositions of persistent modules obtained from filtrations of data (e.g. Vietoris--Rips filtrations of point clouds and cubical filtrations of numerical arrays).
-Most applications consider only ordinary persistent homology, so that all points live in the upper-half plane; and most involve non-negative-valued filtrations, so that all points live in the first quadrant. The examples in this vignette will be no exceptions.
+_Persistence diagrams_ are multisets (sets with multiplicity) of points in the
+plane that encode the interval decompositions of persistent modules obtained
+from filtrations of data (e.g. Vietoris--Rips filtrations of point clouds and
+cubical filtrations of numerical arrays).
+Most applications consider only ordinary persistent homology, so that all points
+live in the upper-half plane; and most involve non-negative-valued filtrations,
+so that all points live in the first quadrant. The examples in this vignette
+will be no exceptions.
 
-We'll distinguish between persistence diagrams, which encode usually encode one degree of a persistence module, and _persistence data_, which comprises persistent pairs of many degrees (and annotated as such). Whereas a diagram is typically represented as a 2-column matrix with columns for birth and death values, data are typically represented as a 3-column matrix with an additional column for (whole number) degrees.
+We'll distinguish between persistence diagrams, which encode usually encode one
+degree of a persistence module, and _persistence data_, which comprises
+persistent pairs of many degrees (and annotated as such). Whereas a diagram is
+typically represented as a 2-column matrix with columns for birth and death
+values, data are typically represented as a 3-column matrix with an additional
+column for (whole number) degrees.
 
-The most common distance metrics between persistence diagrams exploit the family of _Minkowski distances_ $D_p$ between points in $\mathbb{R}^n$ defined, for $1 \leq p < \infty$, as follows:
-$$D_p(x,y) = \left(\sum_{i=1}^{n}{(x_i - y_i)^p}\right)^{1/p}$$
-In the limit $p \to \infty$, this expression approaches the following auxiliary definition:
-$$D_\infty(x,y) = \max_{i=1}^{n}{\lvert x_i - y_i \rvert}$$
-As the parameter $p$ ranges between $1$ and $\infty$, three of its values yield familiar distance metrics: The taxicab distance $D_1$, the Pythagorean distance $D_2$, and the Chebyshev distance $D_\infty$.
+The most common distance metrics between persistence diagrams exploit the family
+of _Minkowski distances_ $D_p$ between points in $\mathbb{R}^n$ defined, for $1
+\leq p < \infty$, as follows:
 
-The _Kantorovich_ or _Wasserstein metric_[^wasserstein] derives from the problem of optimal transport: What is the minimum cost of relocating one distribution to another?
-In the space of persistence diagrams, only finitely many points lie off the diagonal, though every point on the diagonal is taken to be included with multiplicity $\mathbb{N}$.
-So the cost of relocating one diagram $X$ to another $Y$ amounts to (a) the cost of relocating some off-diagonal points to other off-diagonal points plus (b) the cost of relocating the remaining off-diagonal points to the diagonal (and vice-versa).
-This cost then depends entirely on how the off-diagonal points are matched, where a _matching_ is any bijective map $\varphi : X \to Y$, though in practice we assume that almost all diagonal points are matched to themselves and incur no cost.
+$$ D_p(x,y) = \left(\sum_{i=1}^{n}{(x_i - y_i)^p}\right)^{1/p}. $$
+
+In the limit $p \to \infty$, this expression approaches the following auxiliary
+definition:
+
+$$ D_\infty(x,y) = \max_{i=1}^{n}{\lvert x_i - y_i \rvert}. $$
+
+As the parameter $p$ ranges between $1$ and $\infty$, three of its values yield
+familiar distance metrics: The taxicab distance $D_1$, the Pythagorean distance
+$D_2$, and the Chebyshev distance $D_\infty$.
+
+The _Kantorovich_ or _Wasserstein metric_[^wasserstein] derives from the problem
+of optimal transport: What is the minimum cost of relocating one distribution to
+another? In the space of persistence diagrams, only finitely many points lie off
+the diagonal, though every point on the diagonal is taken to be included with
+multiplicity $\mathbb{N}$. So the cost of relocating one diagram $X$ to another
+$Y$ amounts to (a) the cost of relocating some off-diagonal points to other
+off-diagonal points plus (b) the cost of relocating the remaining off-diagonal
+points to the diagonal (and vice-versa). This cost then depends entirely on how
+the off-diagonal points are matched, where a _matching_ is any bijective map
+$\varphi : X \to Y$, though in practice we assume that almost all diagonal
+points are matched to themselves and incur no cost.
 
 [^wasserstein]: <https://en.wikipedia.org/wiki/Wasserstein_metric>
 
-The cost $D(x,\varphi(x))$ of relocating a point $x$ to its matched point $\varphi(x)$ is typically taken to be a Minkowski distance $D_q(x,\varphi(x)) = \lVert x - \varphi(x) \rVert_q$, defined by the $L^q$ norm on $\mathbb{R}^2$.
-(While simple, this geometric treatment elides that the points in the plane encode the collection of interval modules into which the persistence module decomposes.
-Other metrics have been proposed for this space, but we restrict to this family here.)
+The cost $D(x,\varphi(x))$ of relocating a point $x$ to its matched point
+$\varphi(x)$ is typically taken to be a Minkowski distance $D_q(x,\varphi(x)) =
+\lVert x - \varphi(x) \rVert_q$, defined by the $L^q$ norm on $\mathbb{R}^2$.
+(While simple, this geometric treatment elides that the points in the plane
+encode the collection of interval modules into which the persistence module
+decomposes. Other metrics have been proposed for this space, but we restrict to
+this family here.)
 
-The total cost of the relocation is canonically taken to be the Minkowski distance $\left( \sum_{x \in X}{D(x,\varphi(x))^p} \right)^{1/p}$ of the vector of matched-point distances.
-The Wasserstein distance is defined to be the infimum of this value over all possible matches.
+The total cost of the relocation is canonically taken to be the Minkowski
+distance $\left( \sum_{x \in X}{D(x,\varphi(x))^p} \right)^{1/p}$ of the vector
+of matched-point distances. The Wasserstein distance is defined to be the
+infimum of this value over all possible matches.
 This yields the formulae
-$$W_p^q(X,Y) = \inf_{\varphi : X \to Y}{\left( \sum_{x \in X}{{\lVert x-\varphi(x) \rVert_q}^p} \right)^{1/p}}$$
+
+$$ W_p^q(X,Y) = \inf_{\varphi : X \to Y}{\left( \sum_{x \in X}{{\lVert
+x-\varphi(x) \rVert_q}^p} \right)^{1/p}}, $$
+
 for $p < \infty$ and
-$$W_\infty^q(X,Y) = \inf_{\varphi : X \to Y}{\max_{x \in X}{\lVert x-\varphi(x) \rVert_q}}$$
+
+$$ W_\infty^q(X,Y) = \inf_{\varphi : X \to Y}{\max_{x \in X}{\lVert x-\varphi(x)
+\rVert_q}} $$
+
 for $p = \infty$.
 
-See [Cohen-Steiner &al (2010)](https://doi.org/10.1007/s10208-010-9060-6) and [Bubenik &al (2023)](https://doi.org/10.1007/s41468-022-00103-8) for detailed treatments and stability results on these families of metrics.
+See [Cohen-Steiner &al (2010)](https://doi.org/10.1007/s10208-010-9060-6) and
+[Bubenik &al (2023)](https://doi.org/10.1007/s41468-022-00103-8) for detailed
+treatments and stability results on these families of metrics.
 
 ## Validation
 
 ### Distances between nontrivial diagrams
 
 The following persistence diagrams provide a tractable example:
-$$X = \left[ \begin{array}{cc} 1 & 3 \\ 3 & 5 \end{array} \right]
-\phantom{X = Y}
-Y = \left[ \begin{array}{cc} 3 & 4 \end{array} \right]$$
-For convenience in the code, we omit dimensionality and focus only on the matrix representations.
+
+$$ X = \left[ \begin{array}{cc} 1 & 3 \\ 3 & 5 \end{array} \right], \phantom{X =
+Y} Y = \left[ \begin{array}{cc} 3 & 4 \end{array} \right]. $$
+
+For convenience in the code, we omit dimensionality and focus only on the matrix
+representations.
 
 ```{r define small PDs}
 X <- rbind(
@@ -84,9 +131,12 @@ Y <- rbind(
 ```
 
 We overlay both diagrams in Figure \ref{fig:small}.
-Note that the vector between the off-diagonal points $(1,3)$ of $X$ and $(3,4)$ of $Y$ is $(2,1)$, while the vector from $(1,3)$ to its nearest diagonal point $(2,2)$ is $(1,-1)$.
-That one coordinate is the same size while the other is smaller implies that an optimal matching will always match $(1,3)$ with the diagonal, so long as $p \geq 1$.
-A similar argument necessitates that $(3,4)$ of $Y$ must match with $(3,5)$ of $X$.
+Note that the vector between the off-diagonal points $(1,3)$ of $X$ and $(3,4)$
+of $Y$ is $(2,1)$, while the vector from $(1,3)$ to its nearest diagonal point
+$(2,2)$ is $(1,-1)$. That one coordinate is the same size while the other is
+smaller implies that an optimal matching will always match $(1,3)$ with the
+diagonal, so long as $p \geq 1$. A similar argument necessitates that $(3,4)$ of
+$Y$ must match with $(3,5)$ of $X$.
 
 ```{r plot small PDs, fig.width=4, fig.height=4, fig.align='center'}
 #| fig.cap=
@@ -105,13 +155,22 @@ segments(X[, 1], X[, 2], c(2, Y[, 1]), c(2, Y[, 2]), lty = 2)
 par(mar = c(5, 4, 4, 2) + .1)
 ```
 
-Based on these observations, we get this expression for the Wasserstein distance using the $q$-norm half-plane metric and the $p$-norm "matched space" metric:
-$$W_p^q(X,Y) = ( {\lVert a \rVert_q}^p + {\lVert b \rVert_q}^p )^{1/p}$$
-where $a = (1,-1)$ and $b = (0,-1)$ are the vectors between matched points.
-We can now calculate Wasserstein distances "by hand"; we'll consider those using the half-plane Minkowski metrics with $q=1,2,\infty$ and the "matched space" metrics with $p=1,2,\infty$.
+Based on these observations, we get this expression for the Wasserstein distance
+using the $q$-norm half-plane metric and the $p$-norm "matched space" metric:
 
-First, with $q=1$, we get $\lVert a \rVert_q = 1+1=2$ and $\lVert b \rVert_q = 0+1=1$. So the $1,p$-Wasserstein distance will be the $p$-Minkowski norm of the vector $(2,1)$, given by $W_p^1(X,Y) = (2^p + 1^p)^{1/p}$. This nets us the values $W_1^1(X,Y) = 3$ and $W_2^1(X,Y) = \sqrt{5}$. And then $W_\infty^1(X,Y) = \max(2,1) = 2$.
-The reader is invited to complete the rest of Table \ref{tab:small}.
+$$ W_p^q(X,Y) = ( {\lVert a \rVert_q}^p + {\lVert b \rVert_q}^p )^{1/p}, $$
+
+where $a = (1,-1)$ and $b = (0,-1)$ are the vectors between matched points. We
+can now calculate Wasserstein distances "by hand"; we'll consider those using
+the half-plane Minkowski metrics with $q=1,2,\infty$ and the "matched space"
+metrics with $p=1,2,\infty$.
+
+First, with $q=1$, we get $\lVert a \rVert_q = 1+1=2$ and $\lVert b \rVert_q =
+0+1=1$. So the $(1,p)$-Wasserstein distance will be the $p$-Minkowski norm of
+the vector $(2,1)$, given by $W_p^1(X,Y) = (2^p + 1^p)^{1/p}$. This nets us the
+values $W_1^1(X,Y) = 3$ and $W_2^1(X,Y) = \sqrt{5}$. And then $W_\infty^1(X,Y) =
+\max(2,1) = 2$. The reader is invited to complete the rest of Table
+\ref{tab:small}.
 
 ```{=latex}
 \begin{table}[h]
@@ -127,12 +186,17 @@ $1 + \sqrt{2}$ & $\sqrt{3}$        &  $\sqrt{2}$         \\
 $L^\infty$  &        $1$        &         $1$         &
            $2$ & $\sqrt{2}$        &         $1$         \\
 \end{tabular}
-\caption{\label{tab:small}Distances between optimally paired features and Wasserstein distances between $X$ and $Y$ for several choices of half-plane and ``matched space'' metrics.}
+\caption{\label{tab:small}Distances between optimally paired features and
+Wasserstein distances between $X$ and $Y$ for several choices of half-plane and
+``matched space'' metrics.}
 \end{table}
 ```
 
-The results make intuitive sense; for example, the values change monotonically along each row and column.
-Let us now validate the bottom row---using the $L^\infty$ distance on the half-plane, giving the popular _bottleneck distance_---using both Hela, as exposed through {phutil}, and Dionysus, as exposed through {TDA}:
+The results make intuitive sense; for example, the values change monotonically
+along each row and column.
+Let us now validate the bottom row---using the $L^\infty$ distance on the
+half-plane, giving the popular _bottleneck distance_---using both Hela, as
+exposed through {phutil}, and Dionysus, as exposed through {TDA}:
 
 ```{r validate small PDs with Hera}
 # TODO: Remove explicit tolerance specification once default is shrunk (#32).
@@ -141,8 +205,11 @@ wasserstein_distance(X, Y, p = 2, tol = 1e-8)
 bottleneck_distance(X, Y, tol = 1e-8)
 ```
 
-In order to compute distances with {TDA}, we must restructure the PDs to include a `"dimension"` column.
-Note also that `TDA::wasserstein()` does not take the $1/p$th power after computing the sum of $p$th powers; we do this manually to get comparable results:
+In order to compute distances with {TDA}, we must restructure the PDs to include
+a `"dimension"` column.
+Note also that `TDA::wasserstein()` does not take the $1/p$th power after
+computing the sum of $p$th powers; we do this manually to get comparable
+results:
 
 ```{r validate small PDs with Dionysus}
 wasserstein(cbind(0, X), cbind(0, Y), p = 1, dimension = 0)
@@ -152,9 +219,14 @@ bottleneck(cbind(0, X), cbind(0, Y), dimension = 0)
 
 ### Distances from the trivial diagram
 
-An important edge case is when one persistence diagram is trivial, i.e. contains only the diagonal so is "empty" of off-diagonal points.
-This can occur unexpectedly in comparisons of persistence data, as the data may be large but higher-degree features present in one set but absent in another.
-To validate the distances in this case, we create an empty diagram $E$ and use the same code to compare it to $X$. The point $(3,5)$ of $X$ will be matched to the diagonal $(4,4)$, which yields the same $\infty$-distance $1$ so the $L^\infty$ Wasserstein distances will be the same as before.
+An important edge case is when one persistence diagram is trivial, i.e. contains
+only the diagonal so is "empty" of off-diagonal points.
+This can occur unexpectedly in comparisons of persistence data, as the data may
+be large but higher-degree features present in one set but absent in another.
+To validate the distances in this case, we create an empty diagram $E$ and use
+the same code to compare it to $X$. The point $(3,5)$ of $X$ will be matched to
+the diagonal $(4,4)$, which yields the same $\infty$-distance $1$ so the
+$L^\infty$ Wasserstein distances will be the same as before.
 
 ```{r validate small PD vs empty}
 # empty PD
@@ -192,9 +264,26 @@ W <- cbind(
 # TODO: Enable `*_distance()` functions to handle 3-column matrix or data frame,
 # perhaps by executing `as_persistence()` internally.
 # distance from empty using phutil/Hera
-wasserstein_distance(as_persistence(Z), as_persistence(W), p = 1, dimension = 2, tol = 1e-8)
-wasserstein_distance(as_persistence(Z), as_persistence(W), p = 2, dimension = 2, tol = 1e-8)
-bottleneck_distance(as_persistence(Z), as_persistence(W), dimension = 2, tol = 1e-8)
+wasserstein_distance(
+  as_persistence(Z),
+  as_persistence(W),
+  p = 1,
+  dimension = 2,
+  tol = 1e-8
+)
+wasserstein_distance(
+  as_persistence(Z),
+  as_persistence(W),
+  p = 2,
+  dimension = 2,
+  tol = 1e-8
+)
+bottleneck_distance(
+  as_persistence(Z),
+  as_persistence(W),
+  dimension = 2,
+  tol = 1e-8
+)
 # distance from empty using TDA/Dionysus
 wasserstein(Z, W, p = 1, dimension = 2)
 sqrt(wasserstein(Z, W, p = 2, dimension = 2))
@@ -205,29 +294,36 @@ bottleneck(Z, W, dimension = 2)
 
 ## Benchmarks
 
-For a straightforward benchmark test, we compute PDs from point clouds sampled with noise from two one-dimensional manifolds embedded in $\mathbb{R}^3$: the circle as a trefoil knot and the segment as a two-armed archimedian spiral.
-To prevent the results from being sensitive to an accident of a single sample, we generate lists of 24 samples and benchmark only one iteration of each function on each.
+For a straightforward benchmark test, we compute PDs from point clouds sampled
+with noise from two one-dimensional manifolds embedded in $\mathbb{R}^3$: the
+circle as a trefoil knot and the segment as a two-armed archimedian spiral.
+To prevent the results from being sensitive to an accident of a single sample,
+we generate lists of 24 samples and benchmark only one iteration of each
+function on each.
 
-**TODO:** Compute these PDs and save the results rather than generate them fresh. I think this can be done specifically for the vignette, i.e. without making the results an installed data set. I tried caching results[^cache] but could not get it to work.
-
-[^cache]: <https://yihui.org/knitr/options/#cache>
-
-```{r compute large PDs}
+```{r compute large PDs fake, eval=FALSE}
 set.seed(28415)
 n <- 24
 PDs1 <- lapply(seq(n), function(i) {
   S1 <- tdaunif::sample_trefoil(n = 120, sd = .05)
-  as_persistence(ripsDiag(S1, maxdimension = 2, maxscale = 6))
+  as_persistence(TDA::ripsDiag(S1, maxdimension = 2, maxscale = 6))
 })
 PDs2 <- lapply(seq(n), function(i) {
   S2 <- cbind(tdaunif::sample_arch_spiral(n = 120, arms = 2), 0)
   S2 <- tdaunif::add_noise(S2, sd = .05)
-  as_persistence(ripsDiag(S2, maxdimension = 2, maxscale = 6))
+  as_persistence(TDA::ripsDiag(S2, maxdimension = 2, maxscale = 6))
 })
 ```
 
-Both implementations are used to compute distances between successive pairs of diagrams.
-The computations are annotated by homological degree and Wasserstein power so that these results can be compared separately.
+```{r compute large PDs true, echo=FALSE}
+n <- 24
+PDs1 <- trefoils
+PDs2 <- arch_spirals
+```
+
+Both implementations are used to compute distances between successive pairs of
+diagrams. The computations are annotated by homological degree and Wasserstein
+power so that these results can be compared separately.
 
 ```{r benchmark phutil and TDA}
 # FIXME: Ensure that empty PDs (dimension 2 below) are handled correctly.
@@ -277,10 +373,15 @@ for (dimension in seq(0, 1)) {
 bm_all <- do.call(rbind, bm_all)
 ```
 
-Figure \ref{fig:benchmark} compares the distributions of runtimes by homological degree (column) and Wasserstein power (row).
-We note that Dionysus via {TDA} clearly outperforms Hera via {phutil} on degree-1 and -2 PDs, which in these cases have many fewer features.
-However, the tables are turned in degree 0, in which the PDs have many more features.
-While by no means exhaustive and not necessarily representative, these results suggest that Hera via {phutil} scales more efficiently than Dionysus via {TDA} and should therefore be preferred for projects involving more feature-rich data sets.
+Figure \ref{fig:benchmark} compares the distributions of runtimes by homological
+degree (column) and Wasserstein power (row).
+We note that Dionysus via {TDA} clearly outperforms Hera via {phutil} on
+degree-1 and -2 PDs, which in these cases have many fewer features.
+However, the tables are turned in degree 0, in which the PDs have many more
+features. While by no means exhaustive and not necessarily representative, these
+results suggest that Hera via {phutil} scales more efficiently than Dionysus via
+{TDA} and should therefore be preferred for projects involving more feature-rich
+data sets.
 
 ```{r visualize large PDs benchmark}
 #| fig.width=6, fig.height=3, fig.align='center',
