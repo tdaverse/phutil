@@ -22,12 +22,15 @@ LazyData: true
 Imports: 
     cli,
     rlang
-Suggests: 
-    tinytest,
-    tinysnapshot,
+Suggests:
+    bench,
+    ggplot2,
     knitr,
     rmarkdown,
-    tdaunif
+    TDA,
+    tdaunif,
+    tinytest,
+    tinysnapshot
 LinkingTo: 
     BH,
     cpp11

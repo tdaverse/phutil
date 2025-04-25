@@ -26,7 +26,6 @@ Dionysus).
 [^hera]: <https://github.com/anigmetov/hera>
 
 ```{r setup}
-library(TDA)
 library(phutil)
 ```
 
@@ -211,9 +210,9 @@ computing the sum of $p$th powers; we do this manually to get comparable
 results:
 
 ```{r validate small PDs with Dionysus}
-wasserstein(cbind(0, X), cbind(0, Y), p = 1, dimension = 0)
-sqrt(wasserstein(cbind(0, X), cbind(0, Y), p = 2, dimension = 0))
-bottleneck(cbind(0, X), cbind(0, Y), dimension = 0)
+TDA::wasserstein(cbind(0, X), cbind(0, Y), p = 1, dimension = 0)
+sqrt(TDA::wasserstein(cbind(0, X), cbind(0, Y), p = 2, dimension = 0))
+TDA::bottleneck(cbind(0, X), cbind(0, Y), dimension = 0)
 ```
 
 ### Distances from the trivial diagram
@@ -237,9 +236,9 @@ wasserstein_distance(E, X, p = 1)
 wasserstein_distance(E, X, p = 2)
 bottleneck_distance(E, X)
 # distance from empty using TDA/Dionysus
-wasserstein(E_, cbind(0, X), p = 1, dimension = 0)
-sqrt(wasserstein(E_, cbind(0, X), p = 2, dimension = 0))
-bottleneck(E_, cbind(0, X), dimension = 0)
+TDA::wasserstein(E_, cbind(0, X), p = 1, dimension = 0)
+sqrt(TDA::wasserstein(E_, cbind(0, X), p = 2, dimension = 0))
+TDA::bottleneck(E_, cbind(0, X), dimension = 0)
 ```
 
 **FIXME:** This alternative validation fails.
@@ -267,9 +266,9 @@ wasserstein_distance(as_persistence(Z), as_persistence(W), p = 1, dimension = 2)
 wasserstein_distance(as_persistence(Z), as_persistence(W), p = 2, dimension = 2)
 bottleneck_distance(as_persistence(Z), as_persistence(W), dimension = 2)
 # distance from empty using TDA/Dionysus
-wasserstein(Z, W, p = 1, dimension = 2)
-sqrt(wasserstein(Z, W, p = 2, dimension = 2))
-bottleneck(Z, W, dimension = 2)
+TDA::wasserstein(Z, W, p = 1, dimension = 2)
+sqrt(TDA::wasserstein(Z, W, p = 2, dimension = 2))
+TDA::bottleneck(Z, W, dimension = 2)
 ```
 
 ...
@@ -319,7 +318,7 @@ for (dimension in seq(0, 1)) {
   # compute
   bm_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
     bench::mark(
-      TDA = wasserstein(
+      TDA = TDA::wasserstein(
         PDs1_[[i]], PDs2_[[i]], 
         dimension = dimension, 
         p = 1
@@ -334,7 +333,7 @@ for (dimension in seq(0, 1)) {
   }))
   bm_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
     bench::mark(
-      TDA = sqrt(wasserstein(
+      TDA = sqrt(TDA::wasserstein(
         PDs1_[[i]], PDs2_[[i]], 
         dimension = dimension, 
         p = 2
@@ -349,7 +348,7 @@ for (dimension in seq(0, 1)) {
   }))
   bm_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
     bench::mark(
-      TDA = bottleneck(
+      TDA = TDA::bottleneck(
         PDs1_[[i]], PDs2_[[i]], 
         dimension = dimension
       ),
