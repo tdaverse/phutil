@@ -29,7 +29,6 @@ Suggests:
     rmarkdown,
     TDA,
     tdaunif,
-    tidyr (>= 1.0.0),
     tinytest,
     tinysnapshot
 LinkingTo: 
