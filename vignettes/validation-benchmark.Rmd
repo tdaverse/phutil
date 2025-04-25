@@ -199,10 +199,9 @@ half-plane, giving the popular _bottleneck distance_---using both Hela, as
 exposed through {phutil}, and Dionysus, as exposed through {TDA}:
 
 ```{r validate small PDs with Hera}
-# TODO: Remove explicit tolerance specification once default is shrunk (#32).
-wasserstein_distance(X, Y, p = 1, tol = 1e-8)
-wasserstein_distance(X, Y, p = 2, tol = 1e-8)
-bottleneck_distance(X, Y, tol = 1e-8)
+wasserstein_distance(X, Y, p = 1)
+wasserstein_distance(X, Y, p = 2)
+bottleneck_distance(X, Y)
 ```
 
 In order to compute distances with {TDA}, we must restructure the PDs to include
@@ -234,9 +233,9 @@ E <- matrix(NA_real_, nrow = 0, ncol = 2)
 # with dimension column
 E_ <- cbind(matrix(NA_real_, nrow = 0, ncol = 1), E)
 # distance from empty using phutil/Hera
-wasserstein_distance(E, X, p = 1, tol = 1e-8)
-wasserstein_distance(E, X, p = 2, tol = 1e-8)
-bottleneck_distance(E, X, tol = 1e-8)
+wasserstein_distance(E, X, p = 1)
+wasserstein_distance(E, X, p = 2)
+bottleneck_distance(E, X)
 # distance from empty using TDA/Dionysus
 wasserstein(E_, cbind(0, X), p = 1, dimension = 0)
 sqrt(wasserstein(E_, cbind(0, X), p = 2, dimension = 0))
@@ -264,26 +263,9 @@ W <- cbind(
 # TODO: Enable `*_distance()` functions to handle 3-column matrix or data frame,
 # perhaps by executing `as_persistence()` internally.
 # distance from empty using phutil/Hera
-wasserstein_distance(
-  as_persistence(Z),
-  as_persistence(W),
-  p = 1,
-  dimension = 2,
-  tol = 1e-8
-)
-wasserstein_distance(
-  as_persistence(Z),
-  as_persistence(W),
-  p = 2,
-  dimension = 2,
-  tol = 1e-8
-)
-bottleneck_distance(
-  as_persistence(Z),
-  as_persistence(W),
-  dimension = 2,
-  tol = 1e-8
-)
+wasserstein_distance(as_persistence(Z), as_persistence(W), p = 1, dimension = 2)
+wasserstein_distance(as_persistence(Z), as_persistence(W), p = 2, dimension = 2)
+bottleneck_distance(as_persistence(Z), as_persistence(W), dimension = 2)
 # distance from empty using TDA/Dionysus
 wasserstein(Z, W, p = 1, dimension = 2)
 sqrt(wasserstein(Z, W, p = 2, dimension = 2))
@@ -337,28 +319,44 @@ for (dimension in seq(0, 1)) {
   # compute
   bm_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
     bench::mark(
-      TDA = wasserstein(PDs1_[[i]], PDs2_[[i]],
-                        dimension = dimension, p = 1),
-      phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]],
-                                    dimension = dimension, p = 1, tol = 1e-8),
+      TDA = wasserstein(
+        PDs1_[[i]], PDs2_[[i]], 
+        dimension = dimension, 
+        p = 1
+      ),
+      phutil = wasserstein_distance(
+        PDs1[[i]], PDs2[[i]], 
+        dimension = dimension, 
+        p = 1
+      ),
       iterations = 1
     )
   }))
   bm_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
     bench::mark(
-      TDA = sqrt(wasserstein(PDs1_[[i]], PDs2_[[i]],
-                             dimension = dimension, p = 2)),
-      phutil = wasserstein_distance(PDs1[[i]], PDs2[[i]],
-                                    dimension = dimension, p = 2, tol = 1e-8),
+      TDA = sqrt(wasserstein(
+        PDs1_[[i]], PDs2_[[i]], 
+        dimension = dimension, 
+        p = 2
+      )),
+      phutil = wasserstein_distance(
+        PDs1[[i]], PDs2[[i]], 
+        dimension = dimension, 
+        p = 2
+      ),
       iterations = 1
     )
   }))
   bm_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
     bench::mark(
-      TDA = bottleneck(PDs1_[[i]], PDs2_[[i]],
-                       dimension = dimension),
-      phutil = bottleneck_distance(PDs1[[i]], PDs2[[i]],
-                                   dimension = dimension, tol = 1e-8),
+      TDA = bottleneck(
+        PDs1_[[i]], PDs2_[[i]], 
+        dimension = dimension
+      ),
+      phutil = bottleneck_distance(
+        PDs1[[i]], PDs2[[i]], 
+        dimension = dimension
+      ),
       iterations = 1
     )
   }))
