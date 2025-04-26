@@ -26,13 +26,13 @@ Suggests:
     bench,
     ggplot2,
     knitr,
-    rmarkdown,
+    quarto,
     TDA,
     tdaunif,
     tidyr,
     tinytest,
-    tinysnapshot
+    tinysnapshot,
 LinkingTo: 
     BH,
     cpp11
-VignetteBuilder: knitr
+VignetteBuilder: quarto
