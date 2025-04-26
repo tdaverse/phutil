@@ -1,11 +1,11 @@
 ---
 title: "Validation and Benchmark of Wasserstein Distances"
-output: rmarkdown::html_vignette
+output: rmarkdown::pdf_document
 vignette: >
   %\VignetteIndexEntry{Validation and Benchmark of Wasserstein Distances}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{bench,ggplot2,TDA}
+  %\VignetteDepends{TDA,bench,ggplot2,scales}
 ---
 
 ```{r setup, include = FALSE}
@@ -13,54 +13,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(phutil)
-autoplot.bench_mark <- function(
-    object, 
-    type = c("beeswarm", "jitter", "ridge", "boxplot", "violin"), 
-    ...
-) {
-  rlang::check_installed("ggplot2", "for `autoplot()`.")
-  type <- match.arg(type)
-  if (type == "beeswarm") {
-    rlang::check_installed("ggbeeswarm", "to use `type = \"beeswarm\".")
-  }
-  if (inherits(object$expression, "bench_expr")) {
-    object$expression <- as.character(object$expression)
-  }
-  
-  # Instead of unnest, expand the nested columns
-  res <- data.frame(
-    expression = rep(object$expression, sapply(object$time, length)),
-    time = unlist(object$time),
-    gc = unlist(object$gc)
-  )
-  
-  p <- ggplot2::ggplot(res)
-  switch(type,
-         beeswarm = p <- p + ggplot2::aes(.data$time, .data$expression, color = .data$gc) + 
-           ggbeeswarm::geom_quasirandom(..., orientation = "y"),
-         jitter = p <- p + ggplot2::aes(.data$time, .data$expression, color = .data$gc) + 
-           ggplot2::geom_jitter(...),
-         ridge = p <- p + ggplot2::aes(.data$time, .data$expression) + 
-           ggridges::geom_density_ridges(...),
-         boxplot = p <- p + ggplot2::aes(.data$time, .data$expression) + 
-           ggplot2::geom_boxplot(...),
-         violin = p <- p + ggplot2::aes(.data$time, .data$expression) + 
-           ggplot2::geom_violin(...))
-  
-  parameters <- setdiff(colnames(object), 
-                       c("expression", summary_cols, data_cols, 
-                         c("level0", "level1", "level2")))
-  
-  if (length(parameters) == 0) {
-    return(p)
-  }
-  if (length(parameters) == 2) {
-    return(p + ggplot2::facet_grid(paste0(parameters[[1]], "~", parameters[[2]]), 
-                                  labeller = ggplot2::label_both))
-  }
-  p + ggplot2::facet_wrap(parameters, labeller = ggplot2::label_both)
-}
 ```
 
 This vignette introduces the Wasserstein and bottleneck distances between
@@ -73,8 +25,12 @@ Dionysus).
 
 [^hera]: <https://github.com/anigmetov/hera>
 
-We will also use the {tdaunif} package to generate larger point clouds and the
-{bench} package to perform benchmark tests.
+```{r}
+library(TDA)
+library(phutil)
+```
+
+Below, remember that the functions with the `*_distance()` suffix come from {phutil}, while those without come from {TDA}.
 
 ## Definitions
 
@@ -254,9 +210,9 @@ computing the sum of $p$th powers; we do this manually to get comparable
 results:
 
 ```{r validate small PDs with Dionysus}
-TDA::wasserstein(cbind(0, X), cbind(0, Y), p = 1, dimension = 0)
-sqrt(TDA::wasserstein(cbind(0, X), cbind(0, Y), p = 2, dimension = 0))
-TDA::bottleneck(cbind(0, X), cbind(0, Y), dimension = 0)
+wasserstein(cbind(0, X), cbind(0, Y), p = 1, dimension = 0)
+sqrt(wasserstein(cbind(0, X), cbind(0, Y), p = 2, dimension = 0))
+bottleneck(cbind(0, X), cbind(0, Y), dimension = 0)
 ```
 
 ### Distances from the trivial diagram
@@ -280,9 +236,9 @@ wasserstein_distance(E, X, p = 1)
 wasserstein_distance(E, X, p = 2)
 bottleneck_distance(E, X)
 # distance from empty using TDA/Dionysus
-TDA::wasserstein(E_, cbind(0, X), p = 1, dimension = 0)
-sqrt(TDA::wasserstein(E_, cbind(0, X), p = 2, dimension = 0))
-TDA::bottleneck(E_, cbind(0, X), dimension = 0)
+wasserstein(E_, cbind(0, X), p = 1, dimension = 0)
+sqrt(wasserstein(E_, cbind(0, X), p = 2, dimension = 0))
+bottleneck(E_, cbind(0, X), dimension = 0)
 ```
 
 **FIXME:** This alternative validation fails.
@@ -310,9 +266,9 @@ wasserstein_distance(as_persistence(Z), as_persistence(W), p = 1, dimension = 2)
 wasserstein_distance(as_persistence(Z), as_persistence(W), p = 2, dimension = 2)
 bottleneck_distance(as_persistence(Z), as_persistence(W), dimension = 2)
 # distance from empty using TDA/Dionysus
-TDA::wasserstein(Z, W, p = 1, dimension = 2)
-sqrt(TDA::wasserstein(Z, W, p = 2, dimension = 2))
-TDA::bottleneck(Z, W, dimension = 2)
+wasserstein(Z, W, p = 1, dimension = 2)
+sqrt(wasserstein(Z, W, p = 2, dimension = 2))
+bottleneck(Z, W, dimension = 2)
 ```
 
 ...
@@ -331,12 +287,12 @@ set.seed(28415)
 n <- 24
 PDs1 <- lapply(seq(n), function(i) {
   S1 <- tdaunif::sample_trefoil(n = 120, sd = .05)
-  as_persistence(TDA::ripsDiag(S1, maxdimension = 2, maxscale = 6))
+  as_persistence(ripsDiag(S1, maxdimension = 2, maxscale = 6))
 })
 PDs2 <- lapply(seq(n), function(i) {
   S2 <- cbind(tdaunif::sample_arch_spiral(n = 120, arms = 2), 0)
   S2 <- tdaunif::add_noise(S2, sd = .05)
-  as_persistence(TDA::ripsDiag(S2, maxdimension = 2, maxscale = 6))
+  as_persistence(ripsDiag(S2, maxdimension = 2, maxscale = 6))
 })
 ```
 
@@ -362,7 +318,7 @@ for (dimension in seq(0, 1)) {
   # compute
   bm_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
     bench::mark(
-      TDA = TDA::wasserstein(
+      TDA = wasserstein(
         PDs1_[[i]], PDs2_[[i]], 
         dimension = dimension, 
         p = 1
@@ -377,7 +333,7 @@ for (dimension in seq(0, 1)) {
   }))
   bm_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
     bench::mark(
-      TDA = sqrt(TDA::wasserstein(
+      TDA = sqrt(wasserstein(
         PDs1_[[i]], PDs2_[[i]], 
         dimension = dimension, 
         p = 2
@@ -392,7 +348,7 @@ for (dimension in seq(0, 1)) {
   }))
   bm_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
     bench::mark(
-      TDA = TDA::bottleneck(
+      TDA = bottleneck(
         PDs1_[[i]], PDs2_[[i]], 
         dimension = dimension
       ),
@@ -431,6 +387,17 @@ data sets.
 #|  Benchmark comparison of Dionysus via \\{TDA\\} and Hera via \\{phutil\\}
 #|  on large persistence diagrams:
 #|  Violin plots of runtime distributions on a common scale."
-ggplot2::autoplot(bm_all, type = "violin") +
-  ggplot2::labs(x = NULL, y = NULL)
+library(magrittr)
+library(ggplot2)
+bm_all %>%
+  transform(implementation = as.character(expression), time = unlist(time)) %>%
+  subset(select = c(implementation, degree, power, time)) %>%
+  ggplot(aes(x = time, y = implementation)) +
+  facet_grid(
+    rows = vars(power), cols = vars(degree),
+    labeller = label_both
+  ) +
+  geom_violin() +
+  scale_x_continuous(transform = "log10", labels = scales::label_timespan()) +
+  labs(x = NULL, y = NULL)
 ```
