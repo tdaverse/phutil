@@ -85,31 +85,17 @@ bottleneck_distance <- function(
   validate = TRUE,
   dimension = 0L
 ) {
-  if (inherits(x, "persistence")) {
+  if (validate) {
+    x <- as_persistence(x)
     x <- get_pairs(x, dimension = dimension)
-  } else if (validate) {
-    status <- check_2column_matrix(x, warn = FALSE)
-    if (!status) {
-      cli::cli_abort(
-        "{.arg x} contains pairs with death prior to birth."
-      )
-    }
+    x <- x[x[, 1] < x[, 2], , drop = FALSE]
   }
 
-  x <- x[x[, 1] < x[, 2], , drop = FALSE]
-
-  if (inherits(y, "persistence")) {
+  if (validate) {
+    y <- as_persistence(y)
     y <- get_pairs(y, dimension = dimension)
-  } else if (validate) {
-    status <- check_2column_matrix(y, warn = FALSE)
-    if (!status) {
-      cli::cli_abort(
-        "{.arg y} contains pairs with death prior to birth."
-      )
-    }
+    y <- y[y[, 1] < y[, 2], , drop = FALSE]
   }
-
-  y <- y[y[, 1] < y[, 2], , drop = FALSE]
 
   bottleneckDistance(
     x = x,
@@ -128,31 +114,17 @@ wasserstein_distance <- function(
   validate = TRUE,
   dimension = 0L
 ) {
-  if (inherits(x, "persistence")) {
+  if (validate) {
+    x <- as_persistence(x)
     x <- get_pairs(x, dimension = dimension)
-  } else if (validate) {
-    status <- check_2column_matrix(x, warn = FALSE)
-    if (!status) {
-      cli::cli_abort(
-        "{.arg x} contains pairs with death prior to birth."
-      )
-    }
+    x <- x[x[, 1] < x[, 2], , drop = FALSE]
   }
 
-  x <- x[x[, 1] < x[, 2], , drop = FALSE]
-
-  if (inherits(y, "persistence")) {
+  if (validate) {
+    y <- as_persistence(y)
     y <- get_pairs(y, dimension = dimension)
-  } else if (validate) {
-    status <- check_2column_matrix(y, warn = FALSE)
-    if (!status) {
-      cli::cli_abort(
-        "{.arg y} contains pairs with death prior to birth."
-      )
-    }
+    y <- y[y[, 1] < y[, 2], , drop = FALSE]
   }
-
-  y <- y[y[, 1] < y[, 2], , drop = FALSE]
 
   if (p > 20) {
     return(bottleneck_distance(
@@ -236,19 +208,12 @@ bottleneck_pairwise_distances <- function(
   ncores = 1L
 ) {
   indices <- seq_along(x)
-  for (i in indices) {
-    if (inherits(x[[i]], "persistence")) {
+  if (validate) {
+    for (i in indices) {
+      x[[i]] <- as_persistence(x[[i]])
       x[[i]] <- get_pairs(x[[i]], dimension = dimension)
-    } else if (validate) {
-      status <- check_2column_matrix(x[[i]], warn = FALSE)
-      if (!status) {
-        cli::cli_abort(
-          "{.arg x[{i}]} contains pairs with death prior to birth."
-        )
-      }
+      x[[i]] <- x[[i]][x[[i]][, 1] < x[[i]][, 2], , drop = FALSE]
     }
-
-    x[[i]] <- x[[i]][x[[i]][, 1] < x[[i]][, 2], , drop = FALSE]
   }
 
   distance_matrix <- bottleneckPairwiseDistances(
@@ -276,19 +241,12 @@ wasserstein_pairwise_distances <- function(
   ncores = 1L
 ) {
   indices <- seq_along(x)
-  for (i in indices) {
-    if (inherits(x[[i]], "persistence")) {
+  if (validate) {
+    for (i in indices) {
+      x[[i]] <- as_persistence(x[[i]])
       x[[i]] <- get_pairs(x[[i]], dimension = dimension)
-    } else if (validate) {
-      status <- check_2column_matrix(x[[i]], warn = FALSE)
-      if (!status) {
-        cli::cli_abort(
-          "{.arg x[{i}]} contains pairs with death prior to birth."
-        )
-      }
+      x[[i]] <- x[[i]][x[[i]][, 1] < x[[i]][, 2], , drop = FALSE]
     }
-
-    x[[i]] <- x[[i]][x[[i]][, 1] < x[[i]][, 2], , drop = FALSE]
   }
 
   if (p > 20) {

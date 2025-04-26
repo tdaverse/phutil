@@ -14,53 +14,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 library(phutil)
-autoplot.bench_mark <- function(
-    object, 
-    type = c("beeswarm", "jitter", "ridge", "boxplot", "violin"), 
-    ...
-) {
-  rlang::check_installed("ggplot2", "for `autoplot()`.")
-  type <- match.arg(type)
-  if (type == "beeswarm") {
-    rlang::check_installed("ggbeeswarm", "to use `type = \"beeswarm\".")
-  }
-  if (inherits(object$expression, "bench_expr")) {
-    object$expression <- as.character(object$expression)
-  }
-  
-  # Instead of unnest, expand the nested columns
-  res <- data.frame(
-    expression = rep(object$expression, sapply(object$time, length)),
-    time = unlist(object$time),
-    gc = unlist(object$gc)
-  )
-  
-  p <- ggplot2::ggplot(res)
-  switch(type,
-         beeswarm = p <- p + ggplot2::aes(.data$time, .data$expression, color = .data$gc) + 
-           ggbeeswarm::geom_quasirandom(..., orientation = "y"),
-         jitter = p <- p + ggplot2::aes(.data$time, .data$expression, color = .data$gc) + 
-           ggplot2::geom_jitter(...),
-         ridge = p <- p + ggplot2::aes(.data$time, .data$expression) + 
-           ggridges::geom_density_ridges(...),
-         boxplot = p <- p + ggplot2::aes(.data$time, .data$expression) + 
-           ggplot2::geom_boxplot(...),
-         violin = p <- p + ggplot2::aes(.data$time, .data$expression) + 
-           ggplot2::geom_violin(...))
-  
-  parameters <- setdiff(colnames(object), 
-                       c("expression", summary_cols, data_cols, 
-                         c("level0", "level1", "level2")))
-  
-  if (length(parameters) == 0) {
-    return(p)
-  }
-  if (length(parameters) == 2) {
-    return(p + ggplot2::facet_grid(paste0(parameters[[1]], "~", parameters[[2]]), 
-                                  labeller = ggplot2::label_both))
-  }
-  p + ggplot2::facet_wrap(parameters, labeller = ggplot2::label_both)
-}
 ```
 
 This vignette introduces the Wasserstein and bottleneck distances between
@@ -285,8 +238,6 @@ sqrt(TDA::wasserstein(E_, cbind(0, X), p = 2, dimension = 0))
 TDA::bottleneck(E_, cbind(0, X), dimension = 0)
 ```
 
-**FIXME:** This alternative validation fails.
-
 ```{r small PDs with one empty}
 Z <- cbind(
   dimension = c(0, 1, 2),
@@ -303,12 +254,10 @@ W <- cbind(
 ...
 
 ```{r validate small PDs with one empty}
-# TODO: Enable `*_distance()` functions to handle 3-column matrix or data frame,
-# perhaps by executing `as_persistence()` internally.
 # distance from empty using phutil/Hera
-wasserstein_distance(as_persistence(Z), as_persistence(W), p = 1, dimension = 2)
-wasserstein_distance(as_persistence(Z), as_persistence(W), p = 2, dimension = 2)
-bottleneck_distance(as_persistence(Z), as_persistence(W), dimension = 2)
+wasserstein_distance(Z, W, p = 1, dimension = 2)
+wasserstein_distance(Z, W, p = 2, dimension = 2)
+bottleneck_distance(Z, W, dimension = 2)
 # distance from empty using TDA/Dionysus
 TDA::wasserstein(Z, W, p = 1, dimension = 2)
 sqrt(TDA::wasserstein(Z, W, p = 2, dimension = 2))

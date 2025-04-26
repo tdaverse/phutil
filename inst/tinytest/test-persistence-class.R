@@ -24,11 +24,12 @@ expect_snapshot_print(mat, label = "print-mat-persistence-filtration")
 
 more_df <- noisy_circle_ripserr
 more_df$morevar <- 1L
-expect_true(inherits(as_persistence(more_df), "persistence"))
+expect_inherits(as_persistence(more_df), "persistence")
 
-wrong_df <- noisy_circle_ripserr
-wrong_df$dimension <- NULL
-expect_error(as_persistence(wrong_df))
+df_2cols <- noisy_circle_ripserr
+df_2cols$dimension <- NULL
+ps <- as_persistence(df_2cols)
+expect_inherits(ps, "persistence")
 
 wrong_df <- noisy_circle_ripserr
 colnames(wrong_df) <- c("x", "y", "z")
@@ -121,11 +122,11 @@ expect_message(
 )
 
 # Test that as_persistence() errors out if provided with a matrix with
-# less than 3 columns
-x <- matrix(1:6, ncol = 2)
+# less than 2 columns
+x <- matrix(1:6, ncol = 1)
 expect_error(
   as_persistence(x),
-  pattern = "The matrix must have at least 3 columns."
+  pattern = "The matrix must have at least 2 columns."
 )
 
 # Test that as_persistence() correctly processes unnamed matrices
