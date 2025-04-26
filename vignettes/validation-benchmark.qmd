@@ -4,7 +4,7 @@ vignette: >
   %\VignetteIndexEntry{validation-benchmark}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{bench,ggplot2,TDA}
+  %\VignetteDepends{TDA,bench,ggplot2,scales}
 knitr:
   opts_chunk:
     collapse: true
@@ -19,13 +19,11 @@ library(phutil)
 
 This vignette introduces the Wasserstein and bottleneck distances between
 persistence diagrams and their implementations in {phutil}, adapted from
-Hera,[^hera] by way of two tasks:
+[Hera](https://github.com/anigmetov/hera), by way of two tasks:
 
 1. Validate the implementations on an example computed by hand.
 2. Benchmark the implementations against those provided by {TDA} (adapted from
 Dionysus).
-
-[^hera]: <https://github.com/anigmetov/hera>
 
 We will also use the {tdaunif} package to generate larger point clouds and the
 {bench} package to perform benchmark tests.
@@ -63,7 +61,7 @@ As the parameter $p$ ranges between $1$ and $\infty$, three of its values yield
 familiar distance metrics: The taxicab distance $D_1$, the Pythagorean distance
 $D_2$, and the Chebyshev distance $D_\infty$.
 
-The _Kantorovich_ or _Wasserstein metric_[^wasserstein] derives from the problem
+The [_Kantorovich_ or _Wasserstein metric_](https://en.wikipedia.org/wiki/Wasserstein_metric) derives from the problem
 of optimal transport: What is the minimum cost of relocating one distribution to
 another? In the space of persistence diagrams, only finitely many points lie off
 the diagonal, though every point on the diagonal is taken to be included with
@@ -74,8 +72,6 @@ points to the diagonal (and vice-versa). This cost then depends entirely on how
 the off-diagonal points are matched, where a _matching_ is any bijective map
 $\varphi : X \to Y$, though in practice we assume that almost all diagonal
 points are matched to themselves and incur no cost.
-
-[^wasserstein]: <https://en.wikipedia.org/wiki/Wasserstein_metric>
 
 The cost $D(x,\varphi(x))$ of relocating a point $x$ to its matched point
 $\varphi(x)$ is typically taken to be a Minkowski distance $D_q(x,\varphi(x)) =
@@ -371,6 +367,17 @@ projects involving more feature-rich data sets.
 #| fig-cap: "Benchmark comparison of Dionysus via {TDA} and Hera via {phutil} on
 #| large persistence diagrams: Violin plots of runtime distributions on a common
 #| scale."
-ggplot2::autoplot(bm_all, type = "violin") +
-  ggplot2::labs(x = NULL, y = NULL)
+library(magrittr)
+library(ggplot2)
+bm_all %>%
+  transform(implementation = as.character(expression), time = unlist(time)) %>%
+  subset(select = c(implementation, degree, power, time)) %>%
+  ggplot(aes(x = time, y = implementation)) +
+  facet_grid(
+    rows = vars(power), cols = vars(degree),
+    labeller = label_both
+  ) +
+  geom_violin() +
+  scale_x_continuous(transform = "log10", labels = scales::label_timespan()) +
+  labs(x = NULL, y = NULL)
 ```
