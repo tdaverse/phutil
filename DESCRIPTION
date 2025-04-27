@@ -25,7 +25,6 @@ Suggests:
     bench,
     ggplot2,
     knitr,
-    magrittr,
     quarto,
     scales,
     TDA,

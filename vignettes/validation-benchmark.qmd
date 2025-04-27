@@ -4,7 +4,7 @@ vignette: >
   %\VignetteIndexEntry{Validation and Benchmark of Wasserstein Distances}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{TDA,bench,ggplot2,scales}
+  %\VignetteDepends{bench,ggplot2,scales,TDA}
 knitr:
   opts_chunk:
     collapse: true
@@ -14,6 +14,7 @@ bibliography: references.bib
 
 ```{r}
 #| label: setup
+library(ggplot2)
 library(phutil)
 ```
 
@@ -344,12 +345,13 @@ projects involving more feature-rich data sets.
 #| fig-cap: "Benchmark comparison of Dionysus via {TDA} and Hera via {phutil} on
 #| large persistence diagrams: Violin plots of runtime distributions on a common
 #| scale."
-library(magrittr)
-library(ggplot2)
-bm_all %>%
-  transform(implementation = as.character(expression), time = unlist(time)) %>%
-  subset(select = c(implementation, degree, power, time)) %>%
-  ggplot(aes(x = time, y = implementation)) +
+bm_all <- transform(
+  bm_all, 
+  implementation = as.character(expression), 
+  time = unlist(time)
+)
+bm_all <- subset(bm_all, select = c(implementation, degree, power, time))
+ggplot(bm_all, aes(x = time, y = implementation)) +
   facet_grid(
     rows = vars(power), cols = vars(degree),
     labeller = label_both
@@ -358,3 +360,5 @@ bm_all %>%
   scale_x_continuous(transform = "log10", labels = scales::label_timespan()) +
   labs(x = NULL, y = NULL)
 ```
+
+## References
