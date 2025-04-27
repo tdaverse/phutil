@@ -4,7 +4,7 @@ vignette: >
   %\VignetteIndexEntry{Validation and Benchmark of Wasserstein Distances}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
-  %\VignetteDepends{bench,ggplot2,scales,TDA}
+  %\VignetteDepends{TDA,microbenchmark,ggplot2,scales}
 knitr:
   opts_chunk:
     collapse: true
@@ -27,7 +27,7 @@ persistence diagrams and their implementations in {phutil}, adapted from
 Dionysus).
 
 We will also use the {tdaunif} package to generate larger point clouds and the
-{bench} package to perform benchmark tests.
+{microbenchmark} package to perform benchmark tests.
 
 ## Definitions
 
@@ -258,87 +258,63 @@ Both implementations are used to compute distances between successive pairs of
 diagrams. The computations are annotated by homological degree and Wasserstein
 power so that these results can be compared separately.
 
-```{r}
-#| eval: false
-# FIXME: Ensure that empty PDs (dimension 2 below) are handled correctly.
-# Apparently this is an issue in TDA, not phutil
-# FIXME: Replace with `seq(0, 2)` once bugs are resolved.
-```
-
 ```{r benchmark phutil and TDA}
 PDs1_ <- lapply(lapply(PDs1, as.data.frame), as.matrix)
 PDs2_ <- lapply(lapply(PDs2, as.data.frame), as.matrix)
 # iterate over homological degrees and Wasserstein powers
 bm_all <- list()
 PDs_i <- seq_along(PDs1)
-for (dimension in seq(0, 1)) {
+for (dimension in seq(0, 2)) {
   # compute
   bm_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-    bench::mark(
+    microbenchmark::microbenchmark(
       TDA = TDA::wasserstein(
-        PDs1_[[i]], PDs2_[[i]], 
-        dimension = dimension, 
-        p = 1
+        PDs1_[[i]], PDs2_[[i]], dimension = dimension, p = 1
       ),
       phutil = wasserstein_distance(
-        PDs1[[i]], PDs2[[i]], 
-        dimension = dimension, 
-        p = 1
+        PDs1[[i]],  PDs2[[i]],  dimension = dimension, p = 1
       ),
-      iterations = 1
+      times = 1
     )
   }))
   bm_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-    bench::mark(
+    microbenchmark::microbenchmark(
       TDA = sqrt(TDA::wasserstein(
-        PDs1_[[i]], PDs2_[[i]], 
-        dimension = dimension, 
-        p = 2
+        PDs1_[[i]], PDs2_[[i]], dimension = dimension, p = 2
       )),
       phutil = wasserstein_distance(
-        PDs1[[i]], PDs2[[i]], 
-        dimension = dimension, 
-        p = 2
+        PDs1[[i]],  PDs2[[i]],  dimension = dimension, p = 2
       ),
-      iterations = 1
+      times = 1
     )
   }))
   bm_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-    bench::mark(
+    microbenchmark::microbenchmark(
       TDA = TDA::bottleneck(
-        PDs1_[[i]], PDs2_[[i]], 
-        dimension = dimension
+        PDs1_[[i]], PDs2_[[i]], dimension = dimension
       ),
       phutil = bottleneck_distance(
-        PDs1[[i]], PDs2[[i]], 
-        dimension = dimension
+        PDs1[[i]],  PDs2[[i]],  dimension = dimension
       ),
-      iterations = 1
+      times = 1
     )
   }))
-  # annotate
+  # annotate and combine
   bm_1$power <- 1; bm_2$power <- 2; bm_inf$power <- Inf
-  # combine
   bm_res <- rbind(bm_1, bm_2, bm_inf)
   bm_res$degree <- dimension
-  # collate
-  bm_all <- c(bm_all, list(bm_res))
+  bm_all <- c(bm_all, list(as.data.frame(bm_res)))
 }
 bm_all <- do.call(rbind, bm_all)
 ```
 
 @fig-benchmark-large compares the distributions of runtimes by homological
-degree (column) and Wasserstein power (row). We note that Dionysus via {TDA}
-clearly outperforms Hera via {phutil} on degree-1 and -2 PDs, which in these
-cases have many fewer features. However, the tables are turned in degree 0, in
-which the PDs have many more features. While by no means exhaustive and not
-necessarily representative, these results suggest that Hera via {phutil} scales
-more efficiently than Dionysus via {TDA} and should therefore be preferred for
-projects involving more feature-rich data sets.
+degree (column) and Wasserstein power (row).
+Because {microbenchmark} returns runtimes in nanoseconds, we convert these to seconds ahead of formatting the axis in seconds.
 
 ```{r}
 #| label: fig-benchmark-large
-#| fig-width: 6
+#| fig-width: 8
 #| fig-height: 3
 #| fig-align: 'center'
 #| fig-retina: 2
@@ -347,18 +323,26 @@ projects involving more feature-rich data sets.
 #| scale."
 bm_all <- transform(
   bm_all, 
-  implementation = as.character(expression), 
+  expr = as.character(expr), 
   time = unlist(time)
 )
-bm_all <- subset(bm_all, select = c(implementation, degree, power, time))
-ggplot(bm_all, aes(x = time, y = implementation)) +
+bm_all <- subset(bm_all, select = c(expr, degree, power, time))
+ggplot(bm_all, aes(x = time * 10e-9, y = expr)) +
   facet_grid(
     rows = vars(power), cols = vars(degree),
     labeller = label_both
   ) +
   geom_violin() +
-  scale_x_continuous(transform = "log10", labels = scales::label_timespan()) +
+  scale_x_continuous(
+    transform = "log10",
+    labels = scales::label_timespan(units = "secs")
+  ) +
   labs(x = NULL, y = NULL)
 ```
+
+We note that Dionysus via {TDA} clearly outperforms Hera via {phutil} on degree-1 PDs, which in these cases have many fewer features.
+However, the tables are turned in degree 0, in which the PDs have many more features.
+(The implementations are more evenly matched on the degree-2 PDs, which may have to do with many of them being empty.)
+While by no means exhaustive and not necessarily representative, these results suggest that Hera via {phutil} scales more efficiently than Dionysus via {TDA} and should therefore be preferred for projects involving more feature-rich data sets.
 
 ## References
