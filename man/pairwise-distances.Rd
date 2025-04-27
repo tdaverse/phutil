@@ -9,7 +9,7 @@
 \usage{
 bottleneck_pairwise_distances(
   x,
-  tol = 1e-04,
+  tol = sqrt(.Machine$double.eps),
   validate = TRUE,
   dimension = 0L,
   ncores = 1L
@@ -17,7 +17,7 @@ bottleneck_pairwise_distances(
 
 wasserstein_pairwise_distances(
   x,
-  tol = 1e-04,
+  tol = sqrt(.Machine$double.eps),
   p = 1,
   validate = TRUE,
   dimension = 0L,
@@ -26,7 +26,7 @@ wasserstein_pairwise_distances(
 
 kantorovich_pairwise_distances(
   x,
-  tol = 1e-04,
+  tol = sqrt(.Machine$double.eps),
   p = 1,
   validate = TRUE,
   dimension = 0L,
@@ -37,11 +37,11 @@ kantorovich_pairwise_distances(
 \item{x}{A list of either 2-column matrices or objects of class \link{persistence}
 specifying the set of persistence diagrams.}
 
-\item{tol}{A numeric value specifying the relative error. Defaults to \code{1e-4}.
-For the Bottleneck distance, it can be set to \code{0.0} in which case the exact
-Bottleneck distance is computed, while an approximate Bottleneck distance
-is computed if \code{tol > 0.0}. For the Wasserstein distance, it must be
-strictly positive.}
+\item{tol}{A numeric value specifying the relative error. Defaults to
+\code{sqrt(.Machine$double.eps)}. For the Bottleneck distance, it can be set to
+\code{0.0} in which case the exact Bottleneck distance is computed, while an
+approximate Bottleneck distance is computed if \code{tol > 0.0}. For the
+Wasserstein distance, it must be strictly positive.}
 
 \item{validate}{A boolean value specifying whether to validate the input
 persistence diagrams. Defaults to \code{TRUE}. If \code{FALSE}, the function will not

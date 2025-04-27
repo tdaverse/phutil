@@ -19,11 +19,20 @@ BugReports: https://github.com/tdaverse/phutil/issues
 Depends: 
     R (>= 3.5)
 LazyData: true
-Suggests: 
-    tinytest, tinysnapshot
 Imports: 
     cli,
     rlang
+Suggests:
+    bench,
+    ggplot2,
+    knitr,
+    quarto,
+    TDA,
+    tdaunif,
+    tidyr,
+    tinytest,
+    tinysnapshot,
 LinkingTo: 
     BH,
     cpp11
+VignetteBuilder: quarto

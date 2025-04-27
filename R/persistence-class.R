@@ -157,11 +157,16 @@ as_persistence.persistence <- function(x, warn = TRUE, ...) {
 #' @rdname persistence
 #' @export
 as_persistence.data.frame <- function(x, warn = TRUE, ...) {
-  required_variables <- c("dimension", "birth", "death")
-  n_required <- length(required_variables)
-  if (ncol(x) < n_required) {
-    cli::cli_abort("The data frame must have at least {n_required} columns.")
+  if (ncol(x) < 2L) {
+    cli::cli_abort("The data frame must have at least 2 columns.")
   }
+
+  if (ncol(x) == 2L) {
+    # Assume dimension is missing and add it
+    x$dimension <- 0L
+  }
+
+  required_variables <- c("dimension", "birth", "death")
   if (!all(required_variables %in% colnames(x))) {
     cli::cli_abort(
       "The data frame must have columns named {.var dimension}, {.var birth} and {.var death}."
@@ -212,8 +217,20 @@ as_persistence.data.frame <- function(x, warn = TRUE, ...) {
 #' @export
 as_persistence.matrix <- function(x, warn = TRUE, ...) {
   n_columns <- ncol(x)
-  if (n_columns < 3L) {
-    cli::cli_abort("The matrix must have at least 3 columns.")
+
+  if (n_columns < 2L) {
+    cli::cli_abort("The matrix must have at least 2 columns.")
+  }
+
+  if (n_columns == 2L) {
+    # if only 2 columns, assume birth and death
+    if (nrow(x) == 0L) {
+      x <- matrix(0L, nrow = 0L, ncol = 3L)
+    } else {
+      x <- cbind(0L, x)
+    }
+    colnames(x) <- c("dimension", "birth", "death")
+    n_columns <- 3L
   }
 
   column_names <- colnames(x)

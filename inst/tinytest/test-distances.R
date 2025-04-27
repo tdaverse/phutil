@@ -1,9 +1,25 @@
 x <- cbind(birth = c(1, 2), death = c(3, 1))
 y <- cbind(birth = numeric(0), death = numeric(0))
-expect_error(bottleneck_distance(x, y))
-expect_error(bottleneck_distance(y, x))
-expect_error(wasserstein_distance(x, y))
-expect_error(wasserstein_distance(y, x))
+expect_equal(bottleneck_distance(x, y), 1)
+expect_message(
+  bottleneck_distance(x, y),
+  "Birth values are expected to be smaller than death values."
+)
+expect_equal(bottleneck_distance(y, x), 1)
+expect_message(
+  bottleneck_distance(y, x),
+  "Birth values are expected to be smaller than death values."
+)
+expect_equal(wasserstein_distance(x, y), 1)
+expect_message(
+  wasserstein_distance(x, y),
+  "Birth values are expected to be smaller than death values."
+)
+expect_equal(wasserstein_distance(y, x), 1)
+expect_message(
+  wasserstein_distance(y, x),
+  "Birth values are expected to be smaller than death values."
+)
 
 x <- cbind(birth = c(1, 2), death = c(3, 4))
 
@@ -47,15 +63,8 @@ expect_equal(length(out), 3L)
 wrong_sample <- persistence_sample[1L:3L]
 wrong_sample[[1L]] <- cbind(birth = c(1, 2), death = c(3, 1))
 
-expect_error(
-  bottleneck_pairwise_distances(wrong_sample),
-  "contains pairs with death prior to birth"
-)
-
-expect_error(
-  wasserstein_pairwise_distances(wrong_sample),
-  "contains pairs with death prior to birth"
-)
+expect_inherits(bottleneck_pairwise_distances(wrong_sample), "dist")
+expect_inherits(wasserstein_pairwise_distances(wrong_sample), "dist")
 
 expect_equal(bottleneck_distance(x, cbind(1, 1)), 1)
 expect_equal(wasserstein_distance(x, cbind(1, 1)), 2)

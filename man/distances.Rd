@@ -7,11 +7,31 @@
 \alias{kantorovich_distance}
 \title{Distances between two persistence diagrams}
 \usage{
-bottleneck_distance(x, y, tol = 1e-04, validate = TRUE, dimension = 0L)
+bottleneck_distance(
+  x,
+  y,
+  tol = sqrt(.Machine$double.eps),
+  validate = TRUE,
+  dimension = 0L
+)
 
-wasserstein_distance(x, y, tol = 1e-04, p = 1, validate = TRUE, dimension = 0L)
+wasserstein_distance(
+  x,
+  y,
+  tol = sqrt(.Machine$double.eps),
+  p = 1,
+  validate = TRUE,
+  dimension = 0L
+)
 
-kantorovich_distance(x, y, tol = 1e-04, p = 1, validate = TRUE, dimension = 0L)
+kantorovich_distance(
+  x,
+  y,
+  tol = sqrt(.Machine$double.eps),
+  p = 1,
+  validate = TRUE,
+  dimension = 0L
+)
 }
 \arguments{
 \item{x}{Either a matrix of shape \eqn{n \times 2} or an object of class
@@ -20,11 +40,11 @@ kantorovich_distance(x, y, tol = 1e-04, p = 1, validate = TRUE, dimension = 0L)
 \item{y}{Either a matrix of shape \eqn{m \times 2} or an object of class
 \link{persistence} specifying the second persistence diagram.}
 
-\item{tol}{A numeric value specifying the relative error. Defaults to \code{1e-4}.
-For the Bottleneck distance, it can be set to \code{0.0} in which case the exact
-Bottleneck distance is computed, while an approximate Bottleneck distance
-is computed if \code{tol > 0.0}. For the Wasserstein distance, it must be
-strictly positive.}
+\item{tol}{A numeric value specifying the relative error. Defaults to
+\code{sqrt(.Machine$double.eps)}. For the Bottleneck distance, it can be set to
+\code{0.0} in which case the exact Bottleneck distance is computed, while an
+approximate Bottleneck distance is computed if \code{tol > 0.0}. For the
+Wasserstein distance, it must be strictly positive.}
 
 \item{validate}{A boolean value specifying whether to validate the input
 persistence diagrams. Defaults to \code{TRUE}. If \code{FALSE}, the function will not
