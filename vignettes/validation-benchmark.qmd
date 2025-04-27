@@ -1,7 +1,7 @@
 ---
 title: "Validation and Benchmark of Wasserstein Distances"
 vignette: >
-  %\VignetteIndexEntry{validation-benchmark}
+  %\VignetteIndexEntry{Validation and Benchmark of Wasserstein Distances}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
   %\VignetteDepends{TDA,bench,ggplot2,scales}
@@ -224,34 +224,6 @@ sqrt(TDA::wasserstein(E_, cbind(0, X), p = 2, dimension = 0))
 TDA::bottleneck(E_, cbind(0, X), dimension = 0)
 ```
 
-```{r small PDs with one empty}
-Z <- cbind(
-  dimension = c(0, 1, 2),
-  birth     = c(0, 1, 2),
-  death     = c(5, 4, 3)
-)
-W <- cbind(
-  dimension = c(0, 1),
-  birth     = c(0, 2),
-  death     = c(4, 3)
-)
-```
-
-...
-
-```{r validate small PDs with one empty}
-# distance from empty using phutil/Hera
-wasserstein_distance(Z, W, p = 1, dimension = 2)
-wasserstein_distance(Z, W, p = 2, dimension = 2)
-bottleneck_distance(Z, W, dimension = 2)
-# distance from empty using TDA/Dionysus
-TDA::wasserstein(Z, W, p = 1, dimension = 2)
-sqrt(TDA::wasserstein(Z, W, p = 2, dimension = 2))
-TDA::bottleneck(Z, W, dimension = 2)
-```
-
-...
-
 ## Benchmarks
 
 For a straightforward benchmark test, we compute PDs from point clouds sampled
@@ -285,14 +257,19 @@ Both implementations are used to compute distances between successive pairs of
 diagrams. The computations are annotated by homological degree and Wasserstein
 power so that these results can be compared separately.
 
-```{r benchmark phutil and TDA}
+```{r}
+#| eval: false
 # FIXME: Ensure that empty PDs (dimension 2 below) are handled correctly.
+# Apparently this is an issue in TDA, not phutil
+# FIXME: Replace with `seq(0, 2)` once bugs are resolved.
+```
+
+```{r benchmark phutil and TDA}
 PDs1_ <- lapply(lapply(PDs1, as.data.frame), as.matrix)
 PDs2_ <- lapply(lapply(PDs2, as.data.frame), as.matrix)
 # iterate over homological degrees and Wasserstein powers
 bm_all <- list()
 PDs_i <- seq_along(PDs1)
-# FIXME: Replace with `seq(0, 2)` once bugs are resolved.
 for (dimension in seq(0, 1)) {
   # compute
   bm_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
