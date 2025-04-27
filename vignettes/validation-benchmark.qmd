@@ -175,7 +175,7 @@ values $W_1^1(X,Y) = 3$ and $W_2^1(X,Y) = \sqrt{5}$. And then $W_\infty^1(X,Y) =
 | $L^\infty$ | 1 | 1 | 2 | $\sqrt{2}$ | 1 |
 
 : Distances between optimally paired features and Wasserstein distances between
-$X$ and $Y$ for several choices of half-plane and ``matched space'' metrics.
+$X$ and $Y$ for several choices of half-plane and "matched space" metrics.
 {#tbl-small}
 
 The results make intuitive sense; for example, the values change monotonically
