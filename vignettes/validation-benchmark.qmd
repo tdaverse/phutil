@@ -267,7 +267,7 @@ PDs_i <- seq_along(PDs1)
 for (dimension in seq(0, 2)) {
   # compute
   bm_1 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-    microbenchmark::microbenchmark(
+    as.data.frame(microbenchmark::microbenchmark(
       TDA = TDA::wasserstein(
         PDs1_[[i]], PDs2_[[i]], dimension = dimension, p = 1
       ),
@@ -275,10 +275,10 @@ for (dimension in seq(0, 2)) {
         PDs1[[i]],  PDs2[[i]],  dimension = dimension, p = 1
       ),
       times = 1
-    )
+    ))
   }))
   bm_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-    microbenchmark::microbenchmark(
+    as.data.frame(microbenchmark::microbenchmark(
       TDA = sqrt(TDA::wasserstein(
         PDs1_[[i]], PDs2_[[i]], dimension = dimension, p = 2
       )),
@@ -286,10 +286,10 @@ for (dimension in seq(0, 2)) {
         PDs1[[i]],  PDs2[[i]],  dimension = dimension, p = 2
       ),
       times = 1
-    )
+    ))
   }))
   bm_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
-    microbenchmark::microbenchmark(
+    as.data.frame(microbenchmark::microbenchmark(
       TDA = TDA::bottleneck(
         PDs1_[[i]], PDs2_[[i]], dimension = dimension
       ),
@@ -297,7 +297,7 @@ for (dimension in seq(0, 2)) {
         PDs1[[i]],  PDs2[[i]],  dimension = dimension
       ),
       times = 1
-    )
+    ))
   }))
   # annotate and combine
   bm_1$power <- 1; bm_2$power <- 2; bm_inf$power <- Inf
