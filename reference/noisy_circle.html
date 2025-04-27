@@ -18,6 +18,10 @@ additive Gaussian noise using a standard deviation of 0.05."></head><body>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/validation-benchmark.html">Validation and Benchmark of Wasserstein Distances</a></li>
+  </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/tdaverse/phutil/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -93,7 +97,7 @@ function, which is a matrix with 3 columns:</p><ul><li><p><code>dimension</code>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The point cloud stored in <code>noisy_circle_points</code> has been generated using the
 <a href="https://tdaverse.github.io/tdaunif/" class="external-link"><strong>tdaunif</strong></a> package using the
-<a href="https://tdaverse.github.io/tdaunif/reference/circles.html" class="external-link"><code>tdaunif::sample_circle()</code></a>
+<a href="https://tdaverse.github.io/tdaunif/reference/circles.html" class="external-link"><code><a href="https://tdaverse.github.io/tdaunif/reference/circles.html" class="external-link">tdaunif::sample_circle()</a></code></a>
 function. Specifically, the following parameters were used: <code>n = 100</code>, <code>sd = 0.05</code> and a seed of 1234.</p>
 <p>The persistence diagram stored in <code>noisy_circle_ripserr</code> has been computed
 using the <a href="https://tdaverse.github.io/ripserr/" class="external-link"><strong>ripserr</strong></a> package with the
@@ -101,7 +105,7 @@ using the <a href="https://tdaverse.github.io/ripserr/" class="external-link"><s
 function. Specifically, the following parameters were used: <code>max_dim = 1L</code>.</p>
 <p>The persistence diagram stored in <code>noisy_circle_tda_rips</code> has been computed
 using the <strong>TDA</strong> package with the
-<a href="https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag" class="external-link"><code>TDA::ripsDiag()</code></a>
+<a href="https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag" class="external-link"><code><a href="https://rdrr.io/pkg/TDA/man/ripsDiag.html" class="external-link">TDA::ripsDiag()</a></code></a>
 function. Specifically, the following parameters were used: <code>maxdimension = 1L</code> and <code>maxscale = 1.6322</code>.</p>
     </div>
 

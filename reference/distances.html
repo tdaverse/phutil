@@ -22,6 +22,10 @@ and the second column contains the death times of the points."></head><body>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/validation-benchmark.html">Validation and Benchmark of Wasserstein Distances</a></li>
+  </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/tdaverse/phutil/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -47,11 +51,31 @@ and the second column contains the death times of the points.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bottleneck_distance</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, tol <span class="op">=</span> <span class="fl">1e-04</span>, validate <span class="op">=</span> <span class="cn">TRUE</span>, dimension <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bottleneck_distance</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">y</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">)</span>,</span>
+<span>  validate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  dimension <span class="op">=</span> <span class="fl">0L</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">wasserstein_distance</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, tol <span class="op">=</span> <span class="fl">1e-04</span>, p <span class="op">=</span> <span class="fl">1</span>, validate <span class="op">=</span> <span class="cn">TRUE</span>, dimension <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span>
+<span><span class="fu">wasserstein_distance</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">y</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">)</span>,</span>
+<span>  p <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  validate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  dimension <span class="op">=</span> <span class="fl">0L</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">kantorovich_distance</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, tol <span class="op">=</span> <span class="fl">1e-04</span>, p <span class="op">=</span> <span class="fl">1</span>, validate <span class="op">=</span> <span class="cn">TRUE</span>, dimension <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">kantorovich_distance</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">y</span>,</span>
+<span>  tol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">)</span>,</span>
+<span>  p <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  validate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  dimension <span class="op">=</span> <span class="fl">0L</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -69,11 +93,11 @@ and the second column contains the death times of the points.</p>
 
 
 <dt id="arg-tol">tol<a class="anchor" aria-label="anchor" href="#arg-tol"></a></dt>
-<dd><p>A numeric value specifying the relative error. Defaults to <code>1e-4</code>.
-For the Bottleneck distance, it can be set to <code>0.0</code> in which case the exact
-Bottleneck distance is computed, while an approximate Bottleneck distance
-is computed if <code>tol &gt; 0.0</code>. For the Wasserstein distance, it must be
-strictly positive.</p></dd>
+<dd><p>A numeric value specifying the relative error. Defaults to
+<code>sqrt(.Machine$double.eps)</code>. For the Bottleneck distance, it can be set to
+<code>0.0</code> in which case the exact Bottleneck distance is computed, while an
+approximate Bottleneck distance is computed if <code>tol &gt; 0.0</code>. For the
+Wasserstein distance, it must be strictly positive.</p></dd>
 
 
 <dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
@@ -131,13 +155,13 @@ of the originator of the metric.</p>
 <span class="r-in"><span>  <span class="va">persistence_sample</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">pairs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>  <span class="va">persistence_sample</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">pairs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.06197891</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.06197453</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">bottleneck_distance</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">persistence_sample</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>  <span class="va">persistence_sample</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.06197891</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.06197453</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">wasserstein_distance</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">persistence_sample</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">pairs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span></span>
