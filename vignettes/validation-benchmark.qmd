@@ -303,7 +303,7 @@ for (dimension in seq(0, 2)) {
   bm_1$power <- 1; bm_2$power <- 2; bm_inf$power <- Inf
   bm_res <- rbind(bm_1, bm_2, bm_inf)
   bm_res$degree <- dimension
-  bm_all <- c(bm_all, list(as.data.frame(bm_res)))
+  bm_all <- c(bm_all, list(bm_res))
 }
 bm_all <- do.call(rbind, bm_all)
 ```
@@ -321,11 +321,7 @@ Because {microbenchmark} returns runtimes in nanoseconds, we convert these to se
 #| fig-cap: "Benchmark comparison of Dionysus via {TDA} and Hera via {phutil} on
 #| large persistence diagrams: Violin plots of runtime distributions on a common
 #| scale."
-bm_all <- transform(
-  bm_all, 
-  expr = as.character(expr), 
-  time = unlist(time)
-)
+bm_all <- transform(bm_all, expr = as.character(expr), time = unlist(time))
 bm_all <- subset(bm_all, select = c(expr, degree, power, time))
 ggplot(bm_all, aes(x = time * 10e-9, y = expr)) +
   facet_grid(
