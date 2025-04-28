@@ -258,7 +258,9 @@ Both implementations are used to compute distances between successive pairs of
 diagrams. The computations are annotated by homological degree and Wasserstein
 power so that these results can be compared separately.
 
-```{r benchmark phutil and TDA}
+```{r}
+#| label: benchmark phutil and TDA
+#| warning: false
 PDs1_ <- lapply(lapply(PDs1, as.data.frame), as.matrix)
 PDs2_ <- lapply(lapply(PDs2, as.data.frame), as.matrix)
 # iterate over homological degrees and Wasserstein powers
@@ -274,7 +276,7 @@ for (dimension in seq(0, 2)) {
       phutil = wasserstein_distance(
         PDs1[[i]],  PDs2[[i]],  dimension = dimension, p = 1
       ),
-      times = 1
+      times = 1, unit = "ns"
     ))
   }))
   bm_2 <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
@@ -285,7 +287,7 @@ for (dimension in seq(0, 2)) {
       phutil = wasserstein_distance(
         PDs1[[i]],  PDs2[[i]],  dimension = dimension, p = 2
       ),
-      times = 1
+      times = 1, unit = "ns"
     ))
   }))
   bm_inf <- do.call(rbind, lapply(seq_along(PDs1), function(i) {
@@ -296,7 +298,7 @@ for (dimension in seq(0, 2)) {
       phutil = bottleneck_distance(
         PDs1[[i]],  PDs2[[i]],  dimension = dimension
       ),
-      times = 1
+      times = 1, unit = "ns"
     ))
   }))
   # annotate and combine
@@ -309,8 +311,9 @@ bm_all <- do.call(rbind, bm_all)
 ```
 
 @fig-benchmark-large compares the distributions of runtimes by homological
-degree (column) and Wasserstein power (row).
-Because {microbenchmark} returns runtimes in nanoseconds, we convert these to seconds ahead of formatting the axis in seconds.
+degree (column) and Wasserstein power (row). We use nanoseconds in
+{microbenchmark} when benchmarking to avoid potential integer overflows. Hence,
+we convert the results into seconds ahead of formatting the axis in seconds.
 
 ```{r}
 #| label: fig-benchmark-large
