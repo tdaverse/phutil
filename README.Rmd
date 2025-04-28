@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# {phutil}
+# phutil
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/tdaverse/phutil/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/tdaverse/phutil/actions/workflows/R-CMD-check.yaml)

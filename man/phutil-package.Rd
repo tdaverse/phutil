@@ -22,7 +22,7 @@ Useful links:
 
 Other contributors:
 \itemize{
-  \item Jason Cory Brunson \email{cornelioid@gmail.com} [contributor]
+  \item Jason Cory Brunson \email{cornelioid@gmail.com} (\href{https://orcid.org/0000-0003-3126-9494}{ORCID}) [contributor]
 }
 
 }
