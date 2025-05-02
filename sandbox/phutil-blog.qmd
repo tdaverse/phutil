@@ -1,0 +1,219 @@
+---
+title: "A unifying toolbox for handling persistent homology data"
+author: "Aymeric Stamm"
+format: html
+editor: visual
+bibliography: references.bib
+---
+
+## The pitch
+
+Topological Data Analysis (TDA) is a rapidly growing field that uses techniques
+from algebraic topology to analyze the shape and structure of data. At its core,
+TDA provides tools to understand the geometric and topological features of
+datasets across multiple scales, with persistent homology being one of its
+fundamental techniques.
+
+Several R packages have emerged to provide TDA capabilities to the R community,
+including:
+
+- [{TDA}](https://cran.r-project.org/package=TDA) which focuses on statistical
+analysis of persistent homology and density clustering by providing an R
+interface for the efficient algorithms of the C++ libraries
+[GUDHI](https://project.inria.fr/gudhi/software/),
+[Dionysus](https://www.mrzv.org/software/dionysus/) and
+[PHAT](https://bitbucket.org/phat-code/phat/). This package also implements
+methods from @fasy2014confidence and @chazal2014stochastic for analyzing the
+statistical significance of persistent homology features.
+- [{TDAstats}](https://cran.r-project.org/package=TDAstats) which provides a
+comprehensive toolset for conducting TDA, specifically via the calculation of
+persistent homology in a Vietoris-Rips complex [@wadhwa2018tdastats]. The tools
+this package currently provides can be conveniently split into three main
+sections: (1) calculating persistent homology; (2) conducting statistical
+inference on persistent homology calculations; (3) visualizing persistent
+homology and statistical inference.
+- [{ripserr}](https://cran.r-project.org/package=ripserr) which provides an R
+interface to the [*ripser*](https://github.com/Ripser/ripser) C++ library for
+calculating persistent homology with ripser-based engines
+[@bauer2021ripser;@kaji2020cubical].
+- [{TDAkit}](https://cran.r-project.org/package=TDAkit) which provides a variety
+of algorithms to learn with persistent homology of the data based on functional
+summaries for clustering, hypothesis testing, visualization, and others
+[@wasserman2018topological].
+- Other packages that have been archived due to lack of maintenance (e.g.
+[{kernelTDA}](https://cran.r-project.org/package=kernelTDA)).
+
+While these packages have made TDA more accessible, they've also introduced
+different data structures for representing persistence data, creating challenges
+for interoperability and workflow consistency.
+
+The [{phutil}](https://tdaverse.github.io/phutil/) package addresses this
+fragmentation by providing a unified toolbox for handling persistence data. It
+offers consistent data structures and methods that work seamlessly with outputs
+from various TDA packages. As part of the
+[*tdaverse*](https://github.com/tdaverse) initiative,
+[{phutil}](https://tdaverse.github.io/phutil/) contributes to creating a
+coherent ecosystem for topological data analysis in R, designed to integrate
+smoothly with the [*tidymodels*](https://www.tidymodels.org) framework for
+modern machine learning workflows.
+
+## Layman mathematical background
+
+### Persistent homology
+
+_Persistence diagrams_ are multisets (sets with multiplicity) of points in the
+plane that encode the interval decompositions of persistent modules obtained
+from filtrations of data (e.g. Vietoris--Rips filtrations of point clouds and
+cubical filtrations of numerical arrays).
+Most applications consider only ordinary persistent homology, so that all points
+live in the upper-half plane; and most involve non-negative-valued filtrations,
+so that all points live in the first quadrant. The examples in this vignette
+will be no exceptions.
+
+We'll distinguish between persistence diagrams, which encode usually encode one
+degree of a persistence module, and _persistence data_, which comprises
+persistent pairs of many degrees (and annotated as such). Whereas a diagram is
+typically represented as a 2-column matrix with columns for birth and death
+values, data are typically represented as a 3-column matrix with an additional
+column for (whole number) degrees.
+
+### Distances between persistence diagrams
+
+The most common distance metrics between persistence diagrams exploit the family
+of _Minkowski distances_ $D_p$ between points in $\mathbb{R}^n$ defined, for $1
+\leq p < \infty$, as follows:
+
+$$ D_p(x,y) = \left(\sum_{i=1}^{n}{(x_i - y_i)^p}\right)^{1/p}. $$
+
+In the limit $p \to \infty$, this expression approaches the following auxiliary
+definition:
+
+$$ D_\infty(x,y) = \max_{i=1}^{n}{\lvert x_i - y_i \rvert}. $$
+
+As the parameter $p$ ranges between $1$ and $\infty$, three of its values yield
+familiar distance metrics: The taxicab distance $D_1$, the Pythagorean distance
+$D_2$, and the Chebyshev distance $D_\infty$.
+
+The [_Kantorovich_ or _Wasserstein metric_](https://en.wikipedia.org/wiki/Wasserstein_metric) derives from the problem
+of optimal transport: What is the minimum cost of relocating one distribution to
+another? In the space of persistence diagrams, only finitely many points lie off
+the diagonal, though every point on the diagonal is taken to be included with
+multiplicity $\mathbb{N}$. So the cost of relocating one diagram $X$ to another
+$Y$ amounts to (a) the cost of relocating some off-diagonal points to other
+off-diagonal points plus (b) the cost of relocating the remaining off-diagonal
+points to the diagonal (and vice-versa). This cost then depends entirely on how
+the off-diagonal points are matched, where a _matching_ is any bijective map
+$\varphi : X \to Y$, though in practice we assume that almost all diagonal
+points are matched to themselves and incur no cost.
+
+The cost $D(x,\varphi(x))$ of relocating a point $x$ to its matched point
+$\varphi(x)$ is typically taken to be a Minkowski distance $D_q(x,\varphi(x)) =
+\lVert x - \varphi(x) \rVert_q$, defined by the $L^q$ norm on $\mathbb{R}^2$.
+(While simple, this geometric treatment elides that the points in the plane
+encode the collection of interval modules into which the persistence module
+decomposes. Other metrics have been proposed for this space, but we restrict to
+this family here.)
+
+The total cost of the relocation is canonically taken to be the Minkowski
+distance $\left( \sum_{x \in X}{D(x,\varphi(x))^p} \right)^{1/p}$ of the vector
+of matched-point distances. The Wasserstein distance is defined to be the
+infimum of this value over all possible matches.
+This yields the formulae
+
+$$ W_p^q(X,Y) = \inf_{\varphi : X \to Y}{\left( \sum_{x \in X}{{\lVert
+x-\varphi(x) \rVert_q}^p} \right)^{1/p}}, $$
+
+for $p < \infty$ and
+
+$$ W_\infty^q(X,Y) = \inf_{\varphi : X \to Y}{\max_{x \in X}{\lVert x-\varphi(x)
+\rVert_q}} $$
+
+for $p = \infty$.
+
+See @cohen2010lipschitz and @bubenik2023exact for detailed treatments and
+stability results on these families of metrics.
+
+## Implementation in [{phutil}](https://tdaverse.github.io/phutil/)
+
+The {phutil} package aims at serving as a low-level package that defines a
+unifying toolbox for handling persistent homology data. The next section
+describes the classes that have been implemented to handle a single persistence
+diagram as well as a set of persistence diagrams.
+
+### The [`persistence`](https://tdaverse.github.io/phutil/reference/persistence.html) class
+
+The 'persistence' class is a list with the following components:
+
+- `pairs`: A list of 2-column matrices containing birth-death pairs. The
+\eqn{i}-*th* element of the list corresponds to the \eqn{(i-1)}-*th* homology
+dimension. If there is no pairs for a given dimension but there are pairs in
+higher dimensions, the corresponding element(s) is/are filled with a
+\eqn{0 \times 2} numeric matrix.
+
+- `metadata`: A list of length 6 containing information about how the data
+was computed:
+
+  - `orderered_pairs`: A boolean indicating whether the pairs in the
+  `pairs` list are ordered (i.e. the first column is strictly less than the
+  second column).
+  - `data`: The name of the object containing the original data on which the
+  persistence data was computed.
+  - `engine`: The name of the package and the function of this package that
+  computed the persistence data in the form
+  `"package_name::package_function"`.
+  - `filtration`: The filtration used in the computation in a human-readable
+  format (i.e. full names, capitals where need, etc.).
+  - `parameters`: A list of parameters used in the computation.
+  - `call`: The exact call that generated the persistence data.
+
+Currently, the following `S3` methods for objects of class `persistence` have
+been implemented:
+
+- coercers from matrix, data.frame, objects of class 'diagram' as produced by
+`TDA::*Diag()` functions, objects of class 'PHom' as produced by
+`ripserr::vietoris_rips()` and objects of class 'hclust' as produced by
+`stats::hclust()`;
+- `format()` and `print()` which use the MIT-licensed
+[{cli}](https://cli.r-lib.org) package behind the scene for printing out to the
+console a nice colourful but brief summary of the persistence data;
+- `get_pairs()` to extract homological features from a specific dimension;
+- reverse coercers to go back to either matrix or data.frame representations.
+
+A 'persistence_set' class has also been implemented. As of now, it is simply a
+list of objects of class 'persistence'.
+
+### Distance computations using the [*Hera*](https://github.com/anigmetov/hera) C++ library
+
+Functions to compute bottleneck and Wasserstein distances either between two
+persistence diagrams or in a pairwise fashion from a set of persistence
+diagrams. The underlying computation is actually performed via the BSD-licensed
+[*Hera*](https://github.com/anigmetov/hera) C++ library. The latter library is
+bundled within {phutil} which required a `LinkingTo` dependency on
+[{BH}](https://dirk.eddelbuettel.com/code/bh.html) for providing access to the
+Boost headers for Hera compilation. To this end, the required Boost licensing
+terms have been copied over with the MIT license terms which {phutil} depends
+on. Specifically, the following functions are available:
+
+- `bottleneck_distance()` and `wasserstein_distance()` compute the eponymous
+distance between two diagrams;
+- `bottleneck_pairwise_distances()` and `wasserstein_pairwise_distances()`
+compute pairwise distances among a sample of persistence diagrams; these
+functions have their C++ code parallelized via [OpenMP](https://www.openmp.org);
+to that end, they gain an optional `ncores` argument which is `1L` by default.
+
+## last section
+
+**TODO:**
+Decide whether to include this here or in the last blog post.
+
+I (Aymeric) am part of a loose-knit team of R developers interested in fostering
+a more sustainable and extensible package collection for TDA.
+
+Development of [{phutil}](https://tdaverse.github.io/phutil/) was directly
+funded by an Infrastructure Steering Committee grant from the R Consortium,
+together with several other packages that will be presented in upcoming blog
+posts.
+While we hope to secure funding for other specific projects in future, we also
+invite interested developers or users to reach out with their issues or ideas.
+
+## References
