@@ -199,15 +199,16 @@ ph_data_pers
 
 ### Distance computations using [*Hera*](https://github.com/anigmetov/hera)
 
-Functions to compute bottleneck and Wasserstein distances either between two
-persistence diagrams or in a pairwise fashion from a set of persistence
-diagrams. The underlying computation is actually performed via the BSD-licensed
-[*Hera*](https://github.com/anigmetov/hera) C++ library. The latter library is
-bundled within {phutil} which required a `LinkingTo` dependency on
-[{BH}](https://dirk.eddelbuettel.com/code/bh.html) for providing access to the
-Boost headers for Hera compilation. To this end, the required Boost licensing
-terms have been copied over with the MIT license terms which {phutil} depends
-on. Specifically, the following functions are available:
+The {phutil} package inlcudes functions to compute bottleneck and Wasserstein
+distances either between two persistence diagrams or in a pairwise fashion from
+a set of persistence diagrams. The underlying computation is actually performed
+via the BSD-licensed [*Hera*](https://github.com/anigmetov/hera) C++ library.
+The latter library is bundled within {phutil} which required a `LinkingTo`
+dependency on [{BH}](https://dirk.eddelbuettel.com/code/bh.html) for providing
+access to the [*Boost*](https://www.boost.org) headers for Hera compilation. To
+this end, the required Boost licensing terms have been copied over with the MIT
+license terms which {phutil} depends on. Specifically, the following functions
+are available:
 
 -   `bottleneck_distance()` and `wasserstein_distance()` compute the eponymous
 distance between two diagrams;
@@ -219,7 +220,7 @@ to that end, they gain an optional `ncores` argument which is `1L` by default.
 For example, {phutil} has a built-in set of 100 persistence diagrams computed on
 100 noisy versions of points on the 2-sphere. The diagrams are stored in the
 object
-[`persistence_sample`](https://tdaverse.github.io/phutil/reference/persistence_sample.html)
+[`persistence_sample`](https://tdaverse.github.io/phutil/reference/persistence_sample.html).
 The following code computes the pairwise bottleneck distances between the first
 7 diagrams in the set:
 
