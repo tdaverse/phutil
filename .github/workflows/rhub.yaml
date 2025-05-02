@@ -38,6 +38,8 @@ jobs:
         config: ${{ github.event.inputs.config }}
       id: rhub-setup
 
+    - uses: quarto-dev/quarto-actions/setup@v2
+
   linux-containers:
     needs: setup
     if: ${{ needs.setup.outputs.containers != '[]' }}
