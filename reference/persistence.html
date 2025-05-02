@@ -36,7 +36,8 @@ a list as returned by any *Diag() function in the TDA package.
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/validation-benchmark.html">Validation and Benchmark of Wasserstein Distances</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/persistence-class.html">The persistence class</a></li>
+    <li><a class="dropdown-item" href="../articles/validation-benchmark.html">Validation and Benchmark of Wasserstein Distances</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -110,14 +111,24 @@ in the form of the 'PHom' class,</p></li>
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>An <code>R</code> object containing the persistence data to be coerced into an
-object of class <code>persistence</code>. Currently supported forms are:</p><ul><li><p>a \(\geq 3\)-column matrix (or object coercible to one) with
-dimension/degree, start/birth and end/death columns,</p></li>
-<li><p>a list whose first element is such an object,</p></li>
+object of class <code>persistence</code>. Currently supported forms are:</p><ul><li><p>a \(\geq 2\)-column matrix (or object coercible to one) with
+dimension/degree, start/birth and end/death columns; if it has only 2
+columns, we assume that the <code>dimension</code> column is missing and we set it to
+<code>0</code> (i.e. we assume that the data is in the form <code>birth</code> and <code>death</code>),</p></li>
+<li><p>a <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">base::data.frame</a></code> (or object coercible to one) with at least 3 columns
+containing the persistence data; if it has only 2 columns, we assume that the
+<code>dimension</code> column is missing and we set it to <code>0</code>,</p></li>
+<li><p>a list of 2-column matrices (or objects coercible to one) with the first column
+being the birth and the second column being the death of homological
+features; indexed by dimension, i.e. the \(i\)-<em>th</em> element of the list
+corresponds to the \((i-1)\)-<em>th</em> homology dimension,</p></li>
 <li><p>an object of class 'PHom' as returned by
 <a href="https://tdaverse.github.io/ripserr/reference/vietoris_rips.html" class="external-link"><code>ripserr::vietoris_rips()</code></a>,</p></li>
 <li><p>(a list as returned by a <code>*Diag()</code> function in <strong>TDA</strong> (e.g.
 <a href="https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag" class="external-link"><code><a href="https://rdrr.io/pkg/TDA/man/ripsDiag.html" class="external-link">TDA::ripsDiag()</a></code></a>)
-whose first element is) an object of class 'diagram'.</p></li>
+whose first element is) an object of class 'diagram',</p></li>
+<li><p>an object of class <code><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">stats::hclust</a></code> in which case we use the entry <code>height</code>
+as the death of homological features and 0 as the birth of all features.</p></li>
 </ul></dd>
 
 
@@ -349,7 +360,7 @@ column being the end/death.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>
