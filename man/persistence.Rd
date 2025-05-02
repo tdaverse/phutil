@@ -47,14 +47,24 @@ get_pairs(x, dimension, ...)
 \item{x}{An \code{R} object containing the persistence data to be coerced into an
 object of class \code{\link{persistence}}. Currently supported forms are:
 \itemize{
-\item a \eqn{\geq 3}-column matrix (or object coercible to one) with
-dimension/degree, start/birth and end/death columns,
-\item a list whose first element is such an object,
+\item a \eqn{\geq 2}-column matrix (or object coercible to one) with
+dimension/degree, start/birth and end/death columns; if it has only 2
+columns, we assume that the \code{dimension} column is missing and we set it to
+\code{0} (i.e. we assume that the data is in the form \code{birth} and \code{death}),
+\item a \code{\link[base:data.frame]{base::data.frame}} (or object coercible to one) with at least 3 columns
+containing the persistence data; if it has only 2 columns, we assume that the
+\code{dimension} column is missing and we set it to \code{0},
+\item a list of 2-column matrices (or objects coercible to one) with the first column
+being the birth and the second column being the death of homological
+features; indexed by dimension, i.e. the \eqn{i}-\emph{th} element of the list
+corresponds to the \eqn{(i-1)}-\emph{th} homology dimension,
 \item an object of class 'PHom' as returned by
 \href{https://tdaverse.github.io/ripserr/reference/vietoris_rips.html}{\code{ripserr::vietoris_rips()}},
 \item (a list as returned by a \verb{*Diag()} function in \strong{TDA} (e.g.
 \href{https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag}{\code{TDA::ripsDiag()}})
-whose first element is) an object of class 'diagram'.
+whose first element is) an object of class 'diagram',
+\item an object of class \code{\link[stats:hclust]{stats::hclust}} in which case we use the entry \code{height}
+as the death of homological features and 0 as the birth of all features.
 }}
 
 \item{warn}{A boolean specifying whether to issue a warning if the input
