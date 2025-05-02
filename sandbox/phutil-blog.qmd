@@ -144,12 +144,7 @@ point_data <- tdaunif::sample_ellipse(n = 100L, ar = 2)
 #| label: fig-point-data
 #| fig-cap: "A sample of 100 points drawn uniformly on the contour of an ellispe."
 #| fig-align: center
-library(ggplot2)
-ggplot(as.data.frame(point_data), aes(x = x, y = y)) +
-  geom_point() +
-  coord_equal() +
-  theme_minimal() +
-  labs(x = "x", y = "y")
+plot(point_data, asp = 1)
 ```
 
 A typical workflow would be to compute the persistence data from the point cloud
@@ -169,7 +164,7 @@ ph_data <- TDA::ripsDiag(
 #| label: fig-ph-data
 #| fig-cap: "Persistence data computed from the point cloud shown in @fig-point-data."
 #| fig-align: center
-plot(ph_data$diagram)
+plot(ph_data$diagram, asp = 1)
 ```
 
 The output that is displayed in @fig-ph-data is a list with a component
