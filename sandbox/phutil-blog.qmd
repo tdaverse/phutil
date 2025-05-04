@@ -56,14 +56,15 @@ creating a coherent ecosystem for topological data analysis in R.
 
 ### Persistent homology
 
-The {phutil} documentation provides an overview of persistent homology. For now,
-know that the result of this procedure is a **persistence diagram**: a multiset
-(set with multiplicity) of points in the plane---usually the upper-half plane
-and most often the first quadrant. Persistence diagrams encode topological
-features of different dimensions, and a single diagram may encode features of
-one or all dimensions. By **persistence data**, we mean a data structure that
-encodes diagrams of all dimensions, and possibly many diagrams coming from data
-sets of a common type.
+The {phutil}
+[documentation](https://tdaverse.github.io/phutil/articles/validation-benchmark.html#definitions)
+provides an overview of persistent homology. For now, know that the result of
+this procedure is a **persistence diagram**: a multiset (set with multiplicity)
+of points in the plane---usually the upper-half plane and most often the first
+quadrant. Persistence diagrams encode topological features of different
+dimensions, and a single diagram may encode features of one or all dimensions.
+By **persistence data**, we mean a data structure that encodes diagrams of all
+dimensions, and possibly many diagrams coming from data sets of a common type.
 
 ### Distances between persistence diagrams
 
@@ -74,21 +75,21 @@ and a $p$-norm on the distances between optimally matched pairs of points:
 $$ W_p^q(X,Y) = \inf_{\varphi : X \to Y}{\left( \sum_{x \in X}{{\lVert
 x-\varphi(x) \rVert_q}^p} \right)^{1/p}} $$
 
-See the vignette on distances for more detail, or @cohen2010lipschitz and
-@bubenik2023exact for detailed treatments and stability results on these
-families of metrics.
-
-The interested reader is referred to the related
+See the
 [vignette](https://tdaverse.github.io/phutil/articles/validation-benchmark.html)
-on the website of the package, which also benchmarks and compares the
-implementations in {phutil} and {TDA}.
+on distances for more detail, or @cohen2010lipschitz and @bubenik2023exact for
+detailed treatments and stability results on these families of metrics.
 
 ## Implementations in {phutil}
 
 The {phutil} package aims at serving as a low-level package that defines a
 unifying toolbox for handling persistence data. This section describes the
-classes that have been implemented to handle a single persistence diagram as
-well as a set of persistence diagrams.
+class that has been implemented to handle a single persistence diagram as
+well as the distances between persistence diagrams. The package also provides
+a class of persistence data that can be used to store multiple diagrams, which
+is simply a list of persistence diagrams. This class is not described here, but
+will be the backbone of the forthcoming {inphr} package for making inference on
+persistence diagrams.
 
 ### The [`persistence`](https://tdaverse.github.io/phutil/reference/persistence.html) class
 
