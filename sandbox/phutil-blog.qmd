@@ -28,8 +28,7 @@ statistical significance of PH features.
 comprehensive toolset for conducting TDA, specifically via the calculation of PH
 in a Vietoris-Rips complex [@wadhwa2018tdastats].
 -   [{ripserr}](https://cran.r-project.org/package=ripserr) which provides an R
-interface to the [*ripser*](https://github.com/Ripser/ripser) C++ library for
-calculating PH with ripser-based engines [@bauer2021ripser; @kaji2020cubical].
+interface to the [Ripser](https://github.com/Ripser/ripser) and [Cubical Ripser](https://github.com/CubicalRipser) C++ libraries [@bauer2021ripser; @kaji2020cubical].
 -   [{TDAkit}](https://cran.r-project.org/package=TDAkit) which provides a
 variety of algorithms to learn with PH of the data based on functional summaries
 for clustering, hypothesis testing, and visualization
@@ -68,13 +67,15 @@ dimensions, and possibly many diagrams coming from data sets of a common type.
 
 ### Distances between persistence diagrams
 
-Two persistence diagrams $X$ and $Y$ are canonically compared using the
-**Wasserstein distance**, parameterized by a $q$-Minkowski distance on the plane
-and a $p$-norm on the distances between optimally matched pairs of points:
+Two persistence diagrams $X$ and $Y$ are canonically compared using
+**Wasserstein distances**.
+These are a family of metrics determined by a $q$-Minkowski distance on the plane
+and a $p$-norm on the distances between pairs of points matched via some $\varphi : X \to Y$:
 
-$$ W_p^q(X,Y) = \inf_{\varphi : X \to Y}{\left( \sum_{x \in X}{{\lVert
-x-\varphi(x) \rVert_q}^p} \right)^{1/p}} $$
+$$ \left( \sum_{x \in X}{{\lVert
+x-\varphi(x) \rVert_q}^p} \right)^{1/p} $$
 
+The distance $W_p^q(X,Y)$ is defined to be the infimum of this expression over all possible matchings.
 See the
 [vignette](https://tdaverse.github.io/phutil/articles/validation-benchmark.html)
 on distances for more detail, or @cohen2010lipschitz and @bubenik2023exact for
@@ -193,7 +194,7 @@ ph_data_pers <- as_persistence(ph_data$diagram)
 ph_data_pers
 ```
 
-### Distance computations using [*Hera*](https://github.com/anigmetov/hera)
+### Distance computations using [Hera](https://github.com/anigmetov/hera)
 
 The {phutil} package inlcudes functions to compute bottleneck and Wasserstein
 distances either between two persistence diagrams or in a pairwise fashion from
