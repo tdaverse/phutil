@@ -53,9 +53,12 @@ jobs:
     steps:
       - name: Install sudo package
         run: apt update && apt install sudo
-      - uses: wusatosi/setup-gh@v1
-      - uses: vegardit/gha-setup-jq@v1
-      - uses: quarto-dev/quarto-actions/setup@v2
+      - name: Install gh command line tool
+        uses: wusatosi/setup-gh@v1
+      - name: Install jq command line tool
+        uses: vegardit/gha-setup-jq@v1
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
       - uses: r-hub/actions/checkout@v1
       - uses: r-hub/actions/platform-info@v1
         with:
@@ -81,11 +84,11 @@ jobs:
         config: ${{ fromJson(needs.setup.outputs.platforms) }}
 
     steps:
-      - name: Install sudo package
-        run: apt update && apt install sudo
-      - uses: wusatosi/setup-gh@v1
-      - uses: vegardit/gha-setup-jq@v1
-      - uses: quarto-dev/quarto-actions/setup@v2
+      # - name: Install sudo package
+      #   run: apt update && apt install sudo
+      # - uses: wusatosi/setup-gh@v1
+      # - uses: vegardit/gha-setup-jq@v1
+      # - uses: quarto-dev/quarto-actions/setup@v2
       - uses: r-hub/actions/checkout@v1
       - uses: r-hub/actions/setup-r@v1
         with:
