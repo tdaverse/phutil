@@ -51,6 +51,8 @@ jobs:
       image: ${{ matrix.config.container }}
 
     steps:
+      - name: Install sudo package
+        run: apt update && apt install sudo
       - uses: wusatosi/setup-gh@v1
       - uses: vegardit/gha-setup-jq@v1
       - uses: quarto-dev/quarto-actions/setup@v2
@@ -79,6 +81,8 @@ jobs:
         config: ${{ fromJson(needs.setup.outputs.platforms) }}
 
     steps:
+      - name: Install sudo package
+        run: apt update && apt install sudo
       - uses: wusatosi/setup-gh@v1
       - uses: vegardit/gha-setup-jq@v1
       - uses: quarto-dev/quarto-actions/setup@v2
