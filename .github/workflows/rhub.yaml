@@ -37,6 +37,14 @@ jobs:
       with:
         config: ${{ github.event.inputs.config }}
       id: rhub-setup
+    - name: Install sudo package
+      run: apt update && apt install sudo
+    - name: Install gh command line tool
+      uses: wusatosi/setup-gh@v1
+    - name: Install jq command line tool
+      uses: vegardit/gha-setup-jq@v1
+    - name: Install Quarto
+      uses: quarto-dev/quarto-actions/setup@v2
 
   linux-containers:
     needs: setup
@@ -51,14 +59,6 @@ jobs:
       image: ${{ matrix.config.container }}
 
     steps:
-      - name: Install sudo package
-        run: apt update && apt install sudo
-      - name: Install gh command line tool
-        uses: wusatosi/setup-gh@v1
-      - name: Install jq command line tool
-        uses: vegardit/gha-setup-jq@v1
-      - name: Install Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
       - uses: r-hub/actions/checkout@v1
       - uses: r-hub/actions/platform-info@v1
         with:
