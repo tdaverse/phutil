@@ -7,7 +7,10 @@
   * ubuntu 24.04.2 LTS and devel and oldrel-1
 * [win-builder](https://win-builder.r-project.org/) (release and devel)
 * [macOS-builder](https://mac.r-project.org/macbuilder/submit.html)
-* [R-hub](https://builder.r-hub.io)
+* [R-hub](https://r-hub.github.io/rhub/): All platforms expect
+  * `gcc15` for which package {fs} fails to install;
+  * `nosuggests` which fails because it cannot build the vignettes that require
+  dependencies listed in `Suggests` field of `DESCRIPTION` file.
 
 ## R CMD check results
 
