@@ -1319,120 +1319,66 @@ inline typename r_vector<T>::iterator r_vector<T>::iterator::operator+(R_xlen_t 
 ///
 /// SAFETY: For use only by `reserve()`! This won't retain the `dim` or `dimnames`
 /// attributes (which doesn't make much sense anyways).
-// template <typename T>
-// inline SEXP r_vector<T>::reserve_data(SEXP x, bool is_altrep, R_xlen_t size) {
-//   // Resize core data
-//   SEXP out = PROTECT(resize_data(x, is_altrep, size));
-//
-//   // Resize names, if required
-//   // Protection seems needed to make rchk happy
-//   SEXP names = PROTECT(Rf_getAttrib(x, R_NamesSymbol));
-//   if (names != R_NilValue) {
-//     if (Rf_xlength(names) != size) {
-//       names = resize_names(names, size);
-//     }
-//     Rf_setAttrib(out, R_NamesSymbol, names);
-//   }
-//
-//   // Copy over "most" attributes, and set OBJECT bit and S4 bit as needed.
-//   // Does not copy over names, dim, or dim names.
-//   // Names are handled already. Dim and dim names should not be applicable,
-//   // as this is a vector.
-//   // Does not look like it would ever error in our use cases, so no `safe[]`.
-//   Rf_copyMostAttrib(x, out);
-//
-//   UNPROTECT(2);
-//   return out;
-// }
-
-// Based on the context and error message, here's a corrected version of the `reserve_data()` function that properly manages the protection stack:
-
 template <typename T>
 inline SEXP r_vector<T>::reserve_data(SEXP x, bool is_altrep, R_xlen_t size) {
-  SEXP out = PROTECT(resize_data(x, is_altrep, size));
+  SEXP out;
+  PROTECT_INDEX idx;
+  PROTECT_WITH_INDEX(out = resize_data(x, is_altrep, size), &idx);
 
   SEXP names = Rf_getAttrib(x, R_NamesSymbol);
   if (names != R_NilValue) {
-    PROTECT(names);
     if (Rf_xlength(names) != size) {
-      SEXP new_names = resize_names(names, size);
-      Rf_setAttrib(out, R_NamesSymbol, new_names);
-    } else {
+      PROTECT(names = resize_names(names, size));
       Rf_setAttrib(out, R_NamesSymbol, names);
+      UNPROTECT(1); // names
     }
-    UNPROTECT(1); // unprotect names
   }
 
   Rf_copyMostAttrib(x, out);
 
-  UNPROTECT(1); // unprotect out
+  UNPROTECT(1); // out
   return out;
 }
-
-// The key changes are:
-//   1. Only protecting `names` if it exists (not R_NilValue)
-//   2. Properly matching PROTECT/UNPROTECT counts
-//   3. Removing redundant PROTECT on the resize_names result since it's already
-//   protected within that function
-//   4. Simplifying the control flow to make protection status clearer
-//
-//   This should resolve the protection stack imbalance issues while maintaining
-//   the same functionality.
 
 template <typename T>
 inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
   underlying_type const* v_x = get_const_p(is_altrep, x);
+  SEXP out = safe[Rf_allocVector](get_sexptype(), size);
 
-  SEXP out = PROTECT(safe[Rf_allocVector](get_sexptype(), size));
   underlying_type* v_out = get_p(ALTREP(out), out);
 
   const R_xlen_t x_size = Rf_xlength(x);
-  const R_xlen_t copy_size = (x_size > size) ? size : x_size;
+  const R_xlen_t copy_size = std::min(x_size, size);
 
-  // Copy over data from `x` up to `copy_size` (we could be truncating so don't blindly
-  // copy everything from `x`)
   if (v_x != nullptr && v_out != nullptr) {
     std::memcpy(v_out, v_x, copy_size * sizeof(underlying_type));
   } else {
-    // Handles ALTREP `x` with no const pointer, VECSXP, STRSXP
     for (R_xlen_t i = 0; i < copy_size; ++i) {
       set_elt(out, i, get_elt(x, i));
     }
   }
 
-  UNPROTECT(1);
   return out;
 }
 
-// Based on the code and environment information provided, I'll modify the `resize_names()` function to properly handle the protection stack and maintain ALTREP compatibility:
-//
-//   ```cpp
 template <typename T>
 inline SEXP r_vector<T>::resize_names(SEXP x, R_xlen_t size) {
-  SEXP out = PROTECT(safe[Rf_allocVector](STRSXP, size));
+  const SEXP* v_x = STRING_PTR_RO(x);
+  SEXP out = safe[Rf_allocVector](STRSXP, size);
 
   const R_xlen_t x_size = Rf_xlength(x);
   const R_xlen_t copy_size = std::min(x_size, size);
 
   for (R_xlen_t i = 0; i < copy_size; ++i) {
-    SET_STRING_ELT(out, i, STRING_ELT(x, i));
+    SET_STRING_ELT(out, i, v_x[i]);
   }
 
   for (R_xlen_t i = copy_size; i < size; ++i) {
     SET_STRING_ELT(out, i, R_BlankString);
   }
 
-  UNPROTECT(1);
   return out;
 }
-// ```
-
-// Key changes made:
-//   1. Removed direct pointer access via STRING_PTR_RO() in favor of STRING_ELT()
-//   2. Simplified protection stack management to one PROTECT/UNPROTECT pair
-// 3. Used std::min() for copy_size calculation
-// 4. Removed unnecessary intermediate pointer variable
-// 5. Maintained ALTREP compatibility by using STRING_ELT() instead of direct pointer access
 
 }  // namespace writable
 
