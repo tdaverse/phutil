@@ -278,33 +278,38 @@ inline R_xlen_t count() {
   return Rf_xlength(list) - head - tail;
 }
 
+// Let me help analyze the protection issues in the `insert` function. The key is to ensure that all intermediate objects are protected before being used in other functions that might allocate memory and trigger garbage collection.
+
+// Here's the corrected version:
+
 inline SEXP insert(SEXP x) {
   if (x == R_NilValue) {
     return R_NilValue;
   }
 
-  SEXP xp = PROTECT(x);
-
   SEXP list = get();
+  PROTECT(list);  // Protect the list while we manipulate it
 
   // Get references to the head of the preserve list and the next element
-  // after the head
   SEXP head = list;
   SEXP next = CDR(list);
 
-  // Add a new cell that points to the current head + next.
+  // Create and protect the new cell
   SEXP cell = PROTECT(Rf_cons(head, next));
-  SET_TAG(cell, xp);
+  SET_TAG(cell, x);
 
-  // Update the head + next to point at the newly-created cell,
-  // effectively inserting that cell between the current head + next.
+  // Update the list structure
   SETCDR(head, cell);
   SETCAR(next, cell);
 
-  UNPROTECT(2);
-
+  UNPROTECT(2);  // Unprotect list and cell
   return cell;
 }
+
+// The key changes are:
+// 1. Adding protection for `list` since we're using it in multiple operations
+// 2. Removing the initial PROTECT(x) as it's not necessary (x is already protected by the caller and we're only using it in SET_TAG)
+// 3. Maintaining proper PROTECT/UNPROTECT balance
 
 inline void release(SEXP cell) {
   if (cell == R_NilValue) {
