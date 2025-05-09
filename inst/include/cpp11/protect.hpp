@@ -1,5 +1,3 @@
-// cpp11 version: 0.5.2
-// vendored on: 2025-05-07
 #pragma once
 
 #include <csetjmp>    // for longjmp, setjmp, jmp_buf
@@ -28,7 +26,7 @@
 
 namespace cpp11 {
 class unwind_exception : public std::exception {
- public:
+public:
   SEXP token;
   unwind_exception(SEXP token_) : token(token_) {}
 };
@@ -37,20 +35,20 @@ class unwind_exception : public std::exception {
 ///
 /// @param code The code to which needs to be protected, as a nullary callable
 template <typename Fun, typename = typename std::enable_if<std::is_same<
-                            decltype(std::declval<Fun&&>()()), SEXP>::value>::type>
-SEXP unwind_protect(Fun&& code) {
-  static SEXP token = [] {
-    SEXP res = R_MakeUnwindCont();
-    R_PreserveObject(res);
-    return res;
-  }();
+  decltype(std::declval<Fun&&>()()), SEXP>::value>::type>
+  SEXP unwind_protect(Fun&& code) {
+    static SEXP token = [] {
+      SEXP res = R_MakeUnwindCont();
+      R_PreserveObject(res);
+      return res;
+    }();
 
-  std::jmp_buf jmpbuf;
-  if (setjmp(jmpbuf)) {
-    throw unwind_exception(token);
-  }
+    std::jmp_buf jmpbuf;
+    if (setjmp(jmpbuf)) {
+      throw unwind_exception(token);
+    }
 
-  SEXP res = R_UnwindProtect(
+    SEXP res = R_UnwindProtect(
       [](void* data) -> SEXP {
         auto callback = static_cast<decltype(&code)>(data);
         return static_cast<Fun&&>(*callback)();
@@ -65,23 +63,23 @@ SEXP unwind_protect(Fun&& code) {
       },
       &jmpbuf, token);
 
-  // R_UnwindProtect adds the result to the CAR of the continuation token,
-  // which implicitly protects the result. However if there is no error and
-  // R_UwindProtect does a normal exit the memory shouldn't be protected, so we
-  // unset it here before returning the value ourselves.
-  SETCAR(token, R_NilValue);
+    // R_UnwindProtect adds the result to the CAR of the continuation token,
+    // which implicitly protects the result. However if there is no error and
+    // R_UwindProtect does a normal exit the memory shouldn't be protected, so we
+    // unset it here before returning the value ourselves.
+    SETCAR(token, R_NilValue);
 
-  return res;
-}
+    return res;
+  }
 
 template <typename Fun, typename = typename std::enable_if<std::is_same<
-                            decltype(std::declval<Fun&&>()()), void>::value>::type>
-void unwind_protect(Fun&& code) {
-  (void)unwind_protect([&] {
-    std::forward<Fun>(code)();
-    return R_NilValue;
-  });
-}
+  decltype(std::declval<Fun&&>()()), void>::value>::type>
+  void unwind_protect(Fun&& code) {
+    (void)unwind_protect([&] {
+      std::forward<Fun>(code)();
+      return R_NilValue;
+    });
+  }
 
 template <typename Fun, typename R = decltype(std::declval<Fun&&>()())>
 typename std::enable_if<!std::is_same<R, SEXP>::value && !std::is_same<R, void>::value,
@@ -110,7 +108,7 @@ struct appended_sequence<index_sequence<I...>, J> : index_sequence<I..., J> {};
 
 template <size_t N>
 struct make_index_sequence
-    : appended_sequence<typename make_index_sequence<N - 1>::type, N - 1> {};
+  : appended_sequence<typename make_index_sequence<N - 1>::type, N - 1> {};
 
 template <>
 struct make_index_sequence<0> : index_sequence<> {};
@@ -123,7 +121,7 @@ decltype(std::declval<F&&>()(std::declval<Aref>()...)) apply(
 
 template <typename F, typename... Aref>
 decltype(std::declval<F&&>()(std::declval<Aref>()...)) apply(F&& f,
-                                                             std::tuple<Aref...>&& a) {
+         std::tuple<Aref...>&& a) {
   return apply(std::forward<F>(f), std::move(a), make_index_sequence<sizeof...(Aref)>{});
 }
 
@@ -152,7 +150,7 @@ struct protect {
     decltype(std::declval<F*>()(std::declval<A&&>()...)) operator()(A&&... a) const {
       // workaround to support gcc4.8, which can't capture a parameter pack
       return unwind_protect(
-          detail::closure<F, A&&...>{ptr_, std::forward_as_tuple(std::forward<A>(a)...)});
+        detail::closure<F, A&&...>{ptr_, std::forward_as_tuple(std::forward<A>(a)...)});
     }
 
     F* ptr_;
@@ -173,7 +171,7 @@ struct protect {
     void operator() [[noreturn]] (A&&... a) const {
       // workaround to support gcc4.8, which can't capture a parameter pack
       unwind_protect(
-          detail::closure<F, A&&...>{ptr_, std::forward_as_tuple(std::forward<A>(a)...)});
+        detail::closure<F, A&&...>{ptr_, std::forward_as_tuple(std::forward<A>(a)...)});
       // Compiler hint to allow [[noreturn]] attribute; this is never executed since
       // the above call will not return.
       throw std::runtime_error("[[noreturn]]");
@@ -278,44 +276,6 @@ inline R_xlen_t count() {
   return Rf_xlength(list) - head - tail;
 }
 
-// Let me help analyze the protection issues in the `insert` function. The key is to ensure that all intermediate objects are protected before being used in other functions that might allocate memory and trigger garbage collection.
-
-// Here's the corrected version:
-
-// inline SEXP insert(SEXP x) {
-//   if (x == R_NilValue) {
-//     return R_NilValue;
-//   }
-//
-//   SEXP list = get();
-//   PROTECT(list);  // Protect the list while we manipulate it
-//
-//   // Get references to the head of the preserve list and the next element
-//   SEXP head = list;
-//   SEXP next = CDR(list);
-//
-//   // Create and protect the new cell
-//   SEXP cell = PROTECT(Rf_cons(head, next));
-//   SET_TAG(cell, x);
-//
-//   // Update the list structure
-//   SETCDR(head, cell);
-//   SETCAR(next, cell);
-//
-//   UNPROTECT(2);  // Unprotect list and cell
-//   return cell;
-// }
-
-// The key changes are:
-// 1. Adding protection for `list` since we're using it in multiple operations
-// 2. Removing the initial PROTECT(x) as it's not necessary (x is already
-// protected by the caller and we're only using it in SET_TAG)
-// 3. Maintaining proper PROTECT/UNPROTECT balance
-
-// Based on the error messages and the code context, the issue is with the
-// protection stack management in the `insert` function. Here's the corrected
-// version:
-
 inline SEXP insert(SEXP x) {
   if (x == R_NilValue) {
     return R_NilValue;
@@ -337,13 +297,6 @@ inline SEXP insert(SEXP x) {
 
   return cell;
 }
-
-// The key changes:
-// 1. Removed PROTECT/UNPROTECT calls since:
-// - `list` from `get()` is already preserved
-// - The cons cell we create is part of the preserve list structure
-// - The input `x` is protected by the caller
-// 2. Simplified the function to avoid protection stack manipulation
 
 inline void release(SEXP cell) {
   if (cell == R_NilValue) {

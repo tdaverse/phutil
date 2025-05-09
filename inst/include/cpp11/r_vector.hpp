@@ -1319,9 +1319,11 @@ inline typename r_vector<T>::iterator r_vector<T>::iterator::operator+(R_xlen_t 
 /// attributes (which doesn't make much sense anyways).
 template <typename T>
 inline SEXP r_vector<T>::reserve_data(SEXP x, bool is_altrep, R_xlen_t size) {
+  // Resize core data
   SEXP out = resize_data(x, is_altrep, size);
-  SEXP names = Rf_getAttrib(x, R_NamesSymbol);
 
+  // Resize names, if required
+  SEXP names = Rf_getAttrib(x, R_NamesSymbol);
   if (names != R_NilValue) {
     if (Rf_xlength(names) != size) {
       SEXP new_names = resize_names(names, size);
@@ -1331,24 +1333,14 @@ inline SEXP r_vector<T>::reserve_data(SEXP x, bool is_altrep, R_xlen_t size) {
     }
   }
 
+  // Copy over "most" attributes, and set OBJECT bit and S4 bit as needed.
+  // Does not copy over names, dim, or dim names.
+  // Names are handled already. Dim and dim names should not be applicable,
+  // as this is a vector.
+  // Does not look like it would ever error in our use cases, so no `safe[]`.
   Rf_copyMostAttrib(x, out);
   return out;
 }
-
-// The key changes are:
-// 1. Removed all explicit PROTECT/UNPROTECT calls since protection is handled by the `safe` wrapper in `resize_data`
-// 2. Simplified the flow of the names handling
-// 3. Let R's garbage collection handle the intermediate objects
-//
-// This should resolve the protection stack imbalance while maintaining the same functionality.
-
-// The key changes are:
-// 1. Removed the PROTECT around resize_data since it's already protected by safe[]
-// 2. Only PROTECT the output once
-// 3. Removed PROTECT around names since it's temporary and protected by R
-// 4. Balanced PROTECT/UNPROTECT count (1:1)
-//
-//   This should resolve the protection stack imbalance while maintaining the same functionality.
 
 template <typename T>
 inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
@@ -1374,14 +1366,6 @@ inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
   return out;
 }
 
-// The key change is removing both the PROTECT and UNPROTECT calls since:
-// 1. The `safe` wrapper around `Rf_allocVector` already handles protection
-// 2. The function is called from `reserve_data` which handles its own protection
-// 3. Having unbalanced PROTECT/UNPROTECT calls was causing the reported error
-//
-// The protection is handled at the higher level in `reserve_data`, so we don't
-// need additional protection in this helper function.
-
 template <typename T>
 inline SEXP r_vector<T>::resize_names(SEXP x, R_xlen_t size) {
   SEXP out = safe[Rf_allocVector](STRSXP, size);
@@ -1393,21 +1377,13 @@ inline SEXP r_vector<T>::resize_names(SEXP x, R_xlen_t size) {
     SET_STRING_ELT(out, i, STRING_ELT(x, i));
   }
 
+  // Ensure remaining names are initialized to `""`
   for (R_xlen_t i = copy_size; i < size; ++i) {
     SET_STRING_ELT(out, i, R_BlankString);
   }
 
   return out;
 }
-
-// The key changes are:
-// 0. The `safe` wrapper around `Rf_allocVector` already handles protection
-// 1. Removed direct pointer access via STRING_PTR_RO
-// 2. Use STRING_ELT instead of direct pointer access
-// 3. Ensure PROTECT/UNPROTECT balance by protecting `out` immediately after allocation
-// 4. Remove redundant safe wrapper since allocation is already protected
-//
-//   This should resolve the protection stack imbalance while maintaining the same functionality.
 
 }  // namespace writable
 
