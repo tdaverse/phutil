@@ -1,3 +1,6 @@
+// cpp11 version: 0.5.2
+// vendored on: 2025-05-07
+// modified on: 2025-05-09
 #pragma once
 
 #include <csetjmp>    // for longjmp, setjmp, jmp_buf
