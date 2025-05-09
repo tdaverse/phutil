@@ -282,34 +282,68 @@ inline R_xlen_t count() {
 
 // Here's the corrected version:
 
+// inline SEXP insert(SEXP x) {
+//   if (x == R_NilValue) {
+//     return R_NilValue;
+//   }
+//
+//   SEXP list = get();
+//   PROTECT(list);  // Protect the list while we manipulate it
+//
+//   // Get references to the head of the preserve list and the next element
+//   SEXP head = list;
+//   SEXP next = CDR(list);
+//
+//   // Create and protect the new cell
+//   SEXP cell = PROTECT(Rf_cons(head, next));
+//   SET_TAG(cell, x);
+//
+//   // Update the list structure
+//   SETCDR(head, cell);
+//   SETCAR(next, cell);
+//
+//   UNPROTECT(2);  // Unprotect list and cell
+//   return cell;
+// }
+
+// The key changes are:
+// 1. Adding protection for `list` since we're using it in multiple operations
+// 2. Removing the initial PROTECT(x) as it's not necessary (x is already
+// protected by the caller and we're only using it in SET_TAG)
+// 3. Maintaining proper PROTECT/UNPROTECT balance
+
+// Based on the error messages and the code context, the issue is with the
+// protection stack management in the `insert` function. Here's the corrected
+// version:
+
 inline SEXP insert(SEXP x) {
   if (x == R_NilValue) {
     return R_NilValue;
   }
 
   SEXP list = get();
-  PROTECT(list);  // Protect the list while we manipulate it
 
   // Get references to the head of the preserve list and the next element
   SEXP head = list;
   SEXP next = CDR(list);
 
-  // Create and protect the new cell
-  SEXP cell = PROTECT(Rf_cons(head, next));
+  // Create the new cell
+  SEXP cell = Rf_cons(head, next);
   SET_TAG(cell, x);
 
   // Update the list structure
   SETCDR(head, cell);
   SETCAR(next, cell);
 
-  UNPROTECT(2);  // Unprotect list and cell
   return cell;
 }
 
-// The key changes are:
-// 1. Adding protection for `list` since we're using it in multiple operations
-// 2. Removing the initial PROTECT(x) as it's not necessary (x is already protected by the caller and we're only using it in SET_TAG)
-// 3. Maintaining proper PROTECT/UNPROTECT balance
+// The key changes:
+// 1. Removed PROTECT/UNPROTECT calls since:
+// - `list` from `get()` is already preserved
+// - The cons cell we create is part of the preserve list structure
+// - The input `x` is protected by the caller
+// 2. Simplified the function to avoid protection stack manipulation
 
 inline void release(SEXP cell) {
   if (cell == R_NilValue) {
