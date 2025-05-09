@@ -58,7 +58,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>The goal of the {phutil} package is to provide utility functions for persistence data analysis. In particular, the package defines a data structure for hosting persistence data. The package is part of the <a href="https://github.com/tdaverse" class="external-link"><em>tdaverse</em></a> suite of packages, which aims to provide a consistent interface for topological data analysis in R that nicely integrates with the <a href="https://www.tidymodels.org" class="external-link"><em>tidymodels</em></a> ecosystem.</p>
+<p>The goal of the {phutil} package is to provide utility functions for persistence data analysis. In particular, the package defines a data structure for hosting persistence data. The package is part of the <a href="https://github.com/tdaverse" class="external-link"><em>TDAverse</em></a> suite of packages, which aims to provide a consistent interface for topological data analysis in R that nicely integrates with the <a href="https://www.tidymodels.org" class="external-link"><em>tidymodels</em></a> ecosystem.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -68,7 +68,7 @@
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"tdaverse/phutil"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="the-persistence-class">The ‘persistence’ class<a class="anchor" aria-label="anchor" href="#the-persistence-class"></a>
+<h2 id="the-persistence-class">The <code>persistence</code> class<a class="anchor" aria-label="anchor" href="#the-persistence-class"></a>
 </h2>
 <p>The package currently provides a new data structure for hosting persistence data. The data set <code>noisy_circle_points</code> is a simulated data set consisting of 100 points sampled from a circle with additive Gaussian noise using a standard deviation of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.05</mn><annotation encoding="application/x-tex">0.05</annotation></semantics></math>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -81,7 +81,7 @@
 <span><span class="co">#&gt; [4,] -0.7650181 -0.7436499</span></span>
 <span><span class="co">#&gt; [5,]  0.6337296 -0.7607464</span></span>
 <span><span class="co">#&gt; [6,] -0.6077663 -0.7036492</span></span></code></pre></div>
-<p>The data set <code>noisy_circle_ripserr</code> is a persistence diagram computed using the <a href="https://tdaverse.github.io/ripserr/" class="external-link"><strong>ripserr</strong></a> package with the <a href="https://tdaverse.github.io/ripserr/reference/vietoris_rips.html" class="external-link"><code>ripserr::vietoris_rips()</code></a> and stored as an object of class ‘PHom’, which is a light wrapper around a data frame with 3 variables:</p>
+<p>The data set <code>noisy_circle_ripserr</code> is a persistence diagram computed using the <a href="https://tdaverse.github.io/ripserr/" class="external-link"><strong>ripserr</strong></a> package with the <a href="https://tdaverse.github.io/ripserr/reference/vietoris_rips.html" class="external-link"><code>ripserr::vietoris_rips()</code></a> and stored as an object of class <code>PHom</code>, which is a light wrapper around a data frame with 3 variables:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">noisy_circle_ripserr</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   dimension birth       death</span></span>
@@ -91,7 +91,7 @@
 <span><span class="co">#&gt; 4         0     0 0.014004707</span></span>
 <span><span class="co">#&gt; 5         0     0 0.020555701</span></span>
 <span><span class="co">#&gt; 6         0     0 0.024621462</span></span></code></pre></div>
-<p>The data set <code>noisy_circle_tda_rips</code> is a persistence diagram computed using the <strong>TDA</strong> package with the <a href="https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag" class="external-link"><code>TDA::ripsDiag()</code></a> and stored as a list of length 1 containing the object <code>diagram</code> of class ‘diagram’, which is a matrix with 3 columns:</p>
+<p>The data set <code>noisy_circle_tda_rips</code> is a persistence diagram computed using the <strong>TDA</strong> package with the <a href="https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag" class="external-link"><code>TDA::ripsDiag()</code></a> and stored as a list of length 1 containing the object <code>diagram</code> of class <code>diagram</code>, which is a matrix with 3 columns:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">noisy_circle_tda_rips</span><span class="op">$</span><span class="va">diagram</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      dimension Birth     Death</span></span>
@@ -101,8 +101,8 @@
 <span><span class="co">#&gt; [4,]         0     0 0.3226673</span></span>
 <span><span class="co">#&gt; [5,]         0     0 0.2096916</span></span>
 <span><span class="co">#&gt; [6,]         0     0 0.1953531</span></span></code></pre></div>
-<p>The data structure adopted by the <em>tdaverse</em> suite of packages and provided by this package is designed to be a common interface for persistence data. This allows for a seamless integration of persistence data across different packages and ensures that the data is always in a consistent format.</p>
-<p>Specifically, the ‘persistence’ class is a list with the following components:</p>
+<p>The data structure adopted by the <em>TDAverse</em> suite of packages and provided by this package is designed to be a common interface for persistence data. This allows for a seamless integration of persistence data across different packages and ensures that the data is always in a consistent format.</p>
+<p>Specifically, the <code>persistence</code> class is a list with the following components:</p>
 <ul>
 <li><p><code>pairs</code>: A list of 2-column matrices containing birth-death pairs. The -<em>th</em> element of the list corresponds to the -<em>th</em> homology dimension. If there is no pairs for a given dimension but there are pairs in higher dimensions, the corresponding element(s) is/are filled with a numeric matrix.</p></li>
 <li>
@@ -123,7 +123,7 @@
 </ul>
 </li>
 </ul>
-<p>The <code><a href="reference/persistence.html">as_persistence()</a></code> function is used to convert persistence data from different packages into the ‘persistence’ class. For example, the persistence data computed using the <strong>ripserr</strong> package can be converted into the ‘persistence’ class as follows:</p>
+<p>The <code><a href="reference/persistence.html">as_persistence()</a></code> function is used to convert persistence data from different packages into the <code>persistence</code> class. For example, the persistence data computed using the <strong>ripserr</strong> package can be converted into the <code>persistence</code> class as follows:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/persistence.html">as_persistence</a></span><span class="op">(</span><span class="va">noisy_circle_ripserr</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -131,7 +131,7 @@
 <span><span class="co">#&gt; ℹ There are 99 and 2 pairs in dimensions 0 and 1 respectively.</span></span>
 <span><span class="co">#&gt; ℹ Computed from a Vietoris-Rips/Cubical filtration using `ripserr::&lt;vietoris_rips/cubical&gt;()`.</span></span>
 <span><span class="co">#&gt; ! With unknown parameters.</span></span></code></pre></div>
-<p>Similarly, the persistence data computed using the <strong>TDA</strong> package can be converted into the ‘persistence’ class as follows:</p>
+<p>Similarly, the persistence data computed using the <strong>TDA</strong> package can be converted into the <code>persistence</code> class as follows:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/persistence.html">as_persistence</a></span><span class="op">(</span><span class="va">noisy_circle_tda_rips</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -162,7 +162,7 @@
 <span><span class="co">#&gt; 3 2.301812 1.852241                  </span></span>
 <span><span class="co">#&gt; 4 2.354967 2.362616 1.922799         </span></span>
 <span><span class="co">#&gt; 5 2.374818 2.707366 1.985518 3.154120</span></span></code></pre></div>
-<p>It returns an object of class ‘dist’. It is parallelized using <a href="https://www.openmp.org/" class="external-link">OpenMP</a> and relies under the hood on the <a href="https://github.com/anigmetov/hera" class="external-link">Hera</a> C++ library which is BSD-licensed. The code interfacing R and C++ is generated by the header-only <a href="https://cpp11.r-lib.org" class="external-link">{cpp11}</a> package which is MIT-licensed.</p>
+<p>It returns an object of class <code>dist</code>. It is parallelized using <a href="https://www.openmp.org/" class="external-link">OpenMP</a> and relies under the hood on the <a href="https://github.com/anigmetov/hera" class="external-link">Hera</a> C++ library which is BSD-licensed. The code interfacing R and C++ is generated by the header-only <a href="https://cpp11.r-lib.org" class="external-link">{cpp11}</a> package which is MIT-licensed.</p>
 </div>
 <div class="section level2">
 <h2 id="contributions">Contributions<a class="anchor" aria-label="anchor" href="#contributions"></a>
