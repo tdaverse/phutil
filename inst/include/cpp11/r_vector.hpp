@@ -1,5 +1,3 @@
-// cpp11 version: 0.5.2
-// vendored on: 2025-05-07
 #pragma once
 
 #include <stddef.h>  // for ptrdiff_t, size_t
@@ -35,19 +33,19 @@ class r_vector;
 // Declarations
 template <typename T>
 class r_vector {
- public:
+public:
   // Forward declare
   class const_iterator;
   using underlying_type = typename traits::get_underlying_type<T>::type;
 
- private:
+private:
   SEXP data_ = R_NilValue;
   SEXP protect_ = R_NilValue;
   bool is_altrep_ = false;
   underlying_type* data_p_ = nullptr;
   R_xlen_t length_ = 0;
 
- public:
+public:
   typedef ptrdiff_t difference_type;
   typedef size_t size_type;
   typedef T value_type;
@@ -110,14 +108,14 @@ class r_vector {
     // It seems like our iterator doesn't fully implement everything for
     // `random_access_iterator_tag` (like an `[]` operator, for example). If we discover
     // issues with it, we probably need to add more methods.
-   private:
+  private:
     const r_vector* data_;
     R_xlen_t pos_;
     std::array<underlying_type, 64 * 64> buf_;
     R_xlen_t block_start_ = 0;
     R_xlen_t length_ = 0;
 
-   public:
+  public:
     using difference_type = ptrdiff_t;
     using value_type = T;
     using pointer = T*;
@@ -142,13 +140,13 @@ class r_vector {
 
     friend class writable::r_vector<T>::iterator;
 
-   private:
+  private:
     /// Implemented in specialization
     static bool use_buf(bool is_altrep);
     void fill_buf(R_xlen_t pos);
   };
 
- private:
+private:
   /// Implemented in specialization
   static underlying_type get_elt(SEXP x, R_xlen_t i);
   /// Implemented in specialization
@@ -175,12 +173,12 @@ using has_begin_fun = std::decay<decltype(*begin(std::declval<T>()))>;
 /// Read/write access to new or copied r_vectors
 template <typename T>
 class r_vector : public cpp11::r_vector<T> {
- public:
+public:
   // Forward declare
   class proxy;
   class iterator;
 
- private:
+private:
   R_xlen_t capacity_ = 0;
 
   using cpp11::r_vector<T>::data_;
@@ -191,7 +189,7 @@ class r_vector : public cpp11::r_vector<T> {
 
   using typename cpp11::r_vector<T>::underlying_type;
 
- public:
+public:
   typedef ptrdiff_t difference_type;
   typedef size_t size_type;
   typedef proxy value_type;
@@ -265,13 +263,13 @@ class r_vector : public cpp11::r_vector<T> {
   attribute_proxy<r_vector<T>> names() const;
 
   class proxy {
-   private:
+  private:
     const SEXP data_;
     const R_xlen_t index_;
     underlying_type* const p_;
     bool is_altrep_;
 
-   public:
+  public:
     proxy(SEXP data, const R_xlen_t index, underlying_type* const p, bool is_altrep);
 
     proxy& operator=(const proxy& rhs);
@@ -289,13 +287,13 @@ class r_vector : public cpp11::r_vector<T> {
 
     operator T() const;
 
-   private:
+  private:
     underlying_type get() const;
     void set(underlying_type x);
   };
 
   class iterator : public cpp11::r_vector<T>::const_iterator {
-   private:
+  private:
     using cpp11::r_vector<T>::const_iterator::data_;
     using cpp11::r_vector<T>::const_iterator::block_start_;
     using cpp11::r_vector<T>::const_iterator::pos_;
@@ -304,7 +302,7 @@ class r_vector : public cpp11::r_vector<T> {
     using cpp11::r_vector<T>::const_iterator::use_buf;
     using cpp11::r_vector<T>::const_iterator::fill_buf;
 
-   public:
+  public:
     using difference_type = ptrdiff_t;
     using value_type = proxy;
     using pointer = proxy*;
@@ -323,7 +321,7 @@ class r_vector : public cpp11::r_vector<T> {
     iterator operator+(R_xlen_t rhs);
   };
 
- private:
+private:
   /// Implemented in specialization
   static void set_elt(SEXP x, R_xlen_t i, underlying_type value);
 
@@ -349,19 +347,19 @@ inline r_vector<T>::~r_vector() {
 
 template <typename T>
 inline r_vector<T>::r_vector(const SEXP data)
-    : data_(valid_type(data)),
-      protect_(detail::store::insert(data)),
-      is_altrep_(ALTREP(data)),
-      data_p_(get_p(ALTREP(data), data)),
-      length_(Rf_xlength(data)) {}
+  : data_(valid_type(data)),
+    protect_(detail::store::insert(data)),
+    is_altrep_(ALTREP(data)),
+    data_p_(get_p(ALTREP(data), data)),
+    length_(Rf_xlength(data)) {}
 
 template <typename T>
 inline r_vector<T>::r_vector(const SEXP data, bool is_altrep)
-    : data_(valid_type(data)),
-      protect_(detail::store::insert(data)),
-      is_altrep_(is_altrep),
-      data_p_(get_p(is_altrep, data)),
-      length_(Rf_xlength(data)) {}
+  : data_(valid_type(data)),
+    protect_(detail::store::insert(data)),
+    is_altrep_(is_altrep),
+    data_p_(get_p(is_altrep, data)),
+    length_(Rf_xlength(data)) {}
 
 // We are in read-only space so we can just copy over all properties except for
 // `protect_`, which we need to manage on our own. `x` persists after this call, so we
@@ -403,7 +401,7 @@ inline r_vector<T>::r_vector(r_vector&& x) {
 // `writable::r_vector<T>&& x`, so we let this method handle both scenarios.
 template <typename T>
 inline r_vector<T>::r_vector(const writable::r_vector<T>& x)
-    : r_vector(static_cast<SEXP>(x)) {}
+  : r_vector(static_cast<SEXP>(x)) {}
 
 // Same reasoning as `r_vector(const r_vector& x)` constructor
 template <typename T>
@@ -481,7 +479,7 @@ inline T r_vector<T>::operator[](const size_type pos) const {
 
 template <typename T>
 inline T r_vector<T>::operator[](const r_string& name) const {
-  SEXP names = this->names();
+  SEXP names = PROTECT(this->names());
   R_xlen_t size = Rf_xlength(names);
 
   for (R_xlen_t pos = 0; pos < size; ++pos) {
@@ -491,6 +489,7 @@ inline T r_vector<T>::operator[](const r_string& name) const {
     }
   }
 
+  UNPROTECT(1);
   return get_oob();
 }
 
@@ -593,7 +592,7 @@ inline T r_vector<T>::get_oob() {
 }
 
 class type_error : public std::exception {
- public:
+public:
   type_error(SEXPTYPE expected, SEXPTYPE actual) : expected_(expected), actual_(actual) {}
   virtual const char* what() const noexcept override {
     snprintf(str_, 64, "Invalid input type, expected '%s' actual '%s'",
@@ -601,7 +600,7 @@ class type_error : public std::exception {
     return str_;
   }
 
- private:
+private:
   SEXPTYPE expected_;
   SEXPTYPE actual_;
   mutable char str_[64];
@@ -632,8 +631,8 @@ inline SEXP r_vector<T>::valid_length(SEXP x, R_xlen_t n) {
   char message[128];
   snprintf(message, 128,
            "Invalid input length, expected '%" CPP11_PRIdXLEN_T
-           "' actual '%" CPP11_PRIdXLEN_T "'.",
-           n, x_n);
+             "' actual '%" CPP11_PRIdXLEN_T "'.",
+             n, x_n);
 
   throw std::length_error(message);
 }
@@ -660,7 +659,7 @@ inline typename r_vector<T>::const_iterator r_vector<T>::cend() const {
 
 template <typename T>
 r_vector<T>::const_iterator::const_iterator(const r_vector* data, R_xlen_t pos)
-    : data_(data), pos_(pos), buf_() {
+  : data_(data), pos_(pos), buf_() {
   if (use_buf(data_->is_altrep())) {
     fill_buf(pos);
   }
@@ -686,7 +685,7 @@ inline typename r_vector<T>::const_iterator& r_vector<T>::const_iterator::operat
 
 template <typename T>
 inline typename r_vector<T>::const_iterator& r_vector<T>::const_iterator::operator+=(
-    R_xlen_t i) {
+  R_xlen_t i) {
   pos_ += i;
   if (use_buf(data_->is_altrep()) && pos_ >= block_start_ + length_) {
     fill_buf(pos_);
@@ -696,7 +695,7 @@ inline typename r_vector<T>::const_iterator& r_vector<T>::const_iterator::operat
 
 template <typename T>
 inline typename r_vector<T>::const_iterator& r_vector<T>::const_iterator::operator-=(
-    R_xlen_t i) {
+  R_xlen_t i) {
   pos_ -= i;
   if (use_buf(data_->is_altrep()) && pos_ >= block_start_ + length_) {
     fill_buf(std::max(0_xl, pos_ - 64));
@@ -706,13 +705,13 @@ inline typename r_vector<T>::const_iterator& r_vector<T>::const_iterator::operat
 
 template <typename T>
 inline bool r_vector<T>::const_iterator::operator!=(
-    const r_vector::const_iterator& other) const {
+  const r_vector::const_iterator& other) const {
   return pos_ != other.pos_;
 }
 
 template <typename T>
 inline bool r_vector<T>::const_iterator::operator==(
-    const r_vector::const_iterator& other) const {
+  const r_vector::const_iterator& other) const {
   return pos_ == other.pos_;
 }
 
@@ -769,20 +768,20 @@ namespace writable {
 
 template <typename T>
 inline r_vector<T>::r_vector(const SEXP& data)
-    : cpp11::r_vector<T>(safe[Rf_shallow_duplicate](data)), capacity_(length_) {}
+  : cpp11::r_vector<T>(safe[Rf_shallow_duplicate](data)), capacity_(length_) {}
 
 template <typename T>
 inline r_vector<T>::r_vector(SEXP&& data)
-    : cpp11::r_vector<T>(data), capacity_(length_) {}
+  : cpp11::r_vector<T>(data), capacity_(length_) {}
 
 template <typename T>
 inline r_vector<T>::r_vector(const SEXP& data, bool is_altrep)
-    : cpp11::r_vector<T>(safe[Rf_shallow_duplicate](data), is_altrep),
-      capacity_(length_) {}
+  : cpp11::r_vector<T>(safe[Rf_shallow_duplicate](data), is_altrep),
+    capacity_(length_) {}
 
 template <typename T>
 inline r_vector<T>::r_vector(SEXP&& data, bool is_altrep)
-    : cpp11::r_vector<T>(data, is_altrep), capacity_(length_) {}
+  : cpp11::r_vector<T>(data, is_altrep), capacity_(length_) {}
 
 template <typename T>
 inline r_vector<T>::r_vector(const r_vector& rhs) {
@@ -832,68 +831,69 @@ inline r_vector<T>::r_vector(r_vector&& rhs) {
 
 template <typename T>
 inline r_vector<T>::r_vector(const cpp11::r_vector<T>& rhs)
-    : cpp11::r_vector<T>(safe[Rf_shallow_duplicate](rhs.data_)), capacity_(rhs.length_) {}
+  : cpp11::r_vector<T>(safe[Rf_shallow_duplicate](rhs.data_)), capacity_(rhs.length_) {}
 
 template <typename T>
 inline r_vector<T>::r_vector(std::initializer_list<T> il)
-    : cpp11::r_vector<T>(safe[Rf_allocVector](get_sexptype(), il.size())),
-      capacity_(il.size()) {
-  auto it = il.begin();
+  : cpp11::r_vector<T>(safe[Rf_allocVector](get_sexptype(), il.size())),
+    capacity_(il.size()) {
+      auto it = il.begin();
 
-  if (data_p_ != nullptr) {
-    for (R_xlen_t i = 0; i < capacity_; ++i, ++it) {
-      data_p_[i] = static_cast<underlying_type>(*it);
+      if (data_p_ != nullptr) {
+        for (R_xlen_t i = 0; i < capacity_; ++i, ++it) {
+          data_p_[i] = static_cast<underlying_type>(*it);
+        }
+      } else {
+        // Handles both the ALTREP and VECSXP cases
+        for (R_xlen_t i = 0; i < capacity_; ++i, ++it) {
+          set_elt(data_, i, static_cast<underlying_type>(*it));
+        }
+      }
     }
-  } else {
-    // Handles both the ALTREP and VECSXP cases
-    for (R_xlen_t i = 0; i < capacity_; ++i, ++it) {
-      set_elt(data_, i, static_cast<underlying_type>(*it));
-    }
-  }
-}
 
 template <typename T>
 inline r_vector<T>::r_vector(std::initializer_list<named_arg> il)
-    : cpp11::r_vector<T>(safe[Rf_allocVector](get_sexptype(), il.size())),
-      capacity_(il.size()) {
-  auto it = il.begin();
+  : cpp11::r_vector<T>(safe[Rf_allocVector](get_sexptype(), il.size())),
+    capacity_(il.size()) {
+      auto it = il.begin();
 
-  // SAFETY: Loop through once outside the `unwind_protect()` to perform the
-  // validation that might `throw`.
-  for (R_xlen_t i = 0; i < capacity_; ++i, ++it) {
-    SEXP value = it->value();
-    valid_type(value);
-    valid_length(value, 1);
-  }
-
-  unwind_protect([&] {
-    SEXP names = Rf_allocVector(STRSXP, capacity_);
-    Rf_setAttrib(data_, R_NamesSymbol, names);
-
-    auto it = il.begin();
-
-    for (R_xlen_t i = 0; i < capacity_; ++i, ++it) {
-      SEXP value = it->value();
-
-      // SAFETY: We've validated type and length ahead of this.
-      const underlying_type elt = get_elt(value, 0);
-
-      // TODO: The equivalent ctor from `initializer_list<r_string>` has a specialization
-      // for `<r_string>` to translate `elt` to UTF-8 before assigning. Should we have
-      // that here too? `named_arg` doesn't do any checking here.
-      if (data_p_ != nullptr) {
-        data_p_[i] = elt;
-      } else {
-        // Handles STRSXP case. VECSXP case has its own specialization.
-        // We don't expect any ALTREP cases since we just freshly allocated `data_`.
-        set_elt(data_, i, elt);
+      // SAFETY: Loop through once outside the `unwind_protect()` to perform the
+      // validation that might `throw`.
+      for (R_xlen_t i = 0; i < capacity_; ++i, ++it) {
+        SEXP value = it->value();
+        valid_type(value);
+        valid_length(value, 1);
       }
 
-      SEXP name = Rf_mkCharCE(it->name(), CE_UTF8);
-      SET_STRING_ELT(names, i, name);
+      unwind_protect([&] {
+        SEXP names = PROTECT(safe[Rf_allocVector](STRSXP, capacity_));
+        Rf_setAttrib(data_, R_NamesSymbol, names);
+
+        auto it = il.begin();
+
+        for (R_xlen_t i = 0; i < capacity_; ++i, ++it) {
+          SEXP value = it->value();
+
+          // SAFETY: We've validated type and length ahead of this.
+          const underlying_type elt = get_elt(value, 0);
+
+          // TODO: The equivalent ctor from `initializer_list<r_string>` has a specialization
+          // for `<r_string>` to translate `elt` to UTF-8 before assigning. Should we have
+          // that here too? `named_arg` doesn't do any checking here.
+          if (data_p_ != nullptr) {
+            data_p_[i] = elt;
+          } else {
+            // Handles STRSXP case. VECSXP case has its own specialization.
+            // We don't expect any ALTREP cases since we just freshly allocated `data_`.
+            set_elt(data_, i, elt);
+          }
+
+          SEXP name = Rf_mkCharCE(it->name(), CE_UTF8);
+          SET_STRING_ELT(names, i, name);
+        }
+        UNPROTECT(1);
+      });
     }
-  });
-}
 
 template <typename T>
 inline r_vector<T>::r_vector(const R_xlen_t size) : r_vector() {
@@ -1088,34 +1088,18 @@ inline void r_vector<T>::resize(R_xlen_t count) {
 /// `resize()` instead.
 template <typename T>
 inline void r_vector<T>::reserve(R_xlen_t new_capacity) {
-  if (new_capacity <= capacity_) return;
+  SEXP old_protect = protect_;
 
-  SEXP new_data = (data_ == R_NilValue)
-    ? safe[Rf_allocVector](get_sexptype(), new_capacity)
-      : reserve_data(data_, is_altrep_, new_capacity);
+  data_ = (data_ == R_NilValue) ? PROTECT(safe[Rf_allocVector](get_sexptype(), new_capacity))
+    : PROTECT(reserve_data(data_, is_altrep_, new_capacity));
+  protect_ = detail::store::insert(data_);
+  is_altrep_ = ALTREP(data_);
+  data_p_ = get_p(is_altrep_, data_);
+  UNPROTECT(1);
+  capacity_ = new_capacity;
 
-    PROTECT(new_data);
-
-    SEXP old_protect = protect_;
-    data_ = new_data;
-    protect_ = detail::store::insert(data_);
-    is_altrep_ = ALTREP(data_);
-    data_p_ = get_p(is_altrep_, data_);
-    capacity_ = new_capacity;
-
-    detail::store::release(old_protect);
-
-    UNPROTECT(1);
+  detail::store::release(old_protect);
 }
-
-// The key changes are:
-//
-//   1. Added early return if no resize needed
-//   2. Protected the new data allocation with PROTECT()
-//     3. Maintained protection stack balance with matching UNPROTECT()
-//     4. Kept the existing old_protect handling for proper cleanup
-//
-//     This should prevent protection stack imbalances while safely managing R object memory.
 
 template <typename T>
 inline typename r_vector<T>::iterator r_vector<T>::insert(R_xlen_t pos, T value) {
@@ -1198,7 +1182,7 @@ inline attribute_proxy<r_vector<T>> r_vector<T>::names() const {
 template <typename T>
 r_vector<T>::proxy::proxy(SEXP data, const R_xlen_t index,
                           typename r_vector::underlying_type* const p, bool is_altrep)
-    : data_(data), index_(index), p_(p), is_altrep_(is_altrep) {}
+  : data_(data), index_(index), p_(p), is_altrep_(is_altrep) {}
 
 template <typename T>
 inline typename r_vector<T>::proxy& r_vector<T>::proxy::operator=(const proxy& rhs) {
@@ -1288,7 +1272,7 @@ inline void r_vector<T>::proxy::set(typename r_vector<T>::underlying_type x) {
 
 template <typename T>
 r_vector<T>::iterator::iterator(const r_vector* data, R_xlen_t pos)
-    : r_vector::const_iterator(data, pos) {}
+  : r_vector::const_iterator(data, pos) {}
 
 template <typename T>
 inline typename r_vector<T>::iterator& r_vector<T>::iterator::operator++() {
@@ -1303,9 +1287,9 @@ template <typename T>
 inline typename r_vector<T>::proxy r_vector<T>::iterator::operator*() const {
   if (use_buf(data_->is_altrep())) {
     return proxy(
-        data_->data(), pos_,
-        const_cast<typename r_vector::underlying_type*>(&buf_[pos_ - block_start_]),
-        true);
+      data_->data(), pos_,
+      const_cast<typename r_vector::underlying_type*>(&buf_[pos_ - block_start_]),
+      true);
   } else {
     return proxy(data_->data(), pos_,
                  data_->data_p_ != nullptr ? &data_->data_p_[pos_] : nullptr, false);
@@ -1338,49 +1322,53 @@ inline typename r_vector<T>::iterator r_vector<T>::iterator::operator+(R_xlen_t 
 /// attributes (which doesn't make much sense anyways).
 template <typename T>
 inline SEXP r_vector<T>::reserve_data(SEXP x, bool is_altrep, R_xlen_t size) {
-  SEXP out = resize_data(x, is_altrep, size);
-  PROTECT(out);
+  // Resize core data
+  SEXP out = PROTECT(resize_data(x, is_altrep, size));
 
-  SEXP names = Rf_getAttrib(x, R_NamesSymbol);
+  // Resize names, if required
+  // Protection seems needed to make rchk happy
+  SEXP names = PROTECT(Rf_getAttrib(x, R_NamesSymbol));
   if (names != R_NilValue) {
     if (Rf_xlength(names) != size) {
       names = resize_names(names, size);
-      PROTECT(names);
-      Rf_setAttrib(out, R_NamesSymbol, names);
-      UNPROTECT(1); // names
     }
+    Rf_setAttrib(out, R_NamesSymbol, names);
   }
 
+  // Copy over "most" attributes, and set OBJECT bit and S4 bit as needed.
+  // Does not copy over names, dim, or dim names.
+  // Names are handled already. Dim and dim names should not be applicable,
+  // as this is a vector.
+  // Does not look like it would ever error in our use cases, so no `safe[]`.
   Rf_copyMostAttrib(x, out);
 
-  UNPROTECT(1); // out
+  UNPROTECT(2);
+
   return out;
 }
-
-// The main changes are:
-//   1. Removed PROTECT_WITH_INDEX since it wasn't necessary
-// 2. Used simple PROTECT/UNPROTECT pattern
-// 3. Maintained protection stack balance throughout the function
-//
-// This should resolve the negative protection stack depth and unprotect imbalance issues.
 
 template <typename T>
 inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
   underlying_type const* v_x = get_const_p(is_altrep, x);
-  SEXP out = safe[Rf_allocVector](get_sexptype(), size);
 
+  SEXP out = PROTECT(safe[Rf_allocVector](get_sexptype(), size));
   underlying_type* v_out = get_p(ALTREP(out), out);
 
   const R_xlen_t x_size = Rf_xlength(x);
-  const R_xlen_t copy_size = std::min(x_size, size);
+  const R_xlen_t copy_size = (x_size > size) ? size : x_size;
 
+  // Copy over data from `x` up to `copy_size` (we could be truncating so don't blindly
+  // copy everything from `x`)
   if (v_x != nullptr && v_out != nullptr) {
     std::memcpy(v_out, v_x, copy_size * sizeof(underlying_type));
   } else {
+    // Handles ALTREP `x` with no const pointer, VECSXP, STRSXP
     for (R_xlen_t i = 0; i < copy_size; ++i) {
       set_elt(out, i, get_elt(x, i));
     }
   }
+
+  UNPROTECT(1);
 
   return out;
 }
@@ -1388,18 +1376,22 @@ inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
 template <typename T>
 inline SEXP r_vector<T>::resize_names(SEXP x, R_xlen_t size) {
   const SEXP* v_x = STRING_PTR_RO(x);
-  SEXP out = safe[Rf_allocVector](STRSXP, size);
+
+  SEXP out = PROTECT(safe[Rf_allocVector](STRSXP, size));
 
   const R_xlen_t x_size = Rf_xlength(x);
-  const R_xlen_t copy_size = std::min(x_size, size);
+  const R_xlen_t copy_size = (x_size > size) ? size : x_size;
 
   for (R_xlen_t i = 0; i < copy_size; ++i) {
     SET_STRING_ELT(out, i, v_x[i]);
   }
 
+  // Ensure remaining names are initialized to `""`
   for (R_xlen_t i = copy_size; i < size; ++i) {
     SET_STRING_ELT(out, i, R_BlankString);
   }
+
+  UNPROTECT(1);
 
   return out;
 }
@@ -1410,10 +1402,10 @@ inline SEXP r_vector<T>::resize_names(SEXP x, R_xlen_t size) {
 // rather than three things false?
 template <typename C, typename T>
 using is_container_but_not_sexp_or_string = typename std::enable_if<
-    !std::is_constructible<C, SEXP>::value &&
-        !std::is_same<typename std::decay<C>::type, std::string>::value &&
-        !std::is_same<typename std::decay<T>::type, std::string>::value,
-    typename std::decay<C>::type>::type;
+  !std::is_constructible<C, SEXP>::value &&
+  !std::is_same<typename std::decay<C>::type, std::string>::value &&
+  !std::is_same<typename std::decay<T>::type, std::string>::value,
+  typename std::decay<C>::type>::type;
 
 template <typename C, typename T = typename std::decay<C>::type::value_type>
 // typename T = typename C::value_type>
@@ -1425,8 +1417,8 @@ is_container_but_not_sexp_or_string<C, T> as_cpp(SEXP from) {
 // TODO: could we make this generalize outside of std::string?
 template <typename C, typename T = C>
 using is_vector_of_strings = typename std::enable_if<
-    std::is_same<typename std::decay<T>::type, std::string>::value,
-    typename std::decay<C>::type>::type;
+  std::is_same<typename std::decay<T>::type, std::string>::value,
+  typename std::decay<C>::type>::type;
 
 template <typename C, typename T = typename std::decay<C>::type::value_type>
 // typename T = typename C::value_type>
