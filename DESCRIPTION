@@ -6,12 +6,9 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-8725-3654")),
     person("Jason Cory", "Brunson", , "cornelioid@gmail.com", role = "aut",
            comment = c(ORCID = "0000-0003-3126-9494")),
-    person("Michael", "Kerber", role = c("ctb", "cph"),
-           comment = "HERA C++ code"),
-    person("Dmitriy", "Morozov", role = c("ctb", "cph"),
-           comment = "HERA C++ code"),
-    person("Arnur", "Nigmetov", role = c("ctb", "cph"),
-           comment = "HERA C++ code")
+    person("Michael", "Kerber", role = "ctb", comment = "HERA C++ code"),
+    person("Dmitriy", "Morozov", role = "ctb", comment = "HERA C++ code"),
+    person("Arnur", "Nigmetov", role = "ctb", comment = "HERA C++ code")
   )
 Description: A low-level package for hosting persistence data. It is part of the
     'TDAverse' suite of packages, which are designed to provide a collection of
