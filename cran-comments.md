@@ -7,7 +7,7 @@
   * ubuntu 24.04.2 LTS and devel and oldrel-1
 * [win-builder](https://win-builder.r-project.org/) (release and devel)
 * [macOS-builder](https://mac.r-project.org/macbuilder/submit.html)
-* [R-hub](https://builder.r-hub.io)
+* [R-hub](https://r-hub.github.io/rhub/)
 
 ## R CMD check results
 
