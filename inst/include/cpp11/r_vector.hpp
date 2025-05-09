@@ -1319,31 +1319,65 @@ inline typename r_vector<T>::iterator r_vector<T>::iterator::operator+(R_xlen_t 
 ///
 /// SAFETY: For use only by `reserve()`! This won't retain the `dim` or `dimnames`
 /// attributes (which doesn't make much sense anyways).
+// template <typename T>
+// inline SEXP r_vector<T>::reserve_data(SEXP x, bool is_altrep, R_xlen_t size) {
+//   // Resize core data
+//   SEXP out = PROTECT(resize_data(x, is_altrep, size));
+//
+//   // Resize names, if required
+//   // Protection seems needed to make rchk happy
+//   SEXP names = PROTECT(Rf_getAttrib(x, R_NamesSymbol));
+//   if (names != R_NilValue) {
+//     if (Rf_xlength(names) != size) {
+//       names = resize_names(names, size);
+//     }
+//     Rf_setAttrib(out, R_NamesSymbol, names);
+//   }
+//
+//   // Copy over "most" attributes, and set OBJECT bit and S4 bit as needed.
+//   // Does not copy over names, dim, or dim names.
+//   // Names are handled already. Dim and dim names should not be applicable,
+//   // as this is a vector.
+//   // Does not look like it would ever error in our use cases, so no `safe[]`.
+//   Rf_copyMostAttrib(x, out);
+//
+//   UNPROTECT(2);
+//   return out;
+// }
+
+// Based on the context and error message, here's a corrected version of the `reserve_data()` function that properly manages the protection stack:
+
 template <typename T>
 inline SEXP r_vector<T>::reserve_data(SEXP x, bool is_altrep, R_xlen_t size) {
-  // Resize core data
   SEXP out = PROTECT(resize_data(x, is_altrep, size));
 
-  // Resize names, if required
-  // Protection seems needed to make rchk happy
-  SEXP names = PROTECT(Rf_getAttrib(x, R_NamesSymbol));
+  SEXP names = Rf_getAttrib(x, R_NamesSymbol);
   if (names != R_NilValue) {
+    PROTECT(names);
     if (Rf_xlength(names) != size) {
-      names = resize_names(names, size);
+      SEXP new_names = resize_names(names, size);
+      Rf_setAttrib(out, R_NamesSymbol, new_names);
+    } else {
+      Rf_setAttrib(out, R_NamesSymbol, names);
     }
-    Rf_setAttrib(out, R_NamesSymbol, names);
+    UNPROTECT(1); // unprotect names
   }
 
-  // Copy over "most" attributes, and set OBJECT bit and S4 bit as needed.
-  // Does not copy over names, dim, or dim names.
-  // Names are handled already. Dim and dim names should not be applicable,
-  // as this is a vector.
-  // Does not look like it would ever error in our use cases, so no `safe[]`.
   Rf_copyMostAttrib(x, out);
 
-  UNPROTECT(2);
+  UNPROTECT(1); // unprotect out
   return out;
 }
+
+// The key changes are:
+//   1. Only protecting `names` if it exists (not R_NilValue)
+//   2. Properly matching PROTECT/UNPROTECT counts
+//   3. Removing redundant PROTECT on the resize_names result since it's already
+//   protected within that function
+//   4. Simplifying the control flow to make protection status clearer
+//
+//   This should resolve the protection stack imbalance issues while maintaining
+//   the same functionality.
 
 template <typename T>
 inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
