@@ -479,7 +479,7 @@ inline T r_vector<T>::operator[](const size_type pos) const {
 
 template <typename T>
 inline T r_vector<T>::operator[](const r_string& name) const {
-  SEXP names = PROTECT(this->names());
+  SEXP names = this->names();
   R_xlen_t size = Rf_xlength(names);
 
   for (R_xlen_t pos = 0; pos < size; ++pos) {
@@ -489,7 +489,6 @@ inline T r_vector<T>::operator[](const r_string& name) const {
     }
   }
 
-  UNPROTECT(1);
   return get_oob();
 }
 
@@ -866,7 +865,7 @@ inline r_vector<T>::r_vector(std::initializer_list<named_arg> il)
       }
 
       unwind_protect([&] {
-        SEXP names = PROTECT(safe[Rf_allocVector](STRSXP, capacity_));
+        SEXP names = Rf_allocVector(STRSXP, capacity_);
         Rf_setAttrib(data_, R_NamesSymbol, names);
 
         auto it = il.begin();
@@ -891,7 +890,6 @@ inline r_vector<T>::r_vector(std::initializer_list<named_arg> il)
           SEXP name = Rf_mkCharCE(it->name(), CE_UTF8);
           SET_STRING_ELT(names, i, name);
         }
-        UNPROTECT(1);
       });
     }
 
@@ -1090,12 +1088,11 @@ template <typename T>
 inline void r_vector<T>::reserve(R_xlen_t new_capacity) {
   SEXP old_protect = protect_;
 
-  data_ = (data_ == R_NilValue) ? PROTECT(safe[Rf_allocVector](get_sexptype(), new_capacity))
-    : PROTECT(reserve_data(data_, is_altrep_, new_capacity));
+  data_ = (data_ == R_NilValue) ? safe[Rf_allocVector](get_sexptype(), new_capacity)
+    : reserve_data(data_, is_altrep_, new_capacity);
   protect_ = detail::store::insert(data_);
   is_altrep_ = ALTREP(data_);
   data_p_ = get_p(is_altrep_, data_);
-  UNPROTECT(1);
   capacity_ = new_capacity;
 
   detail::store::release(old_protect);
