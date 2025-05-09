@@ -1088,17 +1088,34 @@ inline void r_vector<T>::resize(R_xlen_t count) {
 /// `resize()` instead.
 template <typename T>
 inline void r_vector<T>::reserve(R_xlen_t new_capacity) {
-  SEXP old_protect = protect_;
+  if (new_capacity <= capacity_) return;
 
-  data_ = (data_ == R_NilValue) ? safe[Rf_allocVector](get_sexptype(), new_capacity)
-                                : reserve_data(data_, is_altrep_, new_capacity);
-  protect_ = detail::store::insert(data_);
-  is_altrep_ = ALTREP(data_);
-  data_p_ = get_p(is_altrep_, data_);
-  capacity_ = new_capacity;
+  SEXP new_data = (data_ == R_NilValue)
+    ? safe[Rf_allocVector](get_sexptype(), new_capacity)
+      : reserve_data(data_, is_altrep_, new_capacity);
 
-  detail::store::release(old_protect);
+    PROTECT(new_data);
+
+    SEXP old_protect = protect_;
+    data_ = new_data;
+    protect_ = detail::store::insert(data_);
+    is_altrep_ = ALTREP(data_);
+    data_p_ = get_p(is_altrep_, data_);
+    capacity_ = new_capacity;
+
+    detail::store::release(old_protect);
+
+    UNPROTECT(1);
 }
+
+// The key changes are:
+//
+//   1. Added early return if no resize needed
+//   2. Protected the new data allocation with PROTECT()
+//     3. Maintained protection stack balance with matching UNPROTECT()
+//     4. Kept the existing old_protect handling for proper cleanup
+//
+//     This should prevent protection stack imbalances while safely managing R object memory.
 
 template <typename T>
 inline typename r_vector<T>::iterator r_vector<T>::insert(R_xlen_t pos, T value) {
@@ -1321,14 +1338,14 @@ inline typename r_vector<T>::iterator r_vector<T>::iterator::operator+(R_xlen_t 
 /// attributes (which doesn't make much sense anyways).
 template <typename T>
 inline SEXP r_vector<T>::reserve_data(SEXP x, bool is_altrep, R_xlen_t size) {
-  SEXP out;
-  PROTECT_INDEX idx;
-  PROTECT_WITH_INDEX(out = resize_data(x, is_altrep, size), &idx);
+  SEXP out = resize_data(x, is_altrep, size);
+  PROTECT(out);
 
   SEXP names = Rf_getAttrib(x, R_NamesSymbol);
   if (names != R_NilValue) {
     if (Rf_xlength(names) != size) {
-      PROTECT(names = resize_names(names, size));
+      names = resize_names(names, size);
+      PROTECT(names);
       Rf_setAttrib(out, R_NamesSymbol, names);
       UNPROTECT(1); // names
     }
@@ -1339,6 +1356,13 @@ inline SEXP r_vector<T>::reserve_data(SEXP x, bool is_altrep, R_xlen_t size) {
   UNPROTECT(1); // out
   return out;
 }
+
+// The main changes are:
+//   1. Removed PROTECT_WITH_INDEX since it wasn't necessary
+// 2. Used simple PROTECT/UNPROTECT pattern
+// 3. Maintained protection stack balance throughout the function
+//
+// This should resolve the negative protection stack depth and unprotect imbalance issues.
 
 template <typename T>
 inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
