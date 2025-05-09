@@ -283,7 +283,7 @@ inline SEXP insert(SEXP x) {
     return R_NilValue;
   }
 
-  PROTECT(x);
+  SEXP xp = PROTECT(x);
 
   SEXP list = get();
 
@@ -294,7 +294,7 @@ inline SEXP insert(SEXP x) {
 
   // Add a new cell that points to the current head + next.
   SEXP cell = PROTECT(Rf_cons(head, next));
-  SET_TAG(cell, x);
+  SET_TAG(cell, xp);
 
   // Update the head + next to point at the newly-created cell,
   // effectively inserting that cell between the current head + next.

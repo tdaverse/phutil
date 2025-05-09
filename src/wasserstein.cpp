@@ -79,8 +79,7 @@ cpp11::doubles wassersteinPairwiseDistances(const cpp11::list& x,
 {
   unsigned int N = x.size();
   unsigned int K = N * (N - 1) / 2;
-  cpp11::writable::doubles result;
-  result.resize(K);
+  cpp11::writable::doubles result(K);
   std::vector<PairVector> pairs(N);
 
   for (int n = 0;n < N;++n)
