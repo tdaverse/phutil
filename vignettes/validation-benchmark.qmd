@@ -171,7 +171,7 @@ $X$ and $Y$ for several choices of half-plane and "matched space" metrics.
 The results make intuitive sense; for example, the values change monotonically
 along each row and column.
 Let us now validate the bottom row---using the $L^\infty$ distance on the
-half-plane, giving the popular _bottleneck distance_---using both Hela, as
+half-plane, giving the popular _bottleneck distance_---using both Hera, as
 exposed through {phutil}, and Dionysus, as exposed through {TDA}:
 
 ```{r validate small PDs with Hera}
