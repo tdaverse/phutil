@@ -1,0 +1,27 @@
+Based on the commit history, here's a structured changelog:
+
+## New features
+
+* `as_persistence()` gains a method for `hclust` objects (#37).
+
+* `as_persistence()` parses matrices assuming dimension/birth/death input (#27).
+
+* `kantorovich_dist()` and `kantorovich_matrix()` provide aliases for `wasserstein_dist()` and `wasserstein_matrix()` functions (#29).
+
+* New `persistence` object class stores data from various TDA computation engines in a standard format (#37).
+
+## Bug fixes and minor improvements
+
+* Added Jason Cory Brunson as package author.
+
+* Package now uses MIT license (#21).
+
+* R>=4.1 dependency removed by avoiding use of lambda functions.
+
+* Switched from Rcpp to cpp11.
+
+* The `persistence` class now:
+  - Better handles unknown filtration or computation engines (#11)
+  - Does not check for non-negative values (#13)
+  - Directly handles output from `TDA::*Diag()` functions (#14)
+  - Uses `engine` field to store package name and function used (#7)

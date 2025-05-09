@@ -12,12 +12,6 @@ knitr:
 bibliography: references.bib
 ---
 
-```{r}
-#| label: setup
-library(ggplot2)
-library(phutil)
-```
-
 This vignette introduces the Wasserstein and bottleneck distances between
 persistence diagrams and their implementations in {phutil}, adapted from
 [Hera](https://github.com/anigmetov/hera), by way of two tasks:
@@ -26,8 +20,14 @@ persistence diagrams and their implementations in {phutil}, adapted from
 2. Benchmark the implementations against those provided by {TDA} (adapted from
 Dionysus).
 
-We will also use the {tdaunif} package to generate larger point clouds and the
-{microbenchmark} package to perform benchmark tests.
+In addition to {phutil}, we use {ggplot2} to visualize the benchmark results.
+We will also access the {tdaunif} package to generate larger point clouds and the {microbenchmark} package to perform benchmark tests.
+
+```{r}
+#| label: setup
+library(phutil)
+library(ggplot2)
+```
 
 ## Definitions
 
@@ -40,7 +40,7 @@ live in the upper-half plane; and most involve non-negative-valued filtrations,
 so that all points live in the first quadrant. The examples in this vignette
 will be no exceptions.
 
-We'll distinguish between persistence diagrams, which encode usually encode one
+We'll distinguish between persistence diagrams, which encode one
 degree of a persistence module, and _persistence data_, which comprises
 persistent pairs of many degrees (and annotated as such). Whereas a diagram is
 typically represented as a 2-column matrix with columns for birth and death
@@ -59,20 +59,13 @@ definition:
 $$ D_\infty(x,y) = \max_{i=1}^{n}{\lvert x_i - y_i \rvert}. $$
 
 As the parameter $p$ ranges between $1$ and $\infty$, three of its values yield
-familiar distance metrics: The taxicab distance $D_1$, the Pythagorean distance
+familiar distance metrics: The taxicab distance $D_1$, the Euclidean distance
 $D_2$, and the Chebyshev distance $D_\infty$.
 
-The [_Kantorovich_ or _Wasserstein metric_](https://en.wikipedia.org/wiki/Wasserstein_metric) derives from the problem
-of optimal transport: What is the minimum cost of relocating one distribution to
-another? In the space of persistence diagrams, only finitely many points lie off
-the diagonal, though every point on the diagonal is taken to be included with
-multiplicity $\mathbb{N}$. So the cost of relocating one diagram $X$ to another
-$Y$ amounts to (a) the cost of relocating some off-diagonal points to other
-off-diagonal points plus (b) the cost of relocating the remaining off-diagonal
-points to the diagonal (and vice-versa). This cost then depends entirely on how
-the off-diagonal points are matched, where a _matching_ is any bijective map
-$\varphi : X \to Y$, though in practice we assume that almost all diagonal
-points are matched to themselves and incur no cost.
+The [_Kantorovich_ or _Wasserstein metric_](https://en.wikipedia.org/wiki/Wasserstein_metric) derives from the problem of optimal transport: What is the minimum cost of relocating one distribution to another? We restrict ourselves to persistence diagrams with finitely many off-diagonal point masses, though each diagram is taken to include every point on the diagonal. So the cost of relocating one diagram $X$ to another $Y$ amounts to (a) the cost of relocating some off-diagonal points to other off-diagonal points plus (b) the cost of relocating the remaining off-diagonal points to the diagonal, and vice-versa.
+
+Because the diagonal points are dense, this cost depends entirely on how the off-diagonal points of both diagrams are matched---either to each other or to the diagonal, with each point matched exactly once.
+For this purpose, define a _matching_ to be any bijective map $\varphi : X \to Y$, though in practice we assume that almost all diagonal points are matched to themselves and incur no cost.
 
 The cost $D(x,\varphi(x))$ of relocating a point $x$ to its matched point
 $\varphi(x)$ is typically taken to be a Minkowski distance $D_q(x,\varphi(x)) =
@@ -83,7 +76,7 @@ decomposes. Other metrics have been proposed for this space, but we restrict to
 this family here.)
 
 The total cost of the relocation is canonically taken to be the Minkowski
-distance $\left( \sum_{x \in X}{D(x,\varphi(x))^p} \right)^{1/p}$ of the vector
+distance $\left( \sum_{x \in X}{D_q(x,\varphi(x))^p} \right)^{1/p}$ of the vector
 of matched-point distances. The Wasserstein distance is defined to be the
 infimum of this value over all possible matches.
 This yields the formulae
@@ -178,7 +171,7 @@ $X$ and $Y$ for several choices of half-plane and "matched space" metrics.
 The results make intuitive sense; for example, the values change monotonically
 along each row and column.
 Let us now validate the bottom row---using the $L^\infty$ distance on the
-half-plane, giving the popular _bottleneck distance_---using both Hela, as
+half-plane, giving the popular _bottleneck distance_---using both Hera, as
 exposed through {phutil}, and Dionysus, as exposed through {TDA}:
 
 ```{r validate small PDs with Hera}
@@ -340,7 +333,7 @@ ggplot(bm_all, aes(x = time * 10e-9, y = expr)) +
 ```
 
 We note that Dionysus via {TDA} clearly outperforms Hera via {phutil} on degree-1 PDs, which in these cases have many fewer features.
-However, the tables are turned in degree 0, in which the PDs have many more features.
+However, the tables are turned in degree 0, in which the PDs have many more features---which, when present, dominate the total computational cost.
 (The implementations are more evenly matched on the degree-2 PDs, which may have to do with many of them being empty.)
 While by no means exhaustive and not necessarily representative, these results suggest that Hera via {phutil} scales more efficiently than Dionysus via {TDA} and should therefore be preferred for projects involving more feature-rich data sets.
 

@@ -19,14 +19,24 @@
 #' @param x An `R` object containing the persistence data to be coerced into an
 #'   object of class [`persistence`]. Currently supported forms are:
 #'
-#' - a \eqn{\geq 3}-column matrix (or object coercible to one) with
-#' dimension/degree, start/birth and end/death columns,
-#' - a list whose first element is such an object,
+#' - a \eqn{\geq 2}-column matrix (or object coercible to one) with
+#' dimension/degree, start/birth and end/death columns; if it has only 2
+#' columns, we assume that the `dimension` column is missing and we set it to
+#' `0` (i.e. we assume that the data is in the form `birth` and `death`),
+#' - a [`base::data.frame`] (or object coercible to one) with at least 3 columns
+#' containing the persistence data; if it has only 2 columns, we assume that the
+#' `dimension` column is missing and we set it to `0`,
+#' - a list of 2-column matrices (or objects coercible to one) with the first column
+#' being the birth and the second column being the death of homological
+#' features; indexed by dimension, i.e. the \eqn{i}-*th* element of the list
+#' corresponds to the \eqn{(i-1)}-*th* homology dimension,
 #' - an object of class 'PHom' as returned by
 #' [`ripserr::vietoris_rips()`](https://tdaverse.github.io/ripserr/reference/vietoris_rips.html),
 #' - (a list as returned by a `*Diag()` function in __TDA__ (e.g.
 #' [`TDA::ripsDiag()`](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag))
-#' whose first element is) an object of class 'diagram'.
+#' whose first element is) an object of class 'diagram',
+#' - an object of class [`stats::hclust`] in which case we use the entry `height`
+#' as the death of homological features and 0 as the birth of all features.
 #'
 #' @param warn A boolean specifying whether to issue a warning if the input
 #'   persistence data contained unordered pairs. Defaults to `TRUE`.
@@ -229,19 +239,15 @@ as_persistence.matrix <- function(x, warn = TRUE, ...) {
     } else {
       x <- cbind(0L, x)
     }
-    colnames(x) <- c("dimension", "birth", "death")
     n_columns <- 3L
   }
 
-  column_names <- colnames(x)
-  if (is.null(column_names)) {
-    colnames(x) <- c(
-      "dimension",
-      "birth",
-      "death",
-      if (n_columns > 3L) paste0("extra_", seq_len(n_columns - 3L))
-    )
-  }
+  colnames(x) <- c(
+    "dimension",
+    "birth",
+    "death",
+    if (n_columns > 3L) paste0("extra_", seq_len(n_columns - 3L))
+  )
 
   x <- as.data.frame(x)
   as_persistence.data.frame(x, warn = warn, ...)
