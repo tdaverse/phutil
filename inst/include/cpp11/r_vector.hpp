@@ -1381,7 +1381,6 @@ inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
 template <typename T>
 inline SEXP r_vector<T>::resize_names(SEXP x, R_xlen_t size) {
   SEXP out = safe[Rf_allocVector](STRSXP, size);
-  PROTECT(out);
 
   const R_xlen_t x_size = Rf_xlength(x);
   const R_xlen_t copy_size = (x_size > size) ? size : x_size;
@@ -1394,11 +1393,11 @@ inline SEXP r_vector<T>::resize_names(SEXP x, R_xlen_t size) {
     SET_STRING_ELT(out, i, R_BlankString);
   }
 
-  UNPROTECT(1);
   return out;
 }
 
 // The key changes are:
+// 0. The `safe` wrapper around `Rf_allocVector` already handles protection
 // 1. Removed direct pointer access via STRING_PTR_RO
 // 2. Use STRING_ELT instead of direct pointer access
 // 3. Ensure PROTECT/UNPROTECT balance by protecting `out` immediately after allocation
