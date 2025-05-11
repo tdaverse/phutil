@@ -1350,6 +1350,7 @@ inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
   underlying_type const* v_x = get_const_p(is_altrep, x);
 
   SEXP out = safe[Rf_allocVector](get_sexptype(), size);
+  PROTECT(out);
   underlying_type* v_out = get_p(ALTREP(out), out);
 
   const R_xlen_t x_size = Rf_xlength(x);
@@ -1365,6 +1366,8 @@ inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
       set_elt(out, i, get_elt(x, i));
     }
   }
+
+  UNPROTECT(1);
 
   return out;
 }
