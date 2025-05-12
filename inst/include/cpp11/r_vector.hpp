@@ -1349,13 +1349,12 @@ template <typename T>
 inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
   underlying_type const* v_x = get_const_p(is_altrep, x);
 
-  // SEXP out = safe[Rf_allocVector](get_sexptype(), size);
-  // PROTECT(out);
+  SEXP out = PROTECT(Rf_allocVector(get_sexptype(), size));
 
-  SEXP out;
-  cpp11::unwind_protect([&] {
-    PROTECT(out = Rf_allocVector(get_sexptype(), size));
-  });
+  // SEXP out;
+  // cpp11::unwind_protect([&] {
+  //   PROTECT(out = Rf_allocVector(get_sexptype(), size));
+  // });
 
   underlying_type* v_out = get_p(ALTREP(out), out);
 
