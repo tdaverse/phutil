@@ -98,6 +98,5 @@ cpp11::doubles wassersteinPairwiseDistances(const cpp11::list& x,
     result[k] = wassersteinDist(pairs[i], pairs[j], wasserstein_power, delta);
   }
 
-  // return result;
-  return cpp11::as_cpp<cpp11::doubles>(result);
+  return result;
 }

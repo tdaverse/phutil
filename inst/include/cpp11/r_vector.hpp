@@ -1353,6 +1353,8 @@ inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
 
   underlying_type* v_out = get_p(ALTREP(out), out);
 
+  PROTECT(out);
+
   const R_xlen_t x_size = Rf_xlength(x);
   const R_xlen_t copy_size = (x_size > size) ? size : x_size;
 
