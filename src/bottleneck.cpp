@@ -67,5 +67,5 @@ cpp11::doubles bottleneckPairwiseDistances(const cpp11::list& x,
     result[k] = bottleneckDist(pairs[i], pairs[j], delta);
   }
 
-  return result;
+  return cpp11::as_cpp<cpp11::doubles>(result);
 }
