@@ -1349,7 +1349,7 @@ template <typename T>
 inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
   underlying_type const* v_x = get_const_p(is_altrep, x);
 
-  SEXP out = safe[Rf_allocVector](get_sexptype(), size);
+  SEXP out = PROTECT(safe[Rf_allocVector](get_sexptype(), size));
 
   underlying_type* v_out = get_p(ALTREP(out), out);
 
@@ -1362,13 +1362,12 @@ inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
     std::memcpy(v_out, v_x, copy_size * sizeof(underlying_type));
   } else {
     // Handles ALTREP `x` with no const pointer, VECSXP, STRSXP
-    PROTECT(out);
     for (R_xlen_t i = 0; i < copy_size; ++i) {
       set_elt(out, i, get_elt(x, i));
     }
-    UNPROTECT(1);
   }
 
+  UNPROTECT(1);
   return out;
 }
 
