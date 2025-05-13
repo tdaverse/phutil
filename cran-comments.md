@@ -1,3 +1,12 @@
+## Resubmission
+
+This is a resubmission. In this version I have:
+
+- Extended the package description to include citations for methods implemented
+in the package;
+- Modified the validation benchchmark vignette to properly reset graphical
+settings to user's defaults after changing them.
+
 ## Test environments
 
 * local macOS R installation, R 4.5.0
