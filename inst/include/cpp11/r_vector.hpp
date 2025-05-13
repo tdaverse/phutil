@@ -1363,16 +1363,15 @@ inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
 
   // Copy over data from `x` up to `copy_size` (we could be truncating so don't blindly
   // copy everything from `x`)
-  if (v_x != nullptr && v_out != nullptr) {
+  // if (v_x != nullptr && v_out != nullptr) {
     std::memcpy(v_out, v_x, copy_size * sizeof(underlying_type));
-  } else {
-    // Handles ALTREP `x` with no const pointer, VECSXP, STRSXP
-    for (R_xlen_t i = 0; i < copy_size; ++i) {
-      set_elt(out, i, get_elt(x, i));
-    }
-  }
+  // } else {
+  //   // Handles ALTREP `x` with no const pointer, VECSXP, STRSXP
+  //   for (R_xlen_t i = 0; i < copy_size; ++i) {
+  //     set_elt(out, i, get_elt(x, i));
+  //   }
+  // }
 
-  PROTECT(out);
   UNPROTECT(2);
   return out;
 }
