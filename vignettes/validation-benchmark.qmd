@@ -130,7 +130,7 @@ $X$.
 #| fig-height: 4
 #| fig-align: center
 #| fig-cap: "Overlaid persistence diagrams $X$ (circles) and $Y$ (diamond) with dashed segments connecting optimally matched pairs."
-par(mar = c(4, 4, 1, 1) + .1)
+oldpar <- par(mar = c(4, 4, 1, 1) + .1)
 plot(
   NA_real_,
   xlim = c(0, 6), ylim = c(0, 6), asp = 1, xlab = "birth", ylab = "death"
@@ -139,7 +139,7 @@ abline(a = 0, b = 1)
 points(X, pch = 1)
 points(Y, pch = 5)
 segments(X[, 1], X[, 2], c(2, Y[, 1]), c(2, Y[, 2]), lty = 2)
-par(mar = c(5, 4, 4, 2) + .1)
+par(oldpar)
 ```
 
 Based on these observations, we get this expression for the Wasserstein distance
