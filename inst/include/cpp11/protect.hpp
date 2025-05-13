@@ -71,6 +71,7 @@ template <typename Fun, typename = typename std::enable_if<std::is_same<
     // R_UwindProtect does a normal exit the memory shouldn't be protected, so we
     // unset it here before returning the value ourselves.
     SETCAR(token, R_NilValue);
+    SETCDR(token, R_NilValue);
 
     return res;
   }
