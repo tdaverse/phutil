@@ -1372,6 +1372,7 @@ inline SEXP r_vector<T>::resize_data(SEXP x, bool is_altrep, R_xlen_t size) {
     }
   }
 
+  PROTECT(out);
   UNPROTECT(2);
   return out;
 }
