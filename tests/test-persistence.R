@@ -77,7 +77,7 @@ expect_equal(length(pd_p5$pairs), 1)
 expect_equal(length(pd_p5$pairs[[1]][1, ]), 2) #correct Format
 
 
-#as_persistence.PHom correctly processes output from `vietoris_rips` from {ripserr}
+#as_persistence.PHom correctly processes output from {ripserr}
 pd <- ripserr::cubical(volcano)
 pd_p <- as_persistence(pd)
 
