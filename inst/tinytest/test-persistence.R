@@ -77,7 +77,7 @@ expect_equal(length(pd_p5$pairs), 1)
 expect_equal(length(pd_p5$pairs[[1]][1, ]), 2) #correct Format
 
 
-#as_persistence.PHom correctly processes output from `vietoris_rips` from {ripserr}
+#as_persistence.PHom correctly processes output from `ripserr::cubical` from {ripserr}
 pd <- ripserr::cubical(volcano)
 pd_p <- as_persistence(pd)
 
@@ -86,12 +86,14 @@ rip_ver <- as.character(utils::packageVersion("ripserr"))
 if (utils::compareVersion(rip_ver, "0.3.0") >= 0) {
   #ripserr ≥ 0.3.0
   expect_inherits(pd_p, "persistence")
-  expect_equal(pd_p$metadata$parameters$maxdimension, 1)
+  expect_equal(pd_p$metadata$engine, "ripserr::<vietoris_rips/cubical>")
+  expect_equal(pd_p$metadata$filtration, "Vietoris-Rips/cubical")
   expect_equal(length(pd_p$pairs[[1]][1, ]), 2)
 } else {
   #ripserr < 0.3.0
   expect_inherits(pd_p, "persistence")
-  expect_equal(pd_p$metadata$parameters$maxdimension, 1)
+  expect_equal(pd_p$metadata$engine, "ripserr::<vietoris_rips/cubical>")
+  expect_equal(pd_p$metadata$filtration, "Vietoris-Rips/cubical")
   expect_equal(length(pd_p$pairs[[1]][1, ]), 2)
 }
 
@@ -108,6 +110,7 @@ expect_equal(pd$pairs[[2]], matrix(c(0.5, 2), ncol = 2))
 
 #as_persistence.persistence returns the object unchanged
 mat <- matrix(c(0, 1, 2, 1, 0.5, 2), ncol = 3, byrow = TRUE)
+colnames(mat) <- c("dimension", "birth", "death")
 pd <- as_persistence(mat)
 pd2 <- as_persistence(pd)
   
