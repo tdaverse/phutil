@@ -47,7 +47,7 @@ FltRips <- TDA::ripsFiltration(X = df, maxdimension = 1,
                           maxscale = 1.5, dist = "euclidean", library = "Dionysus",
                           printProgress = FALSE)
 DiagFltRips <- TDA::filtrationDiag(filtration = FltRips, maxdimension = 1,
-                              library = "Dionysus", location = TRUE, printProgress = TRUE)
+                              library = "Dionysus", location = TRUE, printProgress = FALSE)
 pd3 <- DiagFltRips$diagram
 pd3[, c(2, 3)] <- sqrt(pd3[, c(2, 3)])
 pd_p3 <- as_persistence(pd3)
