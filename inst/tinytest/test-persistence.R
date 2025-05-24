@@ -25,7 +25,7 @@ df3d <- t(data.frame(
   z = c(0.2, 0.4, 0.35)
 ))
 
-pd <- alphaComplexDiag(df3d, maxdimension = 1)$diagram
+pd <- TDA::alphaComplexDiag(df3d, maxdimension = 1)$diagram
 pd[, c(2, 3)] <- sqrt(pd[, c(2, 3)])
 pd_p <- as_persistence(pd)
 
@@ -34,7 +34,7 @@ expect_equal(pd_p$metadata$parameters$maxdimension, 1)
 expect_equal(length(pd_p$pairs[[1]][1, ]), 2) #correct Format
 
 
-pd2 <- alphaShapeDiag(df3d, maxdimension = 2)$diagram
+pd2 <- TDA::alphaShapeDiag(df3d, maxdimension = 2)$diagram
 pd2[, c(2, 3)] <- sqrt(pd2[, c(2, 3)])
 pd_p2 <- as_persistence(pd2)
 
@@ -43,10 +43,10 @@ expect_equal(pd_p$metadata$parameters$maxdimension, 1)
 expect_equal(length(pd_p2$pairs[[1]][1, ]), 2) #correct Format
 
 
-FltRips <- ripsFiltration(X = df, maxdimension = 1,
+FltRips <- TDA::ripsFiltration(X = df, maxdimension = 1,
                           maxscale = 1.5, dist = "euclidean", library = "Dionysus",
                           printProgress = FALSE)
-DiagFltRips <- filtrationDiag(filtration = FltRips, maxdimension = 1,
+DiagFltRips <- TDA::filtrationDiag(filtration = FltRips, maxdimension = 1,
                               library = "Dionysus", location = TRUE, printProgress = TRUE)
 pd3 <- DiagFltRips$diagram
 pd3[, c(2, 3)] <- sqrt(pd3[, c(2, 3)])
@@ -57,7 +57,7 @@ expect_equal(pd_p3$metadata$parameters$maxdimension, 1)
 expect_equal(length(pd_p3$pairs[[1]][1, ]), 2) #correct Format
 
 
-Diag1 <- gridDiag(coords, distFct, lim = cbind(c(-1, 1), c(-1, 1)), maxdimension = 1 ,by = 0.05, sublevel = TRUE,
+Diag1 <- TDA::gridDiag(coords, distFct, lim = cbind(c(-1, 1), c(-1, 1)), maxdimension = 1 ,by = 0.05, sublevel = TRUE,
                     printProgress = TRUE) 
 pd4 <- Diag1$diagram 
 pd4[, c(2, 3)] <- sqrt(pd4[, c(2, 3)])
@@ -68,7 +68,7 @@ expect_equal(pd_p4$metadata$parameters$maxdimension, 1)
 expect_equal(length(pd_p4$pairs[[1]][1, ]), 2) #correct Format
 
 
-pd5 <- ripsDiag(df, maxdimension = 1, maxscale = 10)$diagram
+pd5 <- TDA::ripsDiag(df, maxdimension = 1, maxscale = 10)$diagram
 pd5[, c(2, 3)] <- sqrt(pd5[, c(2, 3)])
 pd_p5 <- as_persistence(pd5)
   
