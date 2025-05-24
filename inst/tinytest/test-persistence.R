@@ -57,7 +57,7 @@ expect_equal(pd_p3$metadata$parameters$maxdimension, 1)
 expect_equal(length(pd_p3$pairs[[1]][1, ]), 2) #correct Format
 
 
-Diag1 <- TDA::gridDiag(coords, distFct, lim = cbind(c(-1, 1), c(-1, 1)), maxdimension = 1 ,by = 0.05, sublevel = TRUE,
+Diag1 <- TDA::gridDiag(coords, TDA::distFct, lim = cbind(c(-1, 1), c(-1, 1)), maxdimension = 1 ,by = 0.05, sublevel = TRUE,
                     printProgress = TRUE) 
 pd4 <- Diag1$diagram 
 pd4[, c(2, 3)] <- sqrt(pd4[, c(2, 3)])
