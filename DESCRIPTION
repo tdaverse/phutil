@@ -22,11 +22,9 @@ Imports:
     cli,
     rlang
 Suggests:
-    ggplot2,
     knitr,
     microbenchmark,
     quarto,
-    scales,
     TDA,
     tdaunif,
     tinysnapshot,
