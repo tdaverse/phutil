@@ -24,6 +24,7 @@ In addition to {phutil}, we access the {tdaunif} package to generate larger poin
 
 ```{r}
 #| label: setup
+#| include: false
 library(phutil)
 init_par <- par()
 ```
