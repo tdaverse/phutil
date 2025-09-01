@@ -130,7 +130,7 @@ $X$.
 #| fig-height: 4
 #| fig-align: center
 #| fig-cap: "Overlaid persistence diagrams $X$ (circles) and $Y$ (diamond) with dashed segments connecting optimally matched pairs."
-par(mar = c(4, 4, 1, 1) + .1)
+oldpar <- par(mar = c(4, 4, 1, 1) + .1)
 plot(
   NA_real_,
   xlim = c(0, 6), ylim = c(0, 6), asp = 1, xlab = "birth", ylab = "death"
@@ -171,7 +171,7 @@ $X$ and $Y$ for several choices of half-plane and "matched space" metrics.
 The results make intuitive sense; for example, the values change monotonically
 along each row and column.
 Let us now validate the bottom row---using the $L^\infty$ distance on the
-half-plane, giving the popular _bottleneck distance_---using both Hela, as
+half-plane, giving the popular _bottleneck distance_---using both Hera, as
 exposed through {phutil}, and Dionysus, as exposed through {TDA}:
 
 ```{r validate small PDs with Hera}
