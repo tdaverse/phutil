@@ -4,11 +4,34 @@
 \alias{distances}
 \alias{bottleneck_distance}
 \alias{wasserstein_distance}
+\alias{kantorovich_distance}
 \title{Distances between two persistence diagrams}
 \usage{
-bottleneck_distance(x, y, tol = 1e-04, validate = TRUE, dimension = 0L)
+bottleneck_distance(
+  x,
+  y,
+  tol = sqrt(.Machine$double.eps),
+  validate = TRUE,
+  dimension = 0L
+)
 
-wasserstein_distance(x, y, tol = 1e-04, p = 1, validate = TRUE, dimension = 0L)
+wasserstein_distance(
+  x,
+  y,
+  tol = sqrt(.Machine$double.eps),
+  p = 1,
+  validate = TRUE,
+  dimension = 0L
+)
+
+kantorovich_distance(
+  x,
+  y,
+  tol = sqrt(.Machine$double.eps),
+  p = 1,
+  validate = TRUE,
+  dimension = 0L
+)
 }
 \arguments{
 \item{x}{Either a matrix of shape \eqn{n \times 2} or an object of class
@@ -17,11 +40,11 @@ wasserstein_distance(x, y, tol = 1e-04, p = 1, validate = TRUE, dimension = 0L)
 \item{y}{Either a matrix of shape \eqn{m \times 2} or an object of class
 \link{persistence} specifying the second persistence diagram.}
 
-\item{tol}{A numeric value specifying the relative error. Defaults to \code{1e-4}.
-For the Bottleneck distance, it can be set to \code{0.0} in which case the exact
-Bottleneck distance is computed, while an approximate Bottleneck distance
-is computed if \code{tol > 0.0}. For the Wasserstein distance, it must be
-strictly positive.}
+\item{tol}{A numeric value specifying the relative error. Defaults to
+\code{sqrt(.Machine$double.eps)}. For the Bottleneck distance, it can be set to
+\code{0.0} in which case the exact Bottleneck distance is computed, while an
+approximate Bottleneck distance is computed if \code{tol > 0.0}. For the
+Wasserstein distance, it must be strictly positive.}
 
 \item{validate}{A boolean value specifying whether to validate the input
 persistence diagrams. Defaults to \code{TRUE}. If \code{FALSE}, the function will not
@@ -52,7 +75,8 @@ the diagonal with infinite multiplicity. The \emph{\eqn{p}-Wasserstein distance}
 between \eqn{D_1} and \eqn{D_2} is defined as the infimum over all matchings
 of the expression
 
-\deqn{W_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
+\deqn{W_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
+\left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
 \right)^{\frac{1}{p}}}
 
 that can be thought of as the Minkowski distance between the diagrams viewed
@@ -62,7 +86,11 @@ is the infinity norm \eqn{\lVert (x_1,x_2) \rVert_\infty = \max(x_1,x_2)}. In
 the limit \eqn{p \to \infty}, the Wasserstein distance becomes the
 \emph{bottleneck distance}:
 
-\deqn{B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2} \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
+\deqn{B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
+\sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
+
+The Wasserstein metric is also called the Kantorovich metric in recognition
+of the originator of the metric.
 }
 \examples{
 bottleneck_distance(

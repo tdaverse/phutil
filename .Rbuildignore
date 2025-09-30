@@ -8,3 +8,9 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^CODE_OF_CONDUCT\.md$
+^vignettes/\.quarto$
+^vignettes/*_files$
+^sandbox$
+^cran-comments\.md$
+^CRAN-SUBMISSION$

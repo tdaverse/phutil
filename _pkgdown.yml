@@ -2,3 +2,7 @@ url: https://tdaverse.github.io/phutil/
 template:
   bootstrap: 5
 
+news:
+  releases:
+  - text: phutil 0.0.1
+    href: https://r-consortium.org/posts/unifying-toolbox-for-handling-persistence-data/

@@ -67,3 +67,27 @@
 #' @format
 #' A list of length 100, where each element is an object of class 'persistence'.
 "persistence_sample"
+
+#' A sample of persistence diagrams from the trefoil
+#'
+#' A collection of 24 samples of size 120 on the trefoil from which a
+#' persistence diagram is computed using the [`TDA::ripsDiag()`] function with
+#' `maxdimension = 2` and `maxscale = 6`. Each diagram has been generated using the
+#' [`tdaunif::sample_trefoil()`] function with the following parameters: `n =
+#' 120` and `sd = 0.05`. The seed was fixed to 28415.
+#'
+#' @format
+#' A list of length 24, where each element is an object of class 'persistence'.
+"trefoils"
+
+#' A sample of persistence diagrams from the arch spiral
+#'
+#' A collection of 24 samples of size 120 on the arch spiral from which a
+#' persistence diagram is computed using the [`TDA::ripsDiag()`] function with
+#' `maxdimension = 2` and `maxscale = 6`. Each diagram has been generated using
+#' the [`tdaunif::sample_arch_spiral()`] function with the following parameters:
+#' `n = 120`, `arms = 2`` and `sd = 0.05`. The seed was fixed to 28415.
+#'
+#' @format
+#' A list of length 24, where each element is an object of class 'persistence'.
+"arch_spirals"
