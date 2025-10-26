@@ -47,6 +47,8 @@
 #'   leaves were born. Defaults to `0` if all heights are non-negative and
 #'   `-Inf` otherwise.
 #' @inheritParams base::as.data.frame
+#' @param list Logical; whether to return the `diagram` object as the sole
+#'   element of a list. Defaults to `TRUE` for consistency with the TDA package.
 
 #' @returns An object of class [`persistence`] which is a list of 2 elements:
 #'
@@ -84,6 +86,13 @@
 #' get_pairs(x, dimension = 1)
 #'
 #' as.data.frame(x)
+#'
+#' # back and forth between `diagram` and `persistence`
+#' x <- tdaunif::sample_projective_plane(n = 12)
+#' ( d <- TDA::alphaComplexDiag(x, maxdimension = 2) )
+#' ( p <- as_persistence(d) )
+#' as_diagram(p)
+#' as_diagram(p, list = FALSE)
 #'
 #' # distances between cities
 #' euroclust <- hclust(eurodist, method = "ward.D")
@@ -427,4 +436,26 @@ as.data.frame.persistence <- function(
     rownames(df) <- paste(dimension, id, sep = "-")
   }
   df
+}
+
+#' @rdname persistence
+#' @export
+as_diagram <- function(x, ...) {
+  UseMethod("as_diagram")
+}
+
+#' @rdname persistence
+#' @export
+as_diagram.persistence <- function(x, list = TRUE, ...) {
+  res <- as.matrix.persistence(x)
+  # NB: {TDA} may produce diagrams with `Death` column before `Bith`.
+  colnames(res)[match(c("birth", "death"), colnames(res))] <-
+    c("Birth", "Death")
+  class(res) <- "diagram"
+  attr(res, "maxdimension") <- max(res[, 1L])
+  attr(res, "scale") <-
+    range(res[! apply(is.infinite(res[, c(2L, 3L)]), 1, any), c(2L, 3L)])
+  attr(res, "call") <- x$metadata$call
+  if (list) res <- list(diagram = res)
+  res
 }

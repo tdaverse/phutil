@@ -161,4 +161,20 @@ expect_equal(xm[, "dimension"], c(0L, 0L, 1L, 1L))
 expect_equal(xm[, "birth"], c(0, 1, 0, 1))
 expect_equal(xm[, "death"], c(2, 3, 2, 3))
 
+# Test that as_diagram() works
+
+x <- cbind(x = runif(6), y = runif(6))
+
+d <- TDA::alphaComplexDiag(x, maxdimension = 2)
+p <- as_persistence(d)
+expect_true(is.list(as_diagram(p)))
+expect_true(! is.list(as_diagram(p, list = FALSE)))
+expect_identical(as_diagram(p), d)
+
+d <- TDA::ripsDiag(x, maxdimension = 2, maxscale = 1.5)
+p <- as_persistence(d)
+expect_true(is.list(as_diagram(p)))
+expect_true(! is.list(as_diagram(p, list = FALSE)))
+expect_identical(as_diagram(p), d)
+
 options(opts)
