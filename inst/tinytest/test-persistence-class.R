@@ -177,4 +177,8 @@ expect_true(is.list(as_diagram(p)))
 expect_true(! is.list(as_diagram(p, list = FALSE)))
 expect_identical(as_diagram(p), d)
 
+h <- ripserr::cubical(volcano)
+expect_true(is.list(as_diagram(h)))
+expect_true(! is.list(as_diagram(h, list = FALSE)))
+
 options(opts)

@@ -17,6 +17,7 @@
 \alias{as.data.frame.persistence}
 \alias{as_diagram}
 \alias{as_diagram.persistence}
+\alias{as_diagram.PHom}
 \title{An \code{S3} class for storing persistence data}
 \usage{
 as_persistence(x, warn = TRUE, ...)
@@ -48,6 +49,8 @@ get_pairs(x, dimension, ...)
 as_diagram(x, ...)
 
 \method{as_diagram}{persistence}(x, list = TRUE, ...)
+
+\method{as_diagram}{PHom}(x, list = TRUE, ...)
 }
 \arguments{
 \item{x}{An \code{R} object containing the persistence data to be coerced into an

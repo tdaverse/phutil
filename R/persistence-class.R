@@ -459,3 +459,15 @@ as_diagram.persistence <- function(x, list = TRUE, ...) {
   if (list) res <- list(diagram = res)
   res
 }
+
+#' @rdname persistence
+#' @export
+as_diagram.PHom <- function(x, list = TRUE, ...) {
+  res <- cbind(dimension = x$dimension, Birth = x$birth, Death = x$death)
+  class(res) <- "diagram"
+  attr(res, "maxdimension") <- max(res[, 1L])
+  attr(res, "scale") <-
+    range(res[! apply(is.infinite(res[, c(2L, 3L)]), 1, any), c(2L, 3L)])
+  if (list) res <- list(diagram = res)
+  res
+}
