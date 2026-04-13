@@ -1,6 +1,6 @@
 using("tinysnapshot")
 
-opts <- options(cli.width = 80)
+opts <- options(cli.width = 80, cli.hyperlink = FALSE)
 
 m <- as.matrix(noisy_circle_ripserr)
 
