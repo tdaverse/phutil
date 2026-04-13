@@ -31,6 +31,7 @@
   [`get_pairs()`](https://tdaverse.github.io/phutil/reference/persistence.md)
   [`as.matrix(`*`<persistence>`*`)`](https://tdaverse.github.io/phutil/reference/persistence.md)
   [`as.data.frame(`*`<persistence>`*`)`](https://tdaverse.github.io/phutil/reference/persistence.md)
+  [`as_diagram()`](https://tdaverse.github.io/phutil/reference/persistence.md)
   :
 
   An `S3` class for storing persistence data

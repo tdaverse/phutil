@@ -109,7 +109,15 @@ in the form of the 'PHom' class,</p></li>
 <span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'persistence'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">x</span>, row.names <span class="op">=</span> <span class="cn">NULL</span>, optional <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">x</span>, row.names <span class="op">=</span> <span class="cn">NULL</span>, optional <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">as_diagram</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'persistence'</span></span>
+<span><span class="fu">as_diagram</span><span class="op">(</span><span class="va">x</span>, list <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'PHom'</span></span>
+<span><span class="fu">as_diagram</span><span class="op">(</span><span class="va">x</span>, list <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -172,6 +180,11 @@ which to recover a matrix of persistence pairs.</p></dd>
     <code>optional</code> only for column names treatment, basically with the
     meaning of <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a>(*, check.names = !optional)</code>.
     See also the <code>make.names</code> argument of the <code>matrix</code> method.</p></dd>
+
+
+<dt id="arg-list">list<a class="anchor" aria-label="anchor" href="#arg-list"></a></dt>
+<dd><p>Logical; whether to return the <code>diagram</code> object as the sole
+element of a list. Defaults to <code>TRUE</code> for consistency with the TDA package.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -337,6 +350,115 @@ column being the end/death.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 100         0 0.00000000 0.008162723</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 101         1 0.38239273 1.632187167</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 102         1 0.07209847 0.075896319</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># back and forth between `diagram` and `persistence`</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">tdaunif</span><span class="fu">::</span><span class="fu"><a href="https://tdaverse.github.io/tdaunif/reference/real-projective-planes.html" class="external-link">sample_projective_plane</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">(</span> <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">TDA</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TDA/man/alphaComplexDiag.html" class="external-link">alphaComplexDiag</a></span><span class="op">(</span><span class="va">x</span>, maxdimension <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $diagram</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       dimension      Birth       Death</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]         0 0.00000000         Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]         0 0.00000000 0.220542887</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]         0 0.00000000 0.183721046</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]         0 0.00000000 0.161571953</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]         0 0.00000000 0.138728626</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]         0 0.00000000 0.135530082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]         0 0.00000000 0.101384011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]         0 0.00000000 0.095064797</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]         0 0.00000000 0.062636790</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]         0 0.00000000 0.014723696</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]         0 0.00000000 0.005423758</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]         0 0.00000000 0.002059914</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]         1 0.21382795 0.252023169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]         1 0.17043368 0.207579157</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]         1 0.18158389 0.215451172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]         1 0.30133247 0.322408606</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]         1 0.24439198 0.264181392</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,]         1 0.26934253 0.286946403</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]         1 0.32881435 0.342465366</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,]         1 0.25341417 0.263543342</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,]         1 0.25927610 0.267734301</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]         1 0.17673254 0.179546814</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,]         1 0.18487942 0.186856239</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,]         1 0.22647199 0.227828650</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]         1 0.36147850 0.361518355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,]         1 0.06463873 0.064639156</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]         2 0.35599699 0.363445520</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]         2 0.31252706 0.314712773</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]         2 0.31253901 0.314339892</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,]         2 0.35653366 0.356571755</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="op">(</span> <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">as_persistence</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Persistence Data</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> There are 12, 14, and 4 pairs in dimensions 0, 1, and 2 respectively.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Computed from a Alphacomplex filtration using `TDA::alphaComplexDiag()`.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> With the following parameters: maxdimension = 2.</span>
+<span class="r-in"><span><span class="fu">as_diagram</span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $diagram</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       dimension      Birth       Death</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]         0 0.00000000         Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]         0 0.00000000 0.220542887</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]         0 0.00000000 0.183721046</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]         0 0.00000000 0.161571953</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]         0 0.00000000 0.138728626</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]         0 0.00000000 0.135530082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]         0 0.00000000 0.101384011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]         0 0.00000000 0.095064797</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]         0 0.00000000 0.062636790</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]         0 0.00000000 0.014723696</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]         0 0.00000000 0.005423758</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]         0 0.00000000 0.002059914</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]         1 0.21382795 0.252023169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]         1 0.17043368 0.207579157</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]         1 0.18158389 0.215451172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]         1 0.30133247 0.322408606</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]         1 0.24439198 0.264181392</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,]         1 0.26934253 0.286946403</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]         1 0.32881435 0.342465366</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,]         1 0.25341417 0.263543342</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,]         1 0.25927610 0.267734301</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]         1 0.17673254 0.179546814</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,]         1 0.18487942 0.186856239</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,]         1 0.22647199 0.227828650</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]         1 0.36147850 0.361518355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,]         1 0.06463873 0.064639156</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]         2 0.35599699 0.363445520</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]         2 0.31252706 0.314712773</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]         2 0.31253901 0.314339892</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,]         2 0.35653366 0.356571755</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="fu">as_diagram</span><span class="op">(</span><span class="va">p</span>, list <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       dimension      Birth       Death</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]         0 0.00000000         Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]         0 0.00000000 0.220542887</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]         0 0.00000000 0.183721046</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]         0 0.00000000 0.161571953</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]         0 0.00000000 0.138728626</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]         0 0.00000000 0.135530082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]         0 0.00000000 0.101384011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]         0 0.00000000 0.095064797</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]         0 0.00000000 0.062636790</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]         0 0.00000000 0.014723696</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]         0 0.00000000 0.005423758</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]         0 0.00000000 0.002059914</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]         1 0.21382795 0.252023169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]         1 0.17043368 0.207579157</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]         1 0.18158389 0.215451172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]         1 0.30133247 0.322408606</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]         1 0.24439198 0.264181392</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,]         1 0.26934253 0.286946403</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]         1 0.32881435 0.342465366</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,]         1 0.25341417 0.263543342</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,]         1 0.25927610 0.267734301</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]         1 0.17673254 0.179546814</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,]         1 0.18487942 0.186856239</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,]         1 0.22647199 0.227828650</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]         1 0.36147850 0.361518355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,]         1 0.06463873 0.064639156</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]         2 0.35599699 0.363445520</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]         2 0.31252706 0.314712773</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]         2 0.31253901 0.314339892</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,]         2 0.35653366 0.356571755</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># distances between cities</span></span></span>
 <span class="r-in"><span><span class="va">euroclust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html" class="external-link">hclust</a></span><span class="op">(</span><span class="va">eurodist</span>, method <span class="op">=</span> <span class="st">"ward.D"</span><span class="op">)</span></span></span>
