@@ -176,17 +176,19 @@ x <- cbind(x = runif(6), y = runif(6))
 d <- TDA::alphaComplexDiag(x, maxdimension = 2)
 p <- as_persistence(d)
 expect_true(is.list(as_diagram(p)))
-expect_true(! is.list(as_diagram(p, list = FALSE)))
+expect_true(!is.list(as_diagram(p, list = FALSE)))
 expect_identical(as_diagram(p), d)
 
 d <- TDA::ripsDiag(x, maxdimension = 2, maxscale = 1.5)
 p <- as_persistence(d)
 expect_true(is.list(as_diagram(p)))
-expect_true(! is.list(as_diagram(p, list = FALSE)))
+expect_true(!is.list(as_diagram(p, list = FALSE)))
 expect_identical(as_diagram(p), d)
 
-h <- ripserr::cubical(volcano)
-expect_true(is.list(as_diagram(h)))
-expect_true(! is.list(as_diagram(h, list = FALSE)))
+if (requireNamespace("ripserr", quietly = TRUE)) {
+  h <- ripserr::cubical(volcano)
+  expect_true(is.list(as_diagram(h)))
+  expect_true(!is.list(as_diagram(h, list = FALSE)))
+}
 
 options(opts)
