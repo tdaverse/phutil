@@ -34,7 +34,6 @@ Suggests:
     knitr,
     microbenchmark,
     quarto,
-    ripserr,
     TDA,
     tdaunif,
     tinysnapshot,
