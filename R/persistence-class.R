@@ -266,6 +266,13 @@ as_persistence.matrix <- function(x, warn = TRUE, ...) {
 #' @export
 as_persistence.diagram <- function(x, warn = TRUE, ...) {
   info <- attributes(x)
+  # check column names
+  stopifnot(
+    info$dimnames[[2L]][1L] == "dimension",
+    all(c("Birth", "Death") %in% info$dimnames[[2L]][c(2L, 3L)])
+  )
+  bd_cols <- match(c("Birth", "Death"), info$dimnames[[2L]])
+
   filt_nm <- gsub("*Diag", "", rlang::call_name(info$call))
   if (filt_nm == "rips") {
     filt_nm <- "Vietoris-Rips"
@@ -290,7 +297,7 @@ as_persistence.diagram <- function(x, warn = TRUE, ...) {
   }
 
   dims <- dim(x)
-  x <- as.matrix(x)[1:dims[1], 1:dims[2]]
+  x <- as.matrix(x)[1:dim(x)[1], c(1L, bd_cols)]
   colnames(x) <- base::tolower(colnames(x))
   as_persistence.matrix(x, warn = warn, rlang::splice(params))
 }
