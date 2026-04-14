@@ -39,7 +39,8 @@ Suggests:
     tinysnapshot,
     tinytest
 LinkingTo: 
-    BH
+    BH,
+    cpp11
 VignetteBuilder: 
     quarto
 Encoding: UTF-8
