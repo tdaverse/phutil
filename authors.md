@@ -23,12 +23,12 @@ Source:
 [`DESCRIPTION`](https://github.com/tdaverse/phutil/blob/main/DESCRIPTION)
 
 Stamm A, Brunson J (2026). *phutil: Persistence Homology Utilities*. R
-package version 0.0.1.9000, <https://github.com/tdaverse/phutil>.
+package version 0.0.2, <https://github.com/tdaverse/phutil>.
 
     @Manual{,
       title = {phutil: Persistence Homology Utilities},
       author = {Aymeric Stamm and Jason Cory Brunson},
       year = {2026},
-      note = {R package version 0.0.1.9000},
+      note = {R package version 0.0.2},
       url = {https://github.com/tdaverse/phutil},
     }

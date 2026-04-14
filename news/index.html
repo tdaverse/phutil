@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">phutil</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,25 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="phutil-development-version">phutil (development version)<a class="anchor" aria-label="anchor" href="#phutil-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.2" id="phutil-002">phutil 0.0.2<a class="anchor" aria-label="anchor" href="#phutil-002"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-0-2">New features<a class="anchor" aria-label="anchor" href="#new-features-0-0-2"></a></h3>
+<ul><li>New <code><a href="../reference/persistence.html">as_diagram()</a></code> generic and methods for <code>persistence</code> and <code>PHom</code> classes, enabling round-trip conversion back to the <code>diagram</code> class used by <a href="https://cran.r-project.org/package=TDA" class="external-link">{TDA}</a> (<a href="https://github.com/tdaverse/phutil/issues/53" class="external-link">#53</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-0-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-2"></a></h3>
+<ul><li>
+<code><a href="../reference/persistence.html">as_persistence.diagram()</a></code> now correctly handles <code>diagram</code> objects whose <code>Birth</code> and <code>Death</code> columns appear in a different order, which can occur with some {TDA} filtrations (<a href="https://github.com/tdaverse/phutil/issues/52" class="external-link">#52</a>).</li>
+<li>Graphics options are now properly restored to the user’s original settings after being temporarily changed (<a href="https://github.com/tdaverse/phutil/issues/41" class="external-link">#41</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-0-0-2">Minor improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-0-0-2"></a></h3>
+<ul><li>{TDA} functions are now called with explicit <code>TDA::</code> namespace prefixes and <code>print.progress = FALSE</code> for cleaner output (<a href="https://github.com/tdaverse/phutil/issues/41" class="external-link">#41</a>).</li>
+<li>Tests for {ripserr} integration are now run conditionally on {ripserr} being installed, removing it as a hard suggested dependency (<a href="https://github.com/tdaverse/phutil/issues/41" class="external-link">#41</a>).</li>
+<li>The vignette no longer requires {ggplot2} or {scales}, reducing optional dependencies for building the documentation (<a href="https://github.com/tdaverse/phutil/issues/46" class="external-link">#46</a>, closes <a href="https://github.com/tdaverse/phutil/issues/45" class="external-link">#45</a>).</li>
+<li>Vendored {cpp11} headers have been removed; the package now relies on the {cpp11} headers provided by the installed package, allowing it to benefit from updated versions. The <code>NO_LEGACY_NONAPI</code> flag is set to comply with the R API going forward (<a href="https://github.com/tdaverse/phutil/issues/55" class="external-link">#55</a>).</li>
+<li>Package description updated with references to the distance methods implemented (<a href="https://github.com/tdaverse/phutil/issues/41" class="external-link">#41</a>).</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.1" id="phutil-001">phutil 0.0.1<a class="anchor" aria-label="anchor" href="#phutil-001"></a></h2><p class="text-muted">CRAN release: 2025-05-15</p>
