@@ -20,7 +20,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/tdaverse/phutil/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/tdaverse/phutil/blob/v0.0.2/DESCRIPTION)
 
 Stamm A, Brunson J (2026). *phutil: Persistence Homology Utilities*. R
 package version 0.0.2, <https://github.com/tdaverse/phutil>.
