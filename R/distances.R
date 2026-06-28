@@ -7,26 +7,26 @@
 #'
 #' A matching \eqn{\varphi : D_1 \to D_2} between persistence diagrams is a
 #' bijection of multisets, where both diagrams are assumed to have all points on
-#' the diagonal with infinite multiplicity. The _\eqn{p}-Wasserstein distance_
+#' the diagonal with infinite multiplicity. The _\eqn{pq}-Wasserstein distance_
 #' between \eqn{D_1} and \eqn{D_2} is defined as the infimum over all matchings
 #' of the expression
 #'
-#' \deqn{W_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
-#' \left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
+#' \deqn{W^q_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
+#' \left( \sum_{x \in D_1}{{\lVert x - \varphi(x) \rVert_q}^p}
 #' \right)^{\frac{1}{p}}}
 #'
 #' that can be thought of as the Minkowski distance between the diagrams viewed
 #' as vectors on the shared coordinates defined by the matching \eqn{\varphi}.
-#' The norm \eqn{\lVert \cdot \rVert} can be arbitrary; as implemented here, it
-#' is the infinity norm \eqn{\lVert (x_1,x_2) \rVert_\infty = \max(x_1,x_2)}. In
-#' the limit \eqn{p \to \infty}, the Wasserstein distance becomes the
-#' _bottleneck distance_:
+#' The norm \eqn{\lVert \cdot \rVert_q} is the Minkowski metric with exponent
+#' \eqn{q}, used to measure distances in the plane. In the limit \eqn{p \to
+#' \infty}, the \eqn{pq}-Wasserstein distance becomes the \eqn{q}-_bottleneck
+#' distance_:
 #'
 #' \deqn{B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
 #' \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
 #'
 #' The Wasserstein metric is also called the Kantorovich metric in recognition
-#' of the originator of the metric.
+#' of its originator.
 #'
 #' @param x Either a matrix of shape \eqn{n \times 2} or an object of class
 #'   [persistence] specifying the first persistence diagram.
@@ -39,6 +39,8 @@
 #'   Wasserstein distance, it must be strictly positive.
 #' @param p A numeric value specifying the power for the Wasserstein distance.
 #'   Defaults to `1.0`.
+#' @param q A numeric value specifying the power of the internal Minkowski
+#'   metric. Defaults to `Inf`.
 #' @param validate A boolean value specifying whether to validate the input
 #'   persistence diagrams. Defaults to `TRUE`. If `FALSE`, the function will not
 #'   check if the input persistence diagrams are valid. This can be useful for
@@ -111,6 +113,7 @@ wasserstein_distance <- function(
   y,
   tol = sqrt(.Machine$double.eps),
   p = 1.0,
+  q = Inf,
   validate = TRUE,
   dimension = 0L
 ) {
@@ -126,7 +129,21 @@ wasserstein_distance <- function(
     y <- y[y[, 1] < y[, 2], , drop = FALSE]
   }
 
-  if (p > 20) {
+  if (p == Inf && q != Inf) cli::cli_abort(
+    "q-bottleneck distances (`q < Inf`) are not yet supported."
+  )
+  # TODO: Should the p threshold (currently 6) depend on the tolerance?
+  if (p >= 6 && p < Inf) {
+    cli::cli_alert_warning(
+      paste(
+        "Values `p ≥ 6` can crash or stall the Wasserstein calculation;",
+        "for `p = Inf`, use the bottleneck distance (where also `q = Inf`)."
+      ),
+      wrap = TRUE
+    )
+  }
+
+  if (p == Inf && q == Inf) {
     return(bottleneck_distance(
       x = x,
       y = y,
@@ -140,7 +157,8 @@ wasserstein_distance <- function(
     x = x,
     y = y,
     delta = tol,
-    wasserstein_power = p
+    wasserstein_power = p,
+    internal_p = q
   )
 }
 
@@ -151,6 +169,7 @@ kantorovich_distance <- function(
   y,
   tol = sqrt(.Machine$double.eps),
   p = 1.0,
+  q = Inf,
   validate = TRUE,
   dimension = 0L
 ) {
@@ -159,6 +178,7 @@ kantorovich_distance <- function(
     y = y,
     tol = tol,
     p = p,
+    q = q,
     validate = validate,
     dimension = dimension
   )
@@ -236,10 +256,12 @@ wasserstein_pairwise_distances <- function(
   x,
   tol = sqrt(.Machine$double.eps),
   p = 1.0,
+  q = Inf,
   validate = TRUE,
   dimension = 0L,
   ncores = 1L
 ) {
+
   indices <- seq_along(x)
   if (validate) {
     for (i in indices) {
@@ -249,7 +271,17 @@ wasserstein_pairwise_distances <- function(
     }
   }
 
-  if (p > 20) {
+  if (p == Inf && q != Inf) cli::cli_abort(
+    "q-bottleneck distances are not yet supported."
+  )
+  # TODO: Should the p threshold (currently 6) depend on the tolerance?
+  if (p >= 6 && p < Inf) {
+    cli::cli_alert_warning(
+      "Values `p ≥ 6` can crash or stall the Wasserstein calculation."
+    )
+  }
+
+  if (p == Inf && q == Inf) {
     return(bottleneck_pairwise_distances(
       x = x,
       tol = tol,
@@ -263,6 +295,7 @@ wasserstein_pairwise_distances <- function(
     x = x,
     delta = tol,
     wasserstein_power = p,
+    internal_p = q,
     ncores = ncores
   )
   attr(distance_matrix, "Size") <- length(x)
@@ -280,6 +313,7 @@ kantorovich_pairwise_distances <- function(
   x,
   tol = sqrt(.Machine$double.eps),
   p = 1.0,
+  q = Inf,
   validate = TRUE,
   dimension = 0L,
   ncores = 1L
@@ -288,6 +322,7 @@ kantorovich_pairwise_distances <- function(
     x = x,
     tol = tol,
     p = p,
+    q = q,
     validate = validate,
     dimension = dimension,
     ncores = ncores

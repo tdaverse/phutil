@@ -20,6 +20,7 @@ wasserstein_distance(
   y,
   tol = sqrt(.Machine$double.eps),
   p = 1,
+  q = Inf,
   validate = TRUE,
   dimension = 0L
 )
@@ -29,6 +30,7 @@ kantorovich_distance(
   y,
   tol = sqrt(.Machine$double.eps),
   p = 1,
+  q = Inf,
   validate = TRUE,
   dimension = 0L
 )
@@ -57,6 +59,9 @@ are objects of class \link{persistence}.}
 
 \item{p}{A numeric value specifying the power for the Wasserstein distance.
 Defaults to \code{1.0}.}
+
+\item{q}{A numeric value specifying the power of the internal Minkowski
+metric. Defaults to \code{Inf}.}
 }
 \value{
 A numeric value storing either the Bottleneck or the Wasserstein
@@ -71,26 +76,26 @@ and the second column contains the death times of the points.
 \details{
 A matching \eqn{\varphi : D_1 \to D_2} between persistence diagrams is a
 bijection of multisets, where both diagrams are assumed to have all points on
-the diagonal with infinite multiplicity. The \emph{\eqn{p}-Wasserstein distance}
+the diagonal with infinite multiplicity. The \emph{\eqn{pq}-Wasserstein distance}
 between \eqn{D_1} and \eqn{D_2} is defined as the infimum over all matchings
 of the expression
 
-\deqn{W_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
-\left( \sum_{x \in D_1}{\lVert x - \varphi(x) \rVert^p}
+\deqn{W^q_p(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
+\left( \sum_{x \in D_1}{{\lVert x - \varphi(x) \rVert_q}^p}
 \right)^{\frac{1}{p}}}
 
 that can be thought of as the Minkowski distance between the diagrams viewed
 as vectors on the shared coordinates defined by the matching \eqn{\varphi}.
-The norm \eqn{\lVert \cdot \rVert} can be arbitrary; as implemented here, it
-is the infinity norm \eqn{\lVert (x_1,x_2) \rVert_\infty = \max(x_1,x_2)}. In
-the limit \eqn{p \to \infty}, the Wasserstein distance becomes the
-\emph{bottleneck distance}:
+The norm \eqn{\lVert \cdot \rVert_q} is the Minkowski metric with exponent
+\eqn{q}, used to measure distances in the plane. In the limit \eqn{p \to
+\infty}, the \eqn{pq}-Wasserstein distance becomes the \eqn{q}-\emph{bottleneck
+distance}:
 
 \deqn{B(D_1,D_2) = \inf_{\varphi: D_1 \to D_2}
 \sup_{x \in D_1}{\lVert x - \varphi(x) \rVert}.}
 
 The Wasserstein metric is also called the Kantorovich metric in recognition
-of the originator of the metric.
+of its originator.
 }
 \examples{
 bottleneck_distance(

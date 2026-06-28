@@ -170,17 +170,19 @@ $X$ and $Y$ for several choices of half-plane and "matched space" metrics.
 
 The results make intuitive sense; for example, the values change monotonically
 along each row and column.
-Let us now validate the bottom row---using the $L^\infty$ distance on the
-half-plane, giving the popular _bottleneck distance_---using both Hera, as
-exposed through {phutil}, and Dionysus, as exposed through {TDA}:
+Let us now validate them using Hera, as exposed through {phutil}---at least, those that are currently supported:
 
 ```{r validate small PDs with Hera}
-wasserstein_distance(X, Y, p = 1)
-wasserstein_distance(X, Y, p = 2)
-bottleneck_distance(X, Y)
+ps <- qs <- c(1, 2, Inf)
+sapply(ps, \(p) sapply(qs, \(q) {
+  as.numeric(try(wasserstein_distance(X, Y, p = p, q = q)))
+}))
 ```
 
-In order to compute distances with {TDA}, we must restructure the PDs to include
+We also validate these calculations using Dionysus, as exposed through {TDA};
+though only the bottom row---using the $L^\infty$ distance on the
+half-plane---can be checked for lack of user control of the internal metric.
+In order to compute distances, we must restructure the PDs to include
 a `"dimension"` column.
 Note also that `TDA::wasserstein()` does not take the $1/p$th power after
 computing the sum of $p$th powers; we do this manually to get comparable
