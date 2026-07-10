@@ -2,9 +2,11 @@
 
 This collection of functions computes the distance between two
 persistence diagrams of the same homology dimension. The diagrams must
-be represented as 2-column matrices. The first column of the matrix
-contains the birth times and the second column contains the death times
-of the points.
+be represented
+[`persistence`](https://tdaverse.github.io/phutil/reference/persistence.md)-class
+objects or as 2-column matrices. Matrices are assumed to have the same
+homological degree, and the first and second columns to contain the
+birth values and the death values, respectively.
 
 ## Usage
 
@@ -41,13 +43,13 @@ kantorovich_distance(
 - x:
 
   Either a matrix of shape \\n \times 2\\ or an object of class
-  [persistence](https://tdaverse.github.io/phutil/reference/persistence.md)
+  [`persistence`](https://tdaverse.github.io/phutil/reference/persistence.md)
   specifying the first persistence diagram.
 
 - y:
 
   Either a matrix of shape \\m \times 2\\ or an object of class
-  [persistence](https://tdaverse.github.io/phutil/reference/persistence.md)
+  [`persistence`](https://tdaverse.github.io/phutil/reference/persistence.md)
   specifying the second persistence diagram.
 
 - tol:
@@ -71,7 +73,7 @@ kantorovich_distance(
   An integer value specifying the homology dimension for which to
   compute the distance. Defaults to `0L`. This is only used if `x` and
   `y` are objects of class
-  [persistence](https://tdaverse.github.io/phutil/reference/persistence.md).
+  [`persistence`](https://tdaverse.github.io/phutil/reference/persistence.md).
 
 - p:
 
