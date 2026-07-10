@@ -14,6 +14,7 @@ You can install the development version of {phutil} from
 [GitHub](https://github.com/) with:
 
 ``` r
+
 # install.packages("pak")
 pak::pak("tdaverse/phutil")
 ```
@@ -23,9 +24,10 @@ pak::pak("tdaverse/phutil")
 The package currently provides a new data structure for hosting
 persistence data. The data set `noisy_circle_points` is a simulated data
 set consisting of 100 points sampled from a circle with additive
-Gaussian noise using a standard deviation of $0.05$:
+Gaussian noise using a standard deviation of $`0.05`$:
 
 ``` r
+
 library(phutil)
 head(noisy_circle_points)
 #>               x          y
@@ -45,6 +47,7 @@ and stored as an object of class `PHom`, which is a light wrapper around
 a data frame with 3 variables:
 
 ``` r
+
 head(noisy_circle_ripserr)
 #>   dimension birth       death
 #> 1         0     0 0.008162723
@@ -62,6 +65,7 @@ and stored as a list of length 1 containing the object `diagram` of
 class `diagram`, which is a matrix with 3 columns:
 
 ``` r
+
 head(noisy_circle_tda_rips$diagram)
 #>      dimension Birth     Death
 #> [1,]         0     0 1.6322000
@@ -111,6 +115,7 @@ using the **ripserr** package can be converted into the `persistence`
 class as follows:
 
 ``` r
+
 as_persistence(noisy_circle_ripserr)
 #> 
 #> ── Persistence Data ────────────────────────────────────────────────────────────
@@ -123,6 +128,7 @@ Similarly, the persistence data computed using the **TDA** package can
 be converted into the `persistence` class as follows:
 
 ``` r
+
 as_persistence(noisy_circle_tda_rips)
 #> 
 #> ── Persistence Data ────────────────────────────────────────────────────────────
@@ -140,6 +146,7 @@ takes two persistence diagrams as input and computes the bottleneck
 distance between them:
 
 ``` r
+
 library(phutil)
 diag1 <- persistence_sample[[1]]
 diag2 <- persistence_sample[[2]]
@@ -153,6 +160,7 @@ diagrams using the
 function:
 
 ``` r
+
 wasserstein_distance(diag1, diag2)
 #> [1] 1.53403
 ```
@@ -162,6 +170,7 @@ persistence diagrams in a list using
 e.g. [`wasserstein_pairwise_distances()`](https://tdaverse.github.io/phutil/reference/pairwise-distances.md):
 
 ``` r
+
 wasserstein_pairwise_distances(persistence_sample[1:5])
 #>          1        2        3        4
 #> 2 1.534030                           

@@ -60,7 +60,7 @@ An object of class `list` of length 1.
 
 The point cloud stored in `noisy_circle_points` has been generated using
 the [**tdaunif**](https://tdaverse.github.io/tdaunif/) package using the
-[[`tdaunif::sample_circle()`](https://tdaverse.github.io/tdaunif/reference/circles.html)](https://tdaverse.github.io/tdaunif/reference/circles.html)
+[`tdaunif::sample_circle()`](https://tdaverse.github.io/tdaunif/reference/circles.html)
 function. Specifically, the following parameters were used: `n = 100`,
 `sd = 0.05` and a seed of 1234.
 
@@ -73,6 +73,6 @@ function. Specifically, the following parameters were used:
 
 The persistence diagram stored in `noisy_circle_tda_rips` has been
 computed using the **TDA** package with the
-[[`TDA::ripsDiag()`](https://rdrr.io/pkg/TDA/man/ripsDiag.html)](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag)
+[`TDA::ripsDiag()`](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag)
 function. Specifically, the following parameters were used:
 `maxdimension = 1L` and `maxscale = 1.6322`.

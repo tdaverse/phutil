@@ -1,6 +1,7 @@
 # The persistence class
 
 ``` r
+
 library(phutil)
 ```
 
@@ -9,7 +10,7 @@ library(phutil)
 An object of class `persistence` is a list of 2 elements:
 
 - `pairs`: A list of 2-column matrices containing birth-death pairs. The
-  $i$-*th* element of the list corresponds to the $(i - 1)$-*th*
+  $`i`$-*th* element of the list corresponds to the $`(i-1)`$-*th*
   homology dimension. If there is no pairs for a given dimension but
   there are pairs in higher dimensions, the corresponding element(s)
   is/are filled with a numeric matrix with 0 rows.
@@ -105,7 +106,7 @@ including
   If the user provides an object of class ‘hclust’ as typically produced
   by [`stats::hclust()`](https://rdrr.io/r/stats/hclust.html), it means
   that it is a [`base::list`](https://rdrr.io/r/base/list.html) which
-  contains the `height` element which is a set of $n - 1$ real values
+  contains the `height` element which is a set of $`n−1`$ real values
   (non-decreasing for ultrametric trees) storing the clustering height,
   that is, the value of the criterion associated with the clustering
   method for the particular agglomeration. This is used as homological

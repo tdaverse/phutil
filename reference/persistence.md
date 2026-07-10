@@ -89,7 +89,7 @@ as_diagram(x, list = TRUE, ...)
     [`ripserr::vietoris_rips()`](https://tdaverse.github.io/ripserr/reference/vietoris_rips.html),
 
   - (a list as returned by a `*Diag()` function in **TDA** (e.g.
-    [[`TDA::ripsDiag()`](https://rdrr.io/pkg/TDA/man/ripsDiag.html)](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag))
+    [`TDA::ripsDiag()`](https://www.rdocumentation.org/packages/TDA/versions/1.9.1/topics/ripsDiag))
     whose first element is) an object of class 'diagram',
 
   - an object of class
