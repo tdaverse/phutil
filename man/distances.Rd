@@ -97,6 +97,11 @@ distance}:
 
 The Wasserstein metric is also called the Kantorovich metric in recognition
 of its originator.
+
+phutil provides support for the \eqn{\infty}-bottleneck distance and for
+\eqn{pq}-Wasserstein distances satisfying \eqn{p,q < \infty}, through a
+slight modification of and bindings to the Hera C++ library (Kerber, Morozov,
+& Nigmetov, 2017).
 }
 \examples{
 bottleneck_distance(
@@ -119,6 +124,11 @@ wasserstein_distance(
   persistence_sample[[2]]
 )
 
+}
+\references{
+Kerber, M., Morozov, D., & Nigmetov, A. (2017). Geometry Helps to
+Compare Persistence Diagrams. ACM J. Exp. Algorithmics, 22, 1.4:1-1.4:20.
+https://doi.org/10.1145/3064175
 }
 \seealso{
 \href{https://github.com/anigmetov/hera}{the Hera C++ library}
