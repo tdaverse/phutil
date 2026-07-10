@@ -1,5 +1,16 @@
 # phutil (development version)
 
+## New features
+
+- Activation of the `internal_p` parameter in Hera's Wasserstein distance
+  function for alternative Minkowski ground distances with a binding to the new
+  argument `q` for `wasserstein_distance()` and
+  `wasserstein_pairwise_distances()`. The implementation is efficient for
+  `p < 6` (roughly); higher values of `p` are accepted with a warning and may
+  cause R to stall. The bottleneck distance is deployed only when
+  `q == p == Inf`; Hera's implementation does not provide support for
+  `internal_p`.
+
 # phutil 0.0.2
 
 ## New features

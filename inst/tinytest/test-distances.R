@@ -38,7 +38,10 @@ expect_error(
   'Wasserstein_degree was "0.000000", must be a number >= 1.0. Cannot proceed.'
 )
 expect_error(wasserstein_distance(x, y, tol = 0.0, p = 1))
-expect_equal(wasserstein_distance(x, y, p = 21), 1)
+expect_message(
+  wasserstein_distance(x, y, p = 7),
+  'crash or stall the Wasserstein calculation'
+)
 expect_equal(wasserstein_distance(x, y, p = 1), 2)
 expect_equal(round(wasserstein_distance(x, y, p = 2), digits = 6L), 1.414214)
 
@@ -78,4 +81,92 @@ expect_equal(kantorovich_distance(x, y), wasserstein_distance(x, y))
 expect_equal(
   kantorovich_pairwise_distances(mod_sample),
   wasserstein_pairwise_distances(mod_sample)
+)
+
+# alternative internal norms
+X <- rbind(
+  c(1, 3),
+  c(3, 5)
+)
+Y <- rbind(
+  c(3, 4)
+)
+Z <- matrix(NA_real_, nrow = 0L, ncol = 2L)
+# Manhattan
+expect_equal(wasserstein_distance(X, Y, p = 1, q = 1), 3, tol = 1e-6)
+expect_equal(wasserstein_distance(X, Y, p = 2, q = 1), sqrt(5), tol = 1e-6)
+# expect_equal(wasserstein_distance(X, Y, p = Inf, q = 1), 2, tol = 1e-6)
+expect_error(
+  wasserstein_distance(X, Y, p = Inf, q = 1),
+  "q-bottleneck distances (`q < Inf`) are not yet supported."
+)
+# Pythagorean
+expect_equal(wasserstein_distance(X, Y, p = 1, q = 2), 1+sqrt(2), tol = 1e-6)
+expect_equal(wasserstein_distance(X, Y, p = 2, q = 2), sqrt(3), tol = 1e-6)
+# expect_equal(wasserstein_distance(X, Y, p = Inf, q = 2), sqrt(2), tol = 1e-4)
+expect_error(
+  wasserstein_distance(X, Y, p = Inf, q = 2),
+  "q-bottleneck distances (`q < Inf`) are not yet supported."
+)
+# supremum (default)
+expect_equal(wasserstein_distance(X, Y, p = 1, q = Inf), 2, tol = 1e-6)
+expect_equal(wasserstein_distance(X, Y, p = 2, q = Inf), sqrt(2), tol = 1e-6)
+expect_equal(wasserstein_distance(X, Y, p = Inf, q = Inf), 1, tol = 1e-6)
+# pairwise
+XYZ <- list(X, Y, Z)
+# Manhattan
+expect_equal(
+  as.vector(wasserstein_pairwise_distances(XYZ, p = 1, q = 1)),
+  c(3, 4, 1),
+  tol = 1e-6
+)
+expect_equal(
+  as.vector(wasserstein_pairwise_distances(XYZ, p = 2, q = 1)),
+  c(sqrt(5), 2*sqrt(2), 1),
+  tol = 1e-6
+)
+# expect_equal(
+#   as.vector(wasserstein_pairwise_distances(XYZ, p = Inf, q = 1)),
+#   c(2, 2, 1),
+#   tol = 1e-1
+# )
+expect_error(
+  as.vector(wasserstein_pairwise_distances(XYZ, p = Inf, q = 1)),
+  "q-bottleneck distances (`q < Inf`) are not yet supported."
+)
+# Pythagorean
+expect_equal(
+  as.vector(wasserstein_pairwise_distances(XYZ, p = 1, q = 2)),
+  c(1+sqrt(2), 2*sqrt(2), 1/sqrt(2)),
+  tol = 1e-6
+)
+expect_equal(
+  as.vector(wasserstein_pairwise_distances(XYZ, p = 2, q = 2)),
+  c(sqrt(3), 2, 1/sqrt(2)),
+  tol = 1e-6
+)
+# expect_equal(
+#   as.vector(wasserstein_pairwise_distances(XYZ, p = Inf, q = 2)),
+#   c(sqrt(2), sqrt(2), 1/sqrt(2)),
+#   tol = 1e-1
+# )
+expect_error(
+  as.vector(wasserstein_pairwise_distances(XYZ, p = Inf, q = 2)),
+  "q-bottleneck distances (`q < Inf`) are not yet supported."
+)
+# supremum
+expect_equal(
+  as.vector(wasserstein_pairwise_distances(XYZ, p = 1, q = Inf)),
+  c(2, 2, 1/2),
+  tol = 1e-6
+)
+expect_equal(
+  as.vector(wasserstein_pairwise_distances(XYZ, p = 2, q = Inf)),
+  c(sqrt(2), sqrt(2), 1/2),
+  tol = 1e-6
+)
+expect_equal(
+  as.vector(wasserstein_pairwise_distances(XYZ, p = Inf, q = Inf)),
+  c(1, 1, 1/2),
+  tol = 1e-6
 )

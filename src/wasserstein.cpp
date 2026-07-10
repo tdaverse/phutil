@@ -63,24 +63,28 @@ double wassersteinDist(PairVector& diagramA,
 double wassersteinDistance(const cpp11::doubles_matrix<>& x,
                            const cpp11::doubles_matrix<>& y,
                            const double delta = 0.01,
-                           const double wasserstein_power = 1.0)
+                           const double wasserstein_power = 1.0,
+                           const double internal_p = std::numeric_limits<double>::infinity())
 {
   PairVector diagramA, diagramB;
   parseMatrix(x, diagramA);
   parseMatrix(y, diagramB);
-  return wassersteinDist(diagramA, diagramB, wasserstein_power, delta);
+  double hera_internal_p = std::isinf(internal_p) ? hera::get_infinity<double>() : internal_p;
+  return wassersteinDist(diagramA, diagramB, wasserstein_power, delta, hera_internal_p);
 }
 
 [[cpp11::register]]
 cpp11::doubles wassersteinPairwiseDistances(const cpp11::list& x,
                                             const double delta = 0.01,
                                             const double wasserstein_power = 1.0,
+                                            const double internal_p = std::numeric_limits<double>::infinity(),
                                             const unsigned int ncores = 1)
 {
   unsigned int N = x.size();
   unsigned int K = N * (N - 1) / 2;
   cpp11::writable::doubles result(K);
   std::vector<PairVector> pairs(N);
+  double hera_internal_p = std::isinf(internal_p) ? hera::get_infinity<double>() : internal_p;
 
   for (int n = 0;n < N;++n)
   {
@@ -95,7 +99,7 @@ cpp11::doubles wassersteinPairwiseDistances(const cpp11::list& x,
   {
     unsigned int i = N - 2 - std::floor(std::sqrt(-8 * k + 4 * N * (N - 1) - 7) / 2.0 - 0.5);
     unsigned int j = k + i + 1 - N * (N - 1) / 2 + (N - i) * ((N - i) - 1) / 2;
-    result[k] = wassersteinDist(pairs[i], pairs[j], wasserstein_power, delta);
+    result[k] = wassersteinDist(pairs[i], pairs[j], wasserstein_power, delta, hera_internal_p);
   }
 
   return result;
