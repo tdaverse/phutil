@@ -1,5 +1,9 @@
 # phutil (development version)
 
+## Bug fixes
+
+- `as_persistence.diagram()` would fail when the input was obtained through `do.call()`; it now continues without error, but with empty information about the engine.
+
 # phutil 0.0.2
 
 ## New features
