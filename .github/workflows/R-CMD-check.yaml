@@ -62,7 +62,7 @@ jobs:
   # source -- flang-23 rejects the `-fvisibility=hidden` Fortran flag that
   # R's Makeconf sets (F_VISIBILITY) and igraph propagates via
   # PKG_FFLAGS = $(F_VISIBILITY). Filed upstream at
-  # https://github.com/igraph/rigraph/issues/XXXX <!-- update after filing -->
+  # https://github.com/igraph/rigraph/issues/2929
   clang23-install:
     runs-on: ubuntu-latest
     container:
