@@ -1,5 +1,9 @@
 # phutil (development version)
 
+## Bug fixes
+
+- Adjust vendorded Hera sources to explicitly include missing headers that are not pulled in transitively in latest clang versions; adapted R-CMD-check action to exercise this along the way.
+
 # phutil 0.0.2
 
 ## New features
