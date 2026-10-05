@@ -65,7 +65,7 @@ kantorovich_pairwise_distances(
   An integer value specifying the homology dimension for which to
   compute the distance. Defaults to `0L`. This is only used if `x` and
   `y` are objects of class
-  [persistence](https://tdaverse.github.io/phutil/reference/persistence.md).
+  [`persistence`](https://tdaverse.github.io/phutil/reference/persistence.md).
 
 - ncores:
 

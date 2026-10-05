@@ -30,6 +30,9 @@ Useful links:
 
 Authors:
 
+- Aymeric Stamm <aymeric.stamm@cnrs.fr>
+  ([ORCID](https://orcid.org/0000-0002-8725-3654))
+
 - Jason Cory Brunson <cornelioid@gmail.com>
   ([ORCID](https://orcid.org/0000-0003-3126-9494))
 
