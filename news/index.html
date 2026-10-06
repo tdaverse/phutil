@@ -47,10 +47,13 @@
 <h2 class="pkg-version" data-toc-text="development version" id="phutil-development-version">phutil (development version)<a class="anchor" aria-label="anchor" href="#phutil-development-version"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
-<ul><li>Adjusted vendored Hera sources to explicitly include missing headers that are not pulled in transitively in latest clang versions; adapted R-CMD-check action to exercise this along the way.</li>
-<li>Aligned vendored sources with upstream repository at <a href="https://github.com/animetov/hera" class="external-link uri">https://github.com/animetov/hera</a>; actually currently aligned with <a href="https://github.com/astamm/hera@r-compatibility" class="external-link uri">https://github.com/astamm/hera@r-compatibility</a> with PR awaiting approval.</li>
+<ul><li>Adjusted vendored Hera sources to explicitly include missing headers that are not pulled in transitively in latest clang versions; adapted R-CMD-check action to exercise this along the way (<a href="https://github.com/tdaverse/phutil/issues/62" class="external-link">#62</a>).
+<ul><li>Aligned vendored sources with upstream repository at <a href="https://github.com/animetov/hera" class="external-link uri">https://github.com/animetov/hera</a>; actually currently aligned with <a href="https://github.com/astamm/hera@r-compatibility" class="external-link uri">https://github.com/astamm/hera@r-compatibility</a> with PR awaiting approval.</li>
 <li>Use a <code>configure</code> script to mirror the vendored Hera headers as <em>forwarding headers</em> in <code>inst/include</code> and generate <code>Makevars</code> from <code>Makevars.in</code> (via <code>abs_srcdir</code>) so the upstream <code>&lt;hera/...&gt;</code> includes resolve without modifying the vendored sources; a <code>cleanup</code> script then removes these generated artifacts, keeping them out of version control (see <code>src/README.md</code>).</li>
 <li>Define hera’s <code>FOR_R_TDA</code> flag (in <code>src/Makevars.in</code>) to suppress the upstream <code>std::cerr</code>/<code>std::cout</code> diagnostics, satisfying R’s requirement that compiled code not write to stdout/stderr.</li>
+</ul></li>
+<li>
+<code><a href="../reference/persistence.html">as_persistence.diagram()</a></code> would fail when the input was obtained through <code><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call()</a></code>; it now continues without error, but with empty information about the engine (<a href="https://github.com/tdaverse/phutil/issues/58" class="external-link">#58</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">
