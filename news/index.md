@@ -1,6 +1,6 @@
 # Changelog
 
-## phutil (development version)
+## phutil 0.0.3
 
 ### Bug fixes
 
