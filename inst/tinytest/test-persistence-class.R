@@ -192,7 +192,7 @@ if (requireNamespace("ripserr", quietly = TRUE)) {
 }
 
 # tolerate `do.call()` input
-ph <- do.call(ripsDiag, c(list(X = x, maxdimension = 2, maxscale = 10)))
+ph <- do.call(TDA::ripsDiag, c(list(X = x, maxdimension = 2, maxscale = 10)))
 expect_silent(as_persistence(ph))
 
 options(opts)
