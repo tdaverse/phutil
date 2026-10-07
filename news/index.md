@@ -2,6 +2,8 @@
 
 ## phutil 0.0.3
 
+CRAN release: 2026-10-06
+
 ### Bug fixes
 
 - Adjusted vendored Hera sources to explicitly include missing headers
