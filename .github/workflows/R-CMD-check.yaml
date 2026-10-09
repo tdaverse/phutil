@@ -51,3 +51,33 @@ jobs:
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+
+  # Compile phutil on the R-hub clang23 (LLVM/flang) container. This catches
+  # C++ portability issues in the vendored Hera sources (e.g. missing
+  # <cmath>/<algorithm>/<stdexcept> includes) that the standard R builds do
+  # not surface, because clang-23's libc++ no longer pulls those in
+  # transitively. We deliberately install only the compile dependencies
+  # (Imports + LinkingTo) rather than all of Suggests: the clang23 image
+  # cannot currently build igraph (a transitive Suggests dependency) from
+  # source -- flang-23 rejects the `-fvisibility=hidden` Fortran flag that
+  # R's Makeconf sets (F_VISIBILITY) and igraph propagates via
+  # PKG_FFLAGS = $(F_VISIBILITY). Filed upstream at
+  # https://github.com/igraph/rigraph/issues/2929
+  clang23-install:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/r-hub/containers/clang23:latest
+    env:
+      R_LIBS_USER: /tmp/Rlib
+      _R_CHECK_CRAN_INCOMING_REMOTE_: "false"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install compile dependencies
+        run: |
+          mkdir -p "$R_LIBS_USER"
+          Rscript -e 'install.packages(c("BH", "cpp11", "cli", "rlang"), repos = "https://cloud.r-project.org", quiet = TRUE)'
+          Rscript -e 'missing <- setdiff(c("BH","cpp11","cli","rlang"), rownames(installed.packages())); if (length(missing)) stop("Missing dependencies: ", paste(missing, collapse = ", "))'
+
+      - name: R CMD INSTALL
+        run: R CMD INSTALL .

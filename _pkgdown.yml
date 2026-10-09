@@ -4,5 +4,7 @@ template:
 
 news:
   releases:
+  - text: phutil 0.0.3
+    href: https://astamm.github.io/posts/2026-10-07-phutil-003/
   - text: phutil 0.0.1
     href: https://r-consortium.org/posts/unifying-toolbox-for-handling-persistence-data/
