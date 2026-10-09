@@ -19,6 +19,7 @@ wasserstein_pairwise_distances(
   x,
   tol = sqrt(.Machine$double.eps),
   p = 1,
+  q = Inf,
   validate = TRUE,
   dimension = 0L,
   ncores = 1L
@@ -28,6 +29,7 @@ kantorovich_pairwise_distances(
   x,
   tol = sqrt(.Machine$double.eps),
   p = 1,
+  q = Inf,
   validate = TRUE,
   dimension = 0L,
   ncores = 1L
@@ -57,6 +59,9 @@ parallel computation. Defaults to \code{1L}.}
 
 \item{p}{A numeric value specifying the power for the Wasserstein distance.
 Defaults to \code{1.0}.}
+
+\item{q}{A numeric value specifying the power of the internal Minkowski
+metric. Defaults to \code{Inf}.}
 }
 \value{
 An object of class 'dist' containing the pairwise distance matrix
